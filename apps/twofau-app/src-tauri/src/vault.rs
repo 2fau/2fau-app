@@ -47,17 +47,41 @@ struct Unlocked {
     doc: VaultDocument,
 }
 
+/// Result of writing an externally-supplied sealed blob under the revision guard.
+pub enum ReplaceOutcome {
+    Committed { revision: u64 },
+    Conflict { revision: u64, blob: Vec<u8> },
+}
+
 pub struct AppVault {
     store: FileVaultStore,
+    rev_path: PathBuf,
+    revision: Mutex<u64>,
     inner: Mutex<Option<Unlocked>>,
 }
 
 impl AppVault {
     pub fn new(path: PathBuf) -> AppVault {
+        let rev_path = path.with_extension("rev");
+        let revision = std::fs::read_to_string(&rev_path)
+            .ok()
+            .and_then(|s| s.trim().parse::<u64>().ok())
+            .unwrap_or(0);
         AppVault {
             store: FileVaultStore::new(path),
+            rev_path,
+            revision: Mutex::new(revision),
             inner: Mutex::new(None),
         }
+    }
+
+    pub fn revision(&self) -> u64 {
+        *self.revision.lock().expect("revision mutex")
+    }
+
+    /// The raw sealed blob on disk (ciphertext), or None on first run.
+    pub fn sealed_blob(&self) -> Result<Option<Vec<u8>>, String> {
+        self.store.load().map_err(str_err)
     }
 
     pub fn is_locked(&self) -> bool {
@@ -225,11 +249,52 @@ impl AppVault {
         Ok(out)
     }
 
+    /// Persist a sealed blob, bump the revision, and persist the revision.
+    /// The single choke point every write goes through.
+    fn write_blob_locked(&self, rev: &mut u64, blob: &[u8]) -> Result<u64, String> {
+        self.store.save(blob).map_err(str_err)?;
+        *rev += 1;
+        std::fs::write(&self.rev_path, rev.to_string()).map_err(str_err)?;
+        Ok(*rev)
+    }
+
     fn seal_and_save(&self, doc: &VaultDocument, passphrase: &str) -> Result<(), String> {
         let salt = random::<SALT_LEN>();
         let nonce = random::<NONCE_LEN>();
         let blob = seal_with_passphrase(doc, passphrase, &salt, &nonce).map_err(str_err)?;
-        self.store.save(&blob).map_err(str_err)
+        let mut rev = self.revision.lock().expect("revision mutex");
+        self.write_blob_locked(&mut rev, &blob)?;
+        Ok(())
+    }
+
+    /// Write an externally-supplied sealed blob under the revision guard. If the
+    /// vault is unlocked, re-open the new blob so the desktop UI reflects it;
+    /// if it can't be opened (a genuinely different passphrase), lock the vault
+    /// rather than show stale data.
+    pub fn replace_sealed(
+        &self,
+        blob: &[u8],
+        base_revision: u64,
+    ) -> Result<ReplaceOutcome, String> {
+        let mut rev = self.revision.lock().expect("revision mutex");
+        if base_revision != *rev {
+            let current = self.store.load().map_err(str_err)?.unwrap_or_default();
+            return Ok(ReplaceOutcome::Conflict {
+                revision: *rev,
+                blob: current,
+            });
+        }
+        let new_rev = self.write_blob_locked(&mut rev, blob)?;
+        drop(rev);
+
+        let mut guard = self.inner.lock().expect("vault mutex");
+        if let Some(u) = guard.as_mut() {
+            match open_with_passphrase(blob, &u.passphrase) {
+                Ok(doc) => u.doc = doc,
+                Err(_) => *guard = None,
+            }
+        }
+        Ok(ReplaceOutcome::Committed { revision: new_rev })
     }
 }
 
@@ -243,4 +308,83 @@ fn keyring_set(passphrase: &str) -> Result<(), keyring::Error> {
 
 fn keyring_get() -> Option<String> {
     keyring_entry().ok()?.get_password().ok()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+
+    const PASS: &str = "correct-horse-battery";
+
+    fn fresh() -> (AppVault, tempfile::TempDir) {
+        let dir = tempdir().unwrap();
+        let vault = AppVault::new(dir.path().join("vault.dat"));
+        (vault, dir)
+    }
+
+    #[test]
+    fn revision_starts_at_zero_and_bumps_on_each_save() {
+        let (vault, _dir) = fresh();
+        assert_eq!(vault.revision(), 0);
+        vault.unlock(PASS.into(), false).unwrap(); // creates + saves the empty vault
+        assert_eq!(vault.revision(), 1);
+        vault
+            .add_uri("otpauth://totp/Acme:me?secret=JBSWY3DPEHPK3PXP&issuer=Acme")
+            .unwrap();
+        assert_eq!(vault.revision(), 2);
+    }
+
+    #[test]
+    fn revision_survives_reopening_the_vault() {
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("vault.dat");
+        {
+            let vault = AppVault::new(path.clone());
+            vault.unlock(PASS.into(), false).unwrap();
+            vault
+                .add_uri("otpauth://totp/A:b?secret=JBSWY3DPEHPK3PXP")
+                .unwrap();
+            assert_eq!(vault.revision(), 2);
+        }
+        let reopened = AppVault::new(path);
+        assert_eq!(reopened.revision(), 2);
+    }
+
+    #[test]
+    fn sealed_blob_round_trips_through_replace() {
+        let (vault, _dir) = fresh();
+        vault.unlock(PASS.into(), false).unwrap();
+        let rev = vault.revision();
+        let blob = vault.sealed_blob().unwrap().expect("a vault exists");
+
+        // Re-sealing the same doc under the same passphrase is a valid new blob.
+        let outcome = vault.replace_sealed(&blob, rev).unwrap();
+        match outcome {
+            ReplaceOutcome::Committed { revision } => assert_eq!(revision, rev + 1),
+            ReplaceOutcome::Conflict { .. } => panic!("expected commit"),
+        }
+        assert_eq!(vault.revision(), rev + 1);
+    }
+
+    #[test]
+    fn replace_with_stale_base_revision_conflicts() {
+        let (vault, _dir) = fresh();
+        vault.unlock(PASS.into(), false).unwrap();
+        let blob = vault.sealed_blob().unwrap().unwrap();
+        let current = vault.revision();
+
+        let outcome = vault.replace_sealed(&blob, current - 1).unwrap();
+        match outcome {
+            ReplaceOutcome::Conflict {
+                revision,
+                blob: got,
+            } => {
+                assert_eq!(revision, current);
+                assert_eq!(got, blob);
+            }
+            ReplaceOutcome::Committed { .. } => panic!("expected conflict"),
+        }
+        assert_eq!(vault.revision(), current, "a conflict must not bump");
+    }
 }

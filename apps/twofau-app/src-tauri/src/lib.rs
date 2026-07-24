@@ -1,4 +1,4 @@
-mod vault;
+pub mod vault;
 
 use tauri::{
     menu::{Menu, MenuItem},
