@@ -107,3 +107,126 @@ fn enable_false_stops_the_server() {
     h.ctrl.enable(false, 0).unwrap();
     assert!(!h.ctrl.is_running());
 }
+
+#[test]
+fn get_vault_returns_a_blob_and_revision() {
+    let h = start();
+    let token = pair(&h);
+    let body: serde_json::Value = ureq::get(&format!("{}/vault", h.base))
+        .set("Origin", ORIGIN)
+        .set("Authorization", &format!("Bearer {token}"))
+        .call()
+        .unwrap()
+        .into_json()
+        .unwrap();
+    assert!(body["revision"].as_u64().unwrap() >= 1);
+    assert!(!body["blob"].as_str().unwrap().is_empty());
+}
+
+#[test]
+fn revision_endpoint_matches_get_vault() {
+    let h = start();
+    let token = pair(&h);
+    let rev: serde_json::Value = ureq::get(&format!("{}/vault/revision", h.base))
+        .set("Origin", ORIGIN)
+        .set("Authorization", &format!("Bearer {token}"))
+        .call()
+        .unwrap()
+        .into_json()
+        .unwrap();
+    let full: serde_json::Value = ureq::get(&format!("{}/vault", h.base))
+        .set("Origin", ORIGIN)
+        .set("Authorization", &format!("Bearer {token}"))
+        .call()
+        .unwrap()
+        .into_json()
+        .unwrap();
+    assert_eq!(rev["revision"], full["revision"]);
+}
+
+#[test]
+fn put_vault_round_trips_at_the_current_revision() {
+    let h = start();
+    let token = pair(&h);
+    let current: serde_json::Value = ureq::get(&format!("{}/vault", h.base))
+        .set("Origin", ORIGIN)
+        .set("Authorization", &format!("Bearer {token}"))
+        .call()
+        .unwrap()
+        .into_json()
+        .unwrap();
+
+    let put: serde_json::Value = ureq::put(&format!("{}/vault", h.base))
+        .set("Origin", ORIGIN)
+        .set("Authorization", &format!("Bearer {token}"))
+        .send_json(ureq::json!({
+            "base_revision": current["revision"],
+            "blob": current["blob"],
+        }))
+        .unwrap()
+        .into_json()
+        .unwrap();
+    assert_eq!(
+        put["revision"].as_u64().unwrap(),
+        current["revision"].as_u64().unwrap() + 1
+    );
+}
+
+#[test]
+fn put_vault_with_a_stale_revision_conflicts() {
+    let h = start();
+    let token = pair(&h);
+    let current: serde_json::Value = ureq::get(&format!("{}/vault", h.base))
+        .set("Origin", ORIGIN)
+        .set("Authorization", &format!("Bearer {token}"))
+        .call()
+        .unwrap()
+        .into_json()
+        .unwrap();
+
+    let err = ureq::put(&format!("{}/vault", h.base))
+        .set("Origin", ORIGIN)
+        .set("Authorization", &format!("Bearer {token}"))
+        .send_json(ureq::json!({
+            "base_revision": current["revision"].as_u64().unwrap() - 1,
+            "blob": current["blob"],
+        }))
+        .unwrap_err();
+    match err {
+        ureq::Error::Status(409, resp) => {
+            let body: serde_json::Value = resp.into_json().unwrap();
+            assert_eq!(body["revision"], current["revision"]);
+            assert!(!body["blob"].as_str().unwrap().is_empty());
+        }
+        other => panic!("expected 409, got {other:?}"),
+    }
+}
+
+#[test]
+fn get_vault_is_404_before_any_vault_exists() {
+    // A controller over a vault path that was never unlocked/created.
+    let dir = tempfile::tempdir().unwrap();
+    let vault = Arc::new(AppVault::new(dir.path().join("vault.dat")));
+    let ctrl = BridgeController::new(vault, dir.path().join("bridge-state.json"));
+    ctrl.enable(true, 0).unwrap();
+    let base = format!("http://127.0.0.1:{}", ctrl.local_addr().unwrap().port());
+
+    // Pair first (pairing doesn't need a vault).
+    let code = ctrl.pairing_code();
+    let token = ureq::post(&format!("{base}/pair"))
+        .set("Origin", ORIGIN)
+        .send_json(ureq::json!({ "code": code, "extensionId": "abcdefghijklmnop" }))
+        .unwrap()
+        .into_json::<serde_json::Value>()
+        .unwrap()["token"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    let err = ureq::get(&format!("{base}/vault"))
+        .set("Origin", ORIGIN)
+        .set("Authorization", &format!("Bearer {token}"))
+        .call()
+        .unwrap_err();
+    assert!(matches!(err, ureq::Error::Status(404, _)), "got {err:?}");
+}
