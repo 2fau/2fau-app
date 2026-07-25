@@ -1,6 +1,9 @@
 pub mod bridge;
 pub mod vault;
 
+use std::sync::Arc;
+
+use bridge::{BridgeController, BridgeStatus};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -11,43 +14,43 @@ use twofau_core::Account;
 use vault::{fallback_vault_path, AppVault};
 
 #[tauri::command]
-fn is_locked(vault: State<AppVault>) -> bool {
+fn is_locked(vault: State<Arc<AppVault>>) -> bool {
     vault.is_locked()
 }
 
 #[tauri::command]
-fn try_auto_unlock(vault: State<AppVault>) -> bool {
+fn try_auto_unlock(vault: State<Arc<AppVault>>) -> bool {
     vault.try_auto_unlock()
 }
 
 #[tauri::command]
-fn has_vault(vault: State<AppVault>) -> bool {
+fn has_vault(vault: State<Arc<AppVault>>) -> bool {
     vault.has_vault()
 }
 
 #[tauri::command]
-fn unlock(vault: State<AppVault>, passphrase: String, remember: bool) -> Result<(), String> {
+fn unlock(vault: State<Arc<AppVault>>, passphrase: String, remember: bool) -> Result<(), String> {
     vault.unlock(passphrase, remember)
 }
 
 #[tauri::command]
-fn list_accounts(vault: State<AppVault>) -> Result<Vec<Account>, String> {
+fn list_accounts(vault: State<Arc<AppVault>>) -> Result<Vec<Account>, String> {
     vault.list()
 }
 
 #[tauri::command]
-fn code(vault: State<AppVault>, id: String, unix_ms: u64) -> Result<String, String> {
+fn code(vault: State<Arc<AppVault>>, id: String, unix_ms: u64) -> Result<String, String> {
     vault.code(&id, unix_ms)
 }
 
 #[tauri::command]
-fn add_uri(vault: State<AppVault>, uri: String) -> Result<Account, String> {
+fn add_uri(vault: State<Arc<AppVault>>, uri: String) -> Result<Account, String> {
     vault.add_uri(&uri)
 }
 
 #[tauri::command]
 fn add_manual(
-    vault: State<AppVault>,
+    vault: State<Arc<AppVault>>,
     issuer: String,
     label: String,
     secret_base32: String,
@@ -57,18 +60,38 @@ fn add_manual(
 }
 
 #[tauri::command]
-fn update_account(vault: State<AppVault>, account: Account) -> Result<(), String> {
+fn update_account(vault: State<Arc<AppVault>>, account: Account) -> Result<(), String> {
     vault.update(account)
 }
 
 #[tauri::command]
-fn remove_account(vault: State<AppVault>, id: String) -> Result<(), String> {
+fn remove_account(vault: State<Arc<AppVault>>, id: String) -> Result<(), String> {
     vault.remove(&id)
 }
 
 #[tauri::command]
-fn advance_hotp(vault: State<AppVault>, id: String) -> Result<(), String> {
+fn advance_hotp(vault: State<Arc<AppVault>>, id: String) -> Result<(), String> {
     vault.advance_hotp(&id)
+}
+
+#[tauri::command]
+fn bridge_status(bridge: State<BridgeController>) -> BridgeStatus {
+    bridge.status()
+}
+
+#[tauri::command]
+fn bridge_enable(bridge: State<BridgeController>, on: bool, port: u16) -> Result<(), String> {
+    bridge.enable(on, port)
+}
+
+#[tauri::command]
+fn bridge_pairing_code(bridge: State<BridgeController>) -> String {
+    bridge.pairing_code()
+}
+
+#[tauri::command]
+fn bridge_revoke(bridge: State<BridgeController>, id: String) -> Result<(), String> {
+    bridge.revoke(&id)
 }
 
 #[tauri::command]
@@ -111,7 +134,17 @@ pub fn run() {
                 .app_data_dir()
                 .map(|dir| dir.join("vault.dat"))
                 .unwrap_or_else(|_| fallback_vault_path());
-            app.manage(AppVault::new(vault_path));
+            let bridge_state_path = vault_path.with_file_name("bridge-state.json");
+            let vault = Arc::new(AppVault::new(vault_path));
+            app.manage(vault.clone());
+
+            let bridge = BridgeController::new(vault, bridge_state_path);
+            // Resume the last enabled/port choice across restarts.
+            let status = bridge.status();
+            if status.enabled {
+                let _ = bridge.enable(true, status.port);
+            }
+            app.manage(bridge);
 
             let show = MenuItem::with_id(app, "show", "Show", true, None::<&str>)?;
             let quit_item = MenuItem::with_id(app, "quit", "Quit 2FAu", true, None::<&str>)?;
@@ -163,6 +196,10 @@ pub fn run() {
             update_account,
             remove_account,
             advance_hotp,
+            bridge_status,
+            bridge_enable,
+            bridge_pairing_code,
+            bridge_revoke,
             quit,
         ])
         .run(tauri::generate_context!())
