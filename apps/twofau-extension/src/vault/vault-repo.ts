@@ -28,6 +28,22 @@ export type SaveResult =
   | { ok: true; manifest: VaultManifest }
   | { ok: false; conflict: LoadedVault };
 
+/**
+ * The surface `ExtensionVaultService` needs from a backing store. Implemented
+ * by the chrome.storage `VaultRepo` and, in client mode, by `HttpVaultRepo`.
+ */
+export interface VaultRepoPort {
+  hasVault(): Promise<boolean>;
+  loadManifest(): Promise<VaultManifest | null>;
+  load(): Promise<LoadedVault | null>;
+  save(
+    blob: Uint8Array,
+    salt: string,
+    kdfId: number,
+    baseRevision: number,
+  ): Promise<SaveResult>;
+}
+
 /** The vault no longer fits in chrome.storage.sync. */
 export class VaultQuotaError extends Error {
   constructor() {
@@ -54,7 +70,7 @@ function split(text: string): string[] {
  * reader therefore sees either the old manifest with its intact generation, or
  * the new manifest with its intact generation — never a mix.
  */
-export class VaultRepo {
+export class VaultRepo implements VaultRepoPort {
   private readonly area: chrome.storage.StorageArea;
 
   constructor(private readonly areaName: "sync" | "local" = "sync") {
