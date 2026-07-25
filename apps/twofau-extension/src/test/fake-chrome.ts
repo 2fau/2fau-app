@@ -81,12 +81,20 @@ export interface FakeContextMenus {
   removeAll(): Promise<void>;
 }
 
+export interface FakePermissions {
+  granted: Set<string>;
+  request(perms: { origins?: string[] }): Promise<boolean>;
+  contains(perms: { origins?: string[] }): Promise<boolean>;
+  remove(perms: { origins?: string[] }): Promise<boolean>;
+}
+
 export interface FakeChrome {
   sync: FakeArea;
   local: FakeArea;
   session: FakeArea;
   alarms: FakeAlarms;
   contextMenus: FakeContextMenus;
+  permissions: FakePermissions;
 }
 
 /** Install a fake `chrome` global and return its areas for assertions. */
@@ -111,18 +119,34 @@ export function installFakeChrome(): FakeChrome {
       contextMenus.items = [];
     },
   };
+  const permissions: FakePermissions = {
+    granted: new Set<string>(),
+    async request(perms) {
+      for (const o of perms.origins ?? []) permissions.granted.add(o);
+      return true; // the fake always grants; real Chrome shows a prompt
+    },
+    async contains(perms) {
+      return (perms.origins ?? []).every((o) => permissions.granted.has(o));
+    },
+    async remove(perms) {
+      for (const o of perms.origins ?? []) permissions.granted.delete(o);
+      return true;
+    },
+  };
   const fake: FakeChrome = {
     sync: makeArea({ total: SYNC_QUOTA_BYTES, perItem: SYNC_QUOTA_BYTES_PER_ITEM }),
     local: makeArea(null),
     session: makeArea(null),
     alarms,
     contextMenus,
+    permissions,
   };
   (globalThis as unknown as { chrome: unknown }).chrome = {
     storage: { sync: fake.sync, local: fake.local, session: fake.session },
     alarms,
     contextMenus,
-    runtime: { getURL: (path: string) => `chrome-extension://test/${path}` },
+    runtime: { id: "abcdefghijklmnop", getURL: (path: string) => `chrome-extension://test/${path}` },
+    permissions,
   };
   return fake;
 }

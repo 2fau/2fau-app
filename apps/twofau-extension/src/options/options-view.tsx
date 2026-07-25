@@ -1,6 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
+import {
+  BridgeUnreachableError,
+  ensureBridgePermission,
+  pairBridge,
+  pingBridge,
+} from "../bridge/connection";
 import { readSettings, type Settings, writeSettings } from "../vault/settings";
 import { syncUsage, type SyncUsage } from "../vault/usage";
 
@@ -60,8 +66,115 @@ export function OptionsView() {
         )}
       </section>
 
+      <ConnectionSection />
       <VaultSection />
     </div>
+  );
+}
+
+function ConnectionSection() {
+  const [mode, setMode] = useState<"independent" | "client">("independent");
+  const [port, setPort] = useState(4849);
+  const [code, setCode] = useState("");
+  const [status, setStatus] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    void (async () => {
+      const s = await readSettings();
+      setMode(s.mode === "client" ? "client" : "independent");
+      setPort(s.bridgePort);
+    })();
+  }, []);
+
+  async function chooseClient() {
+    setError(null);
+    setStatus(null);
+    const granted = await ensureBridgePermission();
+    if (!granted) {
+      setError("Permission to reach the desktop app was declined.");
+      return;
+    }
+    setMode("client");
+    await writeSettings({ mode: "client" });
+  }
+
+  async function chooseIndependent() {
+    setMode("independent");
+    setStatus(null);
+    setError(null);
+    await writeSettings({ mode: "independent" });
+  }
+
+  async function pair() {
+    setError(null);
+    setStatus(null);
+    try {
+      if (!(await pingBridge())) {
+        setError("Desktop app not found on that port. Is the bridge enabled?");
+        return;
+      }
+      await pairBridge(code.trim());
+      setCode("");
+      setStatus("Paired. This browser now uses the desktop vault.");
+    } catch (err) {
+      setError(err instanceof BridgeUnreachableError ? err.message : String(err));
+    }
+  }
+
+  return (
+    <section className="flex flex-col gap-2">
+      <span className="text-[13px] font-medium">Connection</span>
+
+      <label className="flex items-center gap-2 text-[13px]">
+        <input
+          type="radio"
+          checked={mode === "independent"}
+          onChange={() => void chooseIndependent()}
+        />
+        This browser only (independent)
+      </label>
+      <label className="flex items-center gap-2 text-[13px]">
+        <input type="radio" checked={mode === "client"} onChange={() => void chooseClient()} />
+        Use the 2FAU desktop app
+      </label>
+
+      {mode === "client" && (
+        <div className="flex flex-col gap-1.5 pl-5">
+          <label className="flex items-center gap-2 text-[12px]">
+            Port
+            <input
+              type="number"
+              className="w-20 rounded border px-1"
+              value={port}
+              min={1}
+              max={65535}
+              onChange={(e) => {
+                const p = Number(e.target.value) || 4849;
+                setPort(p);
+                void writeSettings({ bridgePort: p });
+              }}
+            />
+          </label>
+          <input
+            className="rounded border px-2 py-1 text-[13px]"
+            placeholder="Pairing code from the desktop app"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
+          <button
+            type="button"
+            className="rounded border px-2 py-1 text-[13px]"
+            onClick={() => void pair()}
+          >
+            Pair with desktop
+          </button>
+        </div>
+      )}
+
+      {status && <p className="text-[11px] text-muted-foreground">{status}</p>}
+      {error && <p className="text-[11px] text-destructive">{error}</p>}
+    </section>
   );
 }
 

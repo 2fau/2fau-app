@@ -21,7 +21,7 @@ import type {
 } from "@twofau/ui";
 import { algorithmArg } from "@twofau/ui";
 import { clearSessionKey, getSessionKey, setSessionKey, touchSessionKey } from "./session-key";
-import { VaultRepo, type VaultManifest } from "./vault-repo";
+import { VaultRepo, type VaultManifest, type VaultRepoPort } from "./vault-repo";
 
 /** PBKDF2-HMAC-SHA256; the only KDF the blob format defines today. */
 export const KDF_ID = 1;
@@ -45,12 +45,12 @@ export class ExtensionVaultService implements VaultService {
   private cached: { revision: number; doc: VaultDocument } | null = null;
 
   private constructor(
-    private readonly repo: VaultRepo,
+    private readonly repo: VaultRepoPort,
     private vaultExists: boolean,
     private unlocked: boolean,
   ) {}
 
-  static async create(repo: VaultRepo = new VaultRepo()): Promise<ExtensionVaultService> {
+  static async create(repo: VaultRepoPort = new VaultRepo()): Promise<ExtensionVaultService> {
     const vaultExists = await repo.hasVault();
     const unlocked = vaultExists && (await getSessionKey()) !== null;
     return new ExtensionVaultService(repo, vaultExists, unlocked);

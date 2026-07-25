@@ -24,6 +24,11 @@ describe("manifest.json", () => {
     expect(manifest).not.toHaveProperty("content_scripts");
   });
 
+  it("declares the loopback bridge permission as optional, not required", () => {
+    expect(manifest.optional_host_permissions).toEqual(["http://127.0.0.1/*"]);
+    expect(manifest).not.toHaveProperty("host_permissions");
+  });
+
   it("allows wasm in extension pages", () => {
     expect(manifest.content_security_policy.extension_pages).toBe(
       "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
