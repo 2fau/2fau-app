@@ -13,6 +13,7 @@
     }
   },
   "permissions": ["storage", "contextMenus", "offscreen", "activeTab", "alarms"],
+  "optional_host_permissions": ["http://127.0.0.1/*"],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   },
