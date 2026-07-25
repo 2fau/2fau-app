@@ -3,6 +3,7 @@ import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import { TwoFAUApp } from "@twofau/ui";
 import { useEffect, useRef } from "react";
 import ReactDOM from "react-dom/client";
+import { BridgeSettings } from "./bridge-settings";
 import { TauriVaultService } from "./tauri-vault-service";
 import "./index.css";
 
@@ -29,7 +30,11 @@ function Root({ startUnlocked, needsSetup }: { startUnlocked: boolean; needsSetu
       ref={containerRef}
       className="w-[320px] overflow-hidden rounded-xl border bg-background shadow-2xl"
     >
-      <TwoFAUApp service={service} onQuit={() => void invoke("quit")} />
+      <TwoFAUApp
+        service={service}
+        onQuit={() => void invoke("quit")}
+        settingsSlot={<BridgeSettings />}
+      />
     </div>
   );
 }
