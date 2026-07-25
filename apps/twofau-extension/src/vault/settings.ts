@@ -1,38 +1,54 @@
 export const DEFAULT_AUTO_LOCK_MINUTES = 15;
+export const DEFAULT_BRIDGE_PORT = 4849;
 
 const SETTINGS_KEY = "settings";
+
+export type BridgeMode = "independent" | "client" | "sync";
 
 export interface Settings {
   /** Minutes of inactivity before the session key is dropped. 0 means never. */
   autoLockMinutes: number;
-  /** Where the vault lives. "local" keeps it on this browser only. */
+  /** Where the local vault lives. "local" keeps it on this browser only. */
   storageArea: "sync" | "local";
+  /** Which backend the UI talks to. */
+  mode: BridgeMode;
+  /** Desktop bridge port (host-permission pattern is port-agnostic). */
+  bridgePort: number;
 }
 
 const DEFAULTS: Settings = {
   autoLockMinutes: DEFAULT_AUTO_LOCK_MINUTES,
   storageArea: "sync",
+  mode: "independent",
+  bridgePort: DEFAULT_BRIDGE_PORT,
 };
+
+const MODES: BridgeMode[] = ["independent", "client", "sync"];
 
 /**
  * Settings live in local storage, not sync: the storage-area choice itself has
- * to be answerable before we know where the vault is, and the lock timeout is
- * a property of this browser.
+ * to be answerable before we know where the vault is, and both the lock timeout
+ * and the bridge connection are properties of this browser.
  *
- * Stored values are validated rather than trusted — a junk `autoLockMinutes`
- * reaching `chrome.alarms.create` as NaN throws, which would leave the vault
- * unlocked with no lock deadline at all.
+ * Stored values are validated rather than trusted — a junk number reaching
+ * chrome.alarms/fetch would throw.
  */
 export async function readSettings(): Promise<Settings> {
   const got = await chrome.storage.local.get(SETTINGS_KEY);
   const stored = (got[SETTINGS_KEY] ?? {}) as Partial<Record<keyof Settings, unknown>>;
   const minutes = stored.autoLockMinutes;
+  const port = stored.bridgePort;
   return {
     autoLockMinutes:
       typeof minutes === "number" && Number.isFinite(minutes) && minutes >= 0
         ? minutes
         : DEFAULTS.autoLockMinutes,
     storageArea: stored.storageArea === "local" ? "local" : DEFAULTS.storageArea,
+    mode: MODES.includes(stored.mode as BridgeMode) ? (stored.mode as BridgeMode) : DEFAULTS.mode,
+    bridgePort:
+      typeof port === "number" && Number.isInteger(port) && port > 0 && port < 65536
+        ? port
+        : DEFAULTS.bridgePort,
   };
 }
 

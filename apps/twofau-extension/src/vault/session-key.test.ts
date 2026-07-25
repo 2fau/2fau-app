@@ -61,10 +61,14 @@ describe("settings", () => {
     expect(await readSettings()).toEqual({
       autoLockMinutes: DEFAULT_AUTO_LOCK_MINUTES,
       storageArea: "sync",
+      mode: "independent",
+      bridgePort: 4849,
     });
     expect(await writeSettings({ storageArea: "local" })).toEqual({
       autoLockMinutes: DEFAULT_AUTO_LOCK_MINUTES,
       storageArea: "local",
+      mode: "independent",
+      bridgePort: 4849,
     });
     expect((await readSettings()).storageArea).toBe("local");
   });
@@ -76,6 +80,16 @@ describe("settings", () => {
     expect(await readSettings()).toEqual({
       autoLockMinutes: DEFAULT_AUTO_LOCK_MINUTES,
       storageArea: "sync",
+      mode: "independent",
+      bridgePort: 4849,
     });
+  });
+
+  it("persists mode and port, and rejects junk values", async () => {
+    expect((await writeSettings({ mode: "client", bridgePort: 5000 })).mode).toBe("client");
+    fake.local.data.settings = { mode: "banana", bridgePort: -1 };
+    const s = await readSettings();
+    expect(s.mode).toBe("independent");
+    expect(s.bridgePort).toBe(4849);
   });
 });
