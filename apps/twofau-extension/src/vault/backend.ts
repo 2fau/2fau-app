@@ -1,16 +1,22 @@
 import type { VaultService } from "@twofau/ui";
 import { ExtensionVaultService } from "./extension-vault-service";
+import { HttpVaultRepo } from "./http-vault-repo";
 import { readSettings } from "./settings";
 import { VaultRepo } from "./vault-repo";
 
 /**
- * Picks the backend the UI talks to.
+ * Picks the backend the UI talks to, from the saved mode.
  *
- * Sub-project 5 adds the desktop app's localhost bridge here: probe it, and
- * return a `BridgeVaultService` when it answers. Nothing else in the extension
- * knows which backend it got.
+ * - `client`: no local vault — proxy everything to the desktop bridge.
+ * - `independent` (and, until Phase C, `sync`): the local chrome.storage vault.
+ *
+ * Every backend is the same `ExtensionVaultService` over a different repo, so
+ * the revision-guard and merge logic is shared.
  */
 export async function createVaultService(): Promise<VaultService> {
-  const { storageArea } = await readSettings();
+  const { mode, storageArea } = await readSettings();
+  if (mode === "client") {
+    return ExtensionVaultService.create(new HttpVaultRepo());
+  }
   return ExtensionVaultService.create(new VaultRepo(storageArea));
 }
