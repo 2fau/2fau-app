@@ -33,6 +33,16 @@ fn json(status: u16, body: String) -> Response<std::io::Cursor<Vec<u8>>> {
         .with_header(ct)
 }
 
+/// Chrome omits the `Origin` header on the extension's GET fetches to a
+/// permitted host, so an **absent** Origin is allowed; a **present**
+/// non-extension Origin (a web page — browsers always set it) is not. For the
+/// authenticated endpoints the bearer token is the real gate; this only keeps
+/// hostile web origins out of the unauthenticated surface and out of a token
+/// that was pinned to a different origin.
+fn origin_allowed(origin: &str) -> bool {
+    origin.is_empty() || origin.starts_with("chrome-extension://")
+}
+
 /// Host must be loopback on our port — defeats DNS rebinding.
 fn host_ok(req: &Request, port: u16) -> bool {
     match header(req, "Host") {
@@ -61,8 +71,8 @@ pub fn handle(ctx: &Ctx, req: Request) {
 
     match (method.as_str(), url.as_str()) {
         ("GET", "/ping") => {
-            // /ping only needs a plausible extension origin (Layer 1, light).
-            if !origin.starts_with("chrome-extension://") {
+            // /ping only needs a non-hostile origin (Layer 1, light).
+            if !origin_allowed(&origin) {
                 let _ = req.respond(json(403, r#"{"error":"forbidden origin"}"#.into()));
                 return;
             }
@@ -110,7 +120,9 @@ fn authorize(
         None => return Err(json(401, r#"{"error":"missing token"}"#.into())),
     };
     match ctx.state.lock().expect("state").token_origin(&token) {
-        Some(o) if o == origin => Ok(()),
+        // Absent Origin (Chrome's extension GET) is fine — the token proves the
+        // caller. A present Origin must still match the one it was paired to.
+        Some(o) if origin.is_empty() || o == origin => Ok(()),
         Some(_) => Err(json(403, r#"{"error":"origin mismatch"}"#.into())),
         None => Err(json(401, r#"{"error":"unknown token"}"#.into())),
     }
@@ -124,7 +136,7 @@ fn now_ms() -> u64 {
 }
 
 fn handle_pair(ctx: &Ctx, mut req: Request, origin: &str) {
-    if !origin.starts_with("chrome-extension://") {
+    if !origin_allowed(origin) {
         let _ = req.respond(json(403, r#"{"error":"forbidden origin"}"#.into()));
         return;
     }

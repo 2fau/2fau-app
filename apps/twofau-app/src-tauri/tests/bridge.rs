@@ -56,6 +56,34 @@ fn ping_answers_with_the_app_name() {
 }
 
 #[test]
+fn ping_allows_a_missing_origin() {
+    // Chrome omits the Origin header on the extension's GET fetch to a permitted
+    // host (confirmed from a live request capture). ureq likewise sends none.
+    let h = start();
+    let body: serde_json::Value = ureq::get(&format!("{}/ping", h.base))
+        .call()
+        .unwrap()
+        .into_json()
+        .unwrap();
+    assert_eq!(body["name"], "2fau");
+}
+
+#[test]
+fn vault_read_allows_a_missing_origin_with_a_valid_token() {
+    // The real client case: paired token, but Chrome sent no Origin on the GET.
+    // The token is the gate; an absent Origin must not be treated as a mismatch.
+    let h = start();
+    let token = pair(&h);
+    let body: serde_json::Value = ureq::get(&format!("{}/vault", h.base))
+        .set("Authorization", &format!("Bearer {token}"))
+        .call()
+        .unwrap()
+        .into_json()
+        .unwrap();
+    assert!(body["revision"].as_u64().unwrap() >= 1);
+}
+
+#[test]
 fn rejects_a_foreign_origin() {
     let h = start();
     let err = ureq::get(&format!("{}/ping", h.base))
