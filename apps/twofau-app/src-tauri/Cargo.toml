@@ -25,6 +25,13 @@ getrandom = "0.2"
 dirs = "5"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+tiny_http = "0.12"
+
+[dev-dependencies]
+tempfile = "3"
+# `json` pulls in `send_json`/`into_json`/`ureq::json!`; no TLS features are
+# needed because the bridge is plain http on loopback.
+ureq = { version = "2", default-features = false, features = ["json"] }
 
 # NOTE: build profiles live in the workspace root Cargo.toml (this crate is a
 # workspace member, so a [profile] here would be ignored).

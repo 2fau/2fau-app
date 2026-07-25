@@ -3,6 +3,7 @@ import {
   Plus,
   ScanLine,
   Search,
+  Settings,
   ShieldCheck,
   X,
 } from "lucide-react";
@@ -21,11 +22,13 @@ export function MenuBarView({
   onEdit,
   onScan,
   onQuit,
+  onOpenSettings,
 }: {
   onAdd: () => void;
   onEdit: (a: Account) => void;
   onScan?: () => void;
   onQuit?: () => void;
+  onOpenSettings?: () => void;
 }) {
   const { accounts, now, capabilities, addUri } = useVault();
   const [search, setSearch] = useState("");
@@ -148,16 +151,24 @@ export function MenuBarView({
         <span className="text-[11px] text-muted-foreground">
           {accounts.length === 1 ? "1 account" : `${accounts.length} accounts`}
         </span>
-        {onQuit && (
-          <Button
-            size="xs"
-            variant="ghost"
-            className="ml-auto text-muted-foreground"
-            onClick={onQuit}
-          >
-            Quit
-          </Button>
-        )}
+        <div className="ml-auto flex items-center gap-0.5">
+          {onOpenSettings && (
+            <Button
+              size="icon-xs"
+              variant="ghost"
+              aria-label="Settings"
+              className="text-muted-foreground"
+              onClick={onOpenSettings}
+            >
+              <Settings />
+            </Button>
+          )}
+          {onQuit && (
+            <Button size="xs" variant="ghost" className="text-muted-foreground" onClick={onQuit}>
+              Quit
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
