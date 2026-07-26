@@ -24,6 +24,7 @@ async function bootstrap() {
   root.render(
     <TwoFAUApp
       service={service}
+      onOpenSettings={() => chrome.runtime.openOptionsPage()}
       onScan={() => {
         void (async () => {
           const { scanCurrentTab } = await import("../vault/scan");

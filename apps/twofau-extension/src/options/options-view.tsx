@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useEffect, useState } from "react";
 import {
   BridgeUnreachableError,
@@ -126,18 +127,28 @@ function ConnectionSection() {
     <section className="flex flex-col gap-2">
       <span className="text-[13px] font-medium">Connection</span>
 
-      <label className="flex items-center gap-2 text-[13px]">
-        <input
-          type="radio"
-          checked={mode === "independent"}
-          onChange={() => void chooseIndependent()}
-        />
-        This browser only (independent)
-      </label>
-      <label className="flex items-center gap-2 text-[13px]">
-        <input type="radio" checked={mode === "client"} onChange={() => void chooseClient()} />
-        Use the 2FAU desktop app
-      </label>
+      <ToggleGroup
+        type="single"
+        variant="outline"
+        value={mode}
+        onValueChange={(v) => {
+          if (v === "client") void chooseClient();
+          else if (v === "independent") void chooseIndependent();
+        }}
+        className="w-full"
+      >
+        <ToggleGroupItem value="independent" className="flex-1">
+          This browser
+        </ToggleGroupItem>
+        <ToggleGroupItem value="client" className="flex-1">
+          Desktop app
+        </ToggleGroupItem>
+      </ToggleGroup>
+      <p className="text-[11px] text-muted-foreground">
+        {mode === "client"
+          ? "Vaults live in the desktop app; this browser is a client."
+          : "This browser keeps its own vault (synced across your Chrome profile)."}
+      </p>
 
       {mode === "client" && (
         <div className="flex flex-col gap-1.5 pl-5">
