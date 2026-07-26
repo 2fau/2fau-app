@@ -22,10 +22,12 @@ export function RootView({
   onScan,
   onQuit,
   settingsSlot,
+  onOpenSettings,
 }: {
   onScan?: () => void;
   onQuit?: () => void;
   settingsSlot?: ReactNode;
+  onOpenSettings?: () => void;
 }) {
   const { locked, needsSetup } = useVault();
   const [screen, setScreen] = useState<Screen>({ name: "list" });
@@ -63,7 +65,11 @@ export function RootView({
           onEdit={(account) => setScreen({ name: "edit", account })}
           onScan={onScan}
           onQuit={onQuit}
-          onOpenSettings={settingsSlot ? () => setScreen({ name: "settings" }) : undefined}
+          onOpenSettings={
+            // An explicit external action (extension → options page) wins; else
+            // the in-panel slot screen (desktop); else no gear.
+            onOpenSettings ?? (settingsSlot ? () => setScreen({ name: "settings" }) : undefined)
+          }
         />
       )}
     </div>
