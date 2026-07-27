@@ -5,13 +5,74 @@ use std::sync::Arc;
 
 use bridge::{BridgeController, BridgeStatus};
 use tauri::{
-    menu::{Menu, MenuItem},
+    menu::{Menu, MenuItem, PredefinedMenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     AppHandle, Manager, State, WindowEvent,
 };
+use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_positioner::{Position, WindowExt};
 use twofau_core::Account;
 use vault::{fallback_vault_path, AppVault};
+
+/// Tray menu id for looking it up to rebuild after the vault changes.
+const TRAY_ID: &str = "main";
+/// How many recent accounts to surface in the tray's quick-copy section.
+const TRAY_RECENT: usize = 5;
+
+fn now_ms() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis() as u64
+}
+
+/// Build the tray context menu: Show, then up to `TRAY_RECENT` quick-copy
+/// accounts (only while unlocked), then Quit.
+fn build_tray_menu<M: Manager<tauri::Wry>>(
+    manager: &M,
+    vault: &AppVault,
+) -> tauri::Result<Menu<tauri::Wry>> {
+    let show = MenuItem::with_id(manager, "show", "Show", true, None::<&str>)?;
+    let quit_item = MenuItem::with_id(manager, "quit", "Quit 2FAu", true, None::<&str>)?;
+
+    let menu = Menu::new(manager)?;
+    menu.append(&show)?;
+
+    let recent = vault.recent(TRAY_RECENT);
+    if !recent.is_empty() {
+        menu.append(&PredefinedMenuItem::separator(manager)?)?;
+        for a in &recent {
+            let title = if a.issuer.is_empty() { &a.label } else { &a.issuer };
+            let item = MenuItem::with_id(manager, format!("otp:{}", a.id), title, true, None::<&str>)?;
+            menu.append(&item)?;
+        }
+    }
+
+    menu.append(&PredefinedMenuItem::separator(manager)?)?;
+    menu.append(&quit_item)?;
+    Ok(menu)
+}
+
+/// Rebuild the tray menu to reflect the current vault. macOS menu mutations must
+/// happen on the main thread, so this hops there; it is a no-op if the tray or
+/// vault state has gone away.
+fn refresh_tray(handle: &AppHandle) {
+    let app = handle.clone();
+    let _ = handle.run_on_main_thread(move || {
+        let vault = app.state::<Arc<AppVault>>().inner().clone();
+        if let (Ok(menu), Some(tray)) = (build_tray_menu(&app, &vault), app.tray_by_id(TRAY_ID)) {
+            let _ = tray.set_menu(Some(menu));
+        }
+    });
+}
+
+/// Compute an account's current code and put it on the clipboard.
+fn copy_code(app: &AppHandle, id: &str) {
+    let vault = app.state::<Arc<AppVault>>();
+    if let Ok(code) = vault.code(id, now_ms()) {
+        let _ = app.clipboard().write_text(code);
+    }
+}
 
 #[tauri::command]
 fn is_locked(vault: State<Arc<AppVault>>) -> bool {
@@ -19,8 +80,12 @@ fn is_locked(vault: State<Arc<AppVault>>) -> bool {
 }
 
 #[tauri::command]
-fn try_auto_unlock(vault: State<Arc<AppVault>>) -> bool {
-    vault.try_auto_unlock()
+fn try_auto_unlock(app: AppHandle, vault: State<Arc<AppVault>>) -> bool {
+    let ok = vault.try_auto_unlock();
+    if ok {
+        refresh_tray(&app);
+    }
+    ok
 }
 
 #[tauri::command]
@@ -29,8 +94,15 @@ fn has_vault(vault: State<Arc<AppVault>>) -> bool {
 }
 
 #[tauri::command]
-fn unlock(vault: State<Arc<AppVault>>, passphrase: String, remember: bool) -> Result<(), String> {
-    vault.unlock(passphrase, remember)
+fn unlock(
+    app: AppHandle,
+    vault: State<Arc<AppVault>>,
+    passphrase: String,
+    remember: bool,
+) -> Result<(), String> {
+    vault.unlock(passphrase, remember)?;
+    refresh_tray(&app);
+    Ok(())
 }
 
 #[tauri::command]
@@ -44,34 +116,49 @@ fn code(vault: State<Arc<AppVault>>, id: String, unix_ms: u64) -> Result<String,
 }
 
 #[tauri::command]
-fn add_uri(vault: State<Arc<AppVault>>, uri: String) -> Result<Account, String> {
-    vault.add_uri(&uri)
+fn add_uri(app: AppHandle, vault: State<Arc<AppVault>>, uri: String) -> Result<Account, String> {
+    let account = vault.add_uri(&uri)?;
+    refresh_tray(&app);
+    Ok(account)
 }
 
 #[tauri::command]
 fn add_manual(
+    app: AppHandle,
     vault: State<Arc<AppVault>>,
     issuer: String,
     label: String,
     secret_base32: String,
     kind: String,
 ) -> Result<Account, String> {
-    vault.add_manual(issuer, label, secret_base32, kind)
+    let account = vault.add_manual(issuer, label, secret_base32, kind)?;
+    refresh_tray(&app);
+    Ok(account)
 }
 
 #[tauri::command]
-fn update_account(vault: State<Arc<AppVault>>, account: Account) -> Result<(), String> {
-    vault.update(account)
+fn update_account(
+    app: AppHandle,
+    vault: State<Arc<AppVault>>,
+    account: Account,
+) -> Result<(), String> {
+    vault.update(account)?;
+    refresh_tray(&app);
+    Ok(())
 }
 
 #[tauri::command]
-fn remove_account(vault: State<Arc<AppVault>>, id: String) -> Result<(), String> {
-    vault.remove(&id)
+fn remove_account(app: AppHandle, vault: State<Arc<AppVault>>, id: String) -> Result<(), String> {
+    vault.remove(&id)?;
+    refresh_tray(&app);
+    Ok(())
 }
 
 #[tauri::command]
-fn advance_hotp(vault: State<Arc<AppVault>>, id: String) -> Result<(), String> {
-    vault.advance_hotp(&id)
+fn advance_hotp(app: AppHandle, vault: State<Arc<AppVault>>, id: String) -> Result<(), String> {
+    vault.advance_hotp(&id)?;
+    refresh_tray(&app);
+    Ok(())
 }
 
 #[tauri::command]
@@ -125,6 +212,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_positioner::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .setup(|app| {
             // Menu-bar agent: no Dock icon on macOS.
             #[cfg(target_os = "macos")]
@@ -143,7 +231,7 @@ pub fn run() {
             let vault = Arc::new(AppVault::new(vault_path));
             app.manage(vault.clone());
 
-            let bridge = BridgeController::new(vault, bridge_state_path);
+            let bridge = BridgeController::new(vault.clone(), bridge_state_path);
             // Resume the last enabled/port choice across restarts.
             let status = bridge.status();
             if status.enabled {
@@ -151,11 +239,9 @@ pub fn run() {
             }
             app.manage(bridge);
 
-            let show = MenuItem::with_id(app, "show", "Show", true, None::<&str>)?;
-            let quit_item = MenuItem::with_id(app, "quit", "Quit 2FAu", true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&show, &quit_item])?;
+            let menu = build_tray_menu(app, &vault)?;
 
-            TrayIconBuilder::new()
+            TrayIconBuilder::with_id(TRAY_ID)
                 .icon(
                     app.default_window_icon()
                         .expect("bundled window icon")
@@ -166,7 +252,11 @@ pub fn run() {
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "show" => toggle_window(app),
                     "quit" => app.exit(0),
-                    _ => {}
+                    other => {
+                        if let Some(id) = other.strip_prefix("otp:") {
+                            copy_code(app, id);
+                        }
+                    }
                 })
                 .on_tray_icon_event(|tray, event| {
                     tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);

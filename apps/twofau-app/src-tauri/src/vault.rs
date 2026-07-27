@@ -135,6 +135,27 @@ impl AppVault {
         Ok(u.doc.entries.iter().map(|e| e.account.clone()).collect())
     }
 
+    /// Up to `limit` accounts for the tray's quick-copy menu: those with an
+    /// issuer or label, most-recently-modified first. Empty when locked.
+    pub fn recent(&self, limit: usize) -> Vec<Account> {
+        let guard = self.inner.lock().expect("vault mutex");
+        let Some(u) = guard.as_ref() else {
+            return Vec::new();
+        };
+        let mut entries: Vec<&StoredAccount> = u
+            .doc
+            .entries
+            .iter()
+            .filter(|e| !e.account.issuer.is_empty() || !e.account.label.is_empty())
+            .collect();
+        entries.sort_by_key(|e| std::cmp::Reverse(e.modified_at));
+        entries
+            .into_iter()
+            .take(limit)
+            .map(|e| e.account.clone())
+            .collect()
+    }
+
     pub fn code(&self, id: &str, unix_ms: u64) -> Result<String, String> {
         let uuid = Uuid::parse_str(id).map_err(str_err)?;
         let guard = self.inner.lock().expect("vault mutex");
@@ -383,6 +404,39 @@ mod tests {
             .add_uri("otpauth://totp/Acme:me?secret=JBSWY3DPEHPK3PXP&issuer=Acme")
             .unwrap();
         assert_eq!(vault.revision(), 2);
+    }
+
+    #[test]
+    fn recent_is_empty_when_locked_and_lists_accounts_when_unlocked() {
+        let (vault, _dir) = fresh();
+        assert!(vault.recent(5).is_empty(), "locked vault has no recents");
+
+        vault.unlock(PASS.into(), false).unwrap();
+        vault
+            .add_uri("otpauth://totp/Acme:me?secret=JBSWY3DPEHPK3PXP&issuer=Acme")
+            .unwrap();
+        vault
+            .add_uri("otpauth://totp/Beta:you?secret=JBSWY3DPEHPK3PXP&issuer=Beta")
+            .unwrap();
+
+        let recent = vault.recent(5);
+        assert_eq!(recent.len(), 2);
+        let issuers: Vec<_> = recent.iter().map(|a| a.issuer.as_str()).collect();
+        assert!(issuers.contains(&"Acme") && issuers.contains(&"Beta"));
+    }
+
+    #[test]
+    fn recent_caps_at_the_limit() {
+        let (vault, _dir) = fresh();
+        vault.unlock(PASS.into(), false).unwrap();
+        for i in 0..7 {
+            vault
+                .add_uri(&format!(
+                    "otpauth://totp/I{i}:a?secret=JBSWY3DPEHPK3PXP&issuer=I{i}"
+                ))
+                .unwrap();
+        }
+        assert_eq!(vault.recent(5).len(), 5);
     }
 
     #[test]
