@@ -157,7 +157,8 @@ fn handle_pair(ctx: &Ctx, mut req: Request, origin: &str) {
         .and_then(|v| v["code"].as_str().map(String::from))
         .unwrap_or_default();
     // Optional self-reported identity; absent fields just stay empty.
-    let str_field = |v: &serde_json::Value, k: &str| v["browser"][k].as_str().unwrap_or_default().to_string();
+    let str_field =
+        |v: &serde_json::Value, k: &str| v["browser"][k].as_str().unwrap_or_default().to_string();
     let browser = parsed
         .as_ref()
         .map(|v| BrowserIdentity {

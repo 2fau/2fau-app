@@ -166,7 +166,9 @@ mod tests {
             .redeem_code("WRONG-CODE", ORIGIN, chrome(), 1_500)
             .is_none());
         // Right code, right window -> a token, and the browser is recorded.
-        let token = state.redeem_code(&code, ORIGIN, chrome(), 1_500).expect("token");
+        let token = state
+            .redeem_code(&code, ORIGIN, chrome(), 1_500)
+            .expect("token");
         assert_eq!(state.browsers.len(), 1);
         assert_eq!(state.token_origin(&token), Some(ORIGIN));
         // The code is single-use.

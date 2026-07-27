@@ -42,8 +42,13 @@ fn build_tray_menu<M: Manager<tauri::Wry>>(
     if !recent.is_empty() {
         menu.append(&PredefinedMenuItem::separator(manager)?)?;
         for a in &recent {
-            let title = if a.issuer.is_empty() { &a.label } else { &a.issuer };
-            let item = MenuItem::with_id(manager, format!("otp:{}", a.id), title, true, None::<&str>)?;
+            let title = if a.issuer.is_empty() {
+                &a.label
+            } else {
+                &a.issuer
+            };
+            let item =
+                MenuItem::with_id(manager, format!("otp:{}", a.id), title, true, None::<&str>)?;
             menu.append(&item)?;
         }
     }
