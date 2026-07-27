@@ -49,4 +49,22 @@ describe("MockVaultService (real core)", () => {
     const [updated] = await svc.list();
     expect(updated.counter).toBe(1);
   });
+
+  it("round-trips an account through its secretUri", async () => {
+    const svc = new MockVaultService();
+    const original = await svc.addUri(
+      "otpauth://totp/Acme:me?secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ&digits=8",
+    );
+    const uri = await svc.secretUri(original.id);
+    // Re-importing the emitted URI must yield the same secret (same 8-digit code).
+    const reimported = await svc.addUri(uri);
+    expect(uri.startsWith("otpauth://totp/Acme:me?")).toBe(true);
+    expect(uri).toContain("secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ");
+    expect(await svc.code(reimported, 59_000)).toBe("94287082");
+  });
+
+  it("rejects secretUri for an unknown id", async () => {
+    const svc = new MockVaultService();
+    await expect(svc.secretUri("nope")).rejects.toThrow();
+  });
 });

@@ -37,4 +37,7 @@ export interface VaultService {
   /** Current OTP for `account` at `unixTimeMs`. */
   code(account: Account, unixTimeMs: number): Promise<string>;
   advanceHotp(id: string): Promise<void>;
+  /** The account's `otpauth://` URI (secret included) for rendering its QR so it
+   * can be re-added on another device. Rejects if `id` is unknown. */
+  secretUri(id: string): Promise<string>;
 }
