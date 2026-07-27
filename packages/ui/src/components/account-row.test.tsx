@@ -27,6 +27,24 @@ describe("AccountRow", () => {
     await waitFor(() => expect(writeText).toHaveBeenCalledWith("492810"));
   });
 
+  it("reveals a copy button on hover that copies and flips to a checkmark", async () => {
+    const a = account();
+    const { container } = renderWithVault(
+      <AccountRow account={a} onEdit={() => {}} />,
+      fakeService([a], { a: "492810" }),
+    );
+    await screen.findByText("492 810");
+    expect(screen.queryByRole("button", { name: /copy code/i })).toBeNull();
+
+    fireEvent.mouseEnter(container.firstChild as HTMLElement);
+    fireEvent.click(screen.getByRole("button", { name: /copy code/i }));
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith("492810"));
+    expect(writeText).toHaveBeenCalledTimes(1); // stopPropagation: not double-fired via the row
+    expect(screen.getByText("492 810")).toHaveClass("text-success");
+    expect(screen.queryByRole("button", { name: /copy code/i })).toBeNull();
+  });
+
   it("omits the secondary name when there is no label", async () => {
     const a = account({ label: "" });
     renderWithVault(<AccountRow account={a} onEdit={() => {}} />, fakeService([a], { a: "000000" }));
