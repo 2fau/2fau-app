@@ -74,7 +74,7 @@ export function OptionsView() {
 }
 
 function ConnectionSection() {
-  const [mode, setMode] = useState<"independent" | "client">("independent");
+  const [mode, setMode] = useState<"independent" | "client" | "sync">("independent");
   const [port, setPort] = useState(4849);
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<string | null>(null);
@@ -83,28 +83,24 @@ function ConnectionSection() {
   useEffect(() => {
     void (async () => {
       const s = await readSettings();
-      setMode(s.mode === "client" ? "client" : "independent");
+      setMode(s.mode);
       setPort(s.bridgePort);
     })();
   }, []);
 
-  async function chooseClient() {
+  async function choose(next: "independent" | "client" | "sync") {
     setError(null);
     setStatus(null);
-    const granted = await ensureBridgePermission();
-    if (!granted) {
-      setError("Permission to reach the desktop app was declined.");
-      return;
+    // Both bridge modes need the loopback permission.
+    if (next !== "independent") {
+      const granted = await ensureBridgePermission();
+      if (!granted) {
+        setError("Permission to reach the desktop app was declined.");
+        return;
+      }
     }
-    setMode("client");
-    await writeSettings({ mode: "client" });
-  }
-
-  async function chooseIndependent() {
-    setMode("independent");
-    setStatus(null);
-    setError(null);
-    await writeSettings({ mode: "independent" });
+    setMode(next);
+    await writeSettings({ mode: next });
   }
 
   async function pair() {
@@ -132,25 +128,29 @@ function ConnectionSection() {
         variant="outline"
         value={mode}
         onValueChange={(v) => {
-          if (v === "client") void chooseClient();
-          else if (v === "independent") void chooseIndependent();
+          if (v === "independent" || v === "client" || v === "sync") void choose(v);
         }}
         className="w-full"
       >
         <ToggleGroupItem value="independent" className="flex-1">
           This browser
         </ToggleGroupItem>
+        <ToggleGroupItem value="sync" className="flex-1">
+          Sync
+        </ToggleGroupItem>
         <ToggleGroupItem value="client" className="flex-1">
-          Desktop app
+          Desktop
         </ToggleGroupItem>
       </ToggleGroup>
       <p className="text-[11px] text-muted-foreground">
         {mode === "client"
           ? "Vaults live in the desktop app; this browser is a client."
-          : "This browser keeps its own vault (synced across your Chrome profile)."}
+          : mode === "sync"
+            ? "This browser keeps its own vault and syncs it with the desktop app when it's running."
+            : "This browser keeps its own vault (synced across your Chrome profile)."}
       </p>
 
-      {mode === "client" && (
+      {mode !== "independent" && (
         <div className="flex flex-col gap-1.5 pl-5">
           <label className="flex items-center gap-2 text-[12px]">
             Port
