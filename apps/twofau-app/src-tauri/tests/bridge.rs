@@ -3,6 +3,7 @@
 
 use std::sync::Arc;
 
+use base64::prelude::{Engine as _, BASE64_STANDARD};
 use tempfile::TempDir;
 use twofau_app_lib::bridge::BridgeController;
 use twofau_app_lib::vault::AppVault;
@@ -257,4 +258,38 @@ fn get_vault_is_404_before_any_vault_exists() {
         .call()
         .unwrap_err();
     assert!(matches!(err, ureq::Error::Status(404, _)), "got {err:?}");
+}
+
+#[test]
+fn merge_endpoint_folds_a_foreign_vault_and_replies_under_its_salt() {
+    let h = start(); // desktop unlocked with PASS (empty vault, revision 1)
+    let token = pair(&h);
+
+    // An "extension" vault: same passphrase, its own salt, one account.
+    let edir = tempfile::tempdir().unwrap();
+    let ext = AppVault::new(edir.path().join("v.dat"));
+    ext.unlock(PASS.into(), false).unwrap();
+    ext.add_uri("otpauth://totp/E:e?secret=JBSWY3DPEHPK3PXP")
+        .unwrap();
+    let ext_blob = ext.sealed_blob().unwrap().unwrap();
+
+    let resp: serde_json::Value = ureq::post(&format!("{}/merge", h.base))
+        .set("Origin", ORIGIN)
+        .set("Authorization", &format!("Bearer {token}"))
+        .send_json(ureq::json!({ "blob": BASE64_STANDARD.encode(&ext_blob) }))
+        .unwrap()
+        .into_json()
+        .unwrap();
+
+    // The reply opens under the extension's passphrase and holds the account,
+    // sealed under the sender's salt (so the extension's key opens it).
+    let returned = BASE64_STANDARD
+        .decode(resp["blob"].as_str().unwrap())
+        .unwrap();
+    let doc = twofau_core::open_with_passphrase(&returned, PASS).unwrap();
+    assert_eq!(doc.entries.len(), 1);
+    assert_eq!(
+        twofau_core::salt_of(&returned).unwrap(),
+        twofau_core::salt_of(&ext_blob).unwrap()
+    );
 }

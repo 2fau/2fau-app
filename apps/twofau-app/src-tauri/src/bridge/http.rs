@@ -101,6 +101,12 @@ pub fn handle(ctx: &Ctx, req: Request) {
                 let _ = req.respond(resp);
             }
         },
+        ("POST", "/merge") => match authorize(ctx, &req, &origin) {
+            Ok(()) => handle_merge(ctx, req),
+            Err(resp) => {
+                let _ = req.respond(resp);
+            }
+        },
         _ => {
             let _ = req.respond(json(404, r#"{"error":"not found"}"#.into()));
         }
@@ -225,6 +231,40 @@ fn handle_put_vault(ctx: &Ctx, mut req: Request) {
                 base64_lite::encode_b64(&blob)
             );
             let _ = req.respond(json(409, body));
+        }
+        Err(e) => {
+            let _ = req.respond(json(500, format!(r#"{{"error":{e:?}}}"#)));
+        }
+    }
+}
+
+fn handle_merge(ctx: &Ctx, mut req: Request) {
+    let mut body = String::new();
+    if req.as_reader().read_to_string(&mut body).is_err() {
+        let _ = req.respond(json(400, r#"{"error":"unreadable body"}"#.into()));
+        return;
+    }
+    let blob = serde_json::from_str::<serde_json::Value>(&body)
+        .ok()
+        .and_then(|v| v["blob"].as_str().and_then(base64_lite::decode_b64));
+    let Some(blob) = blob else {
+        let _ = req.respond(json(400, r#"{"error":"bad body"}"#.into()));
+        return;
+    };
+    match ctx.vault.merge_incoming(&blob) {
+        Ok(res) => {
+            let body = format!(
+                r#"{{"revision":{},"blob":"{}"}}"#,
+                res.revision,
+                base64_lite::encode_b64(&res.blob)
+            );
+            let _ = req.respond(json(200, body));
+        }
+        Err(e) if e.contains("locked") => {
+            let _ = req.respond(json(409, r#"{"error":"desktop locked"}"#.into()));
+        }
+        Err(e) if e.contains("passphrase") => {
+            let _ = req.respond(json(422, r#"{"error":"passphrase mismatch"}"#.into()));
         }
         Err(e) => {
             let _ = req.respond(json(500, format!(r#"{{"error":{e:?}}}"#)));

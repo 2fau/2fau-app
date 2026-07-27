@@ -7,9 +7,9 @@ use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use twofau_core::{
-    base32_decode, hotp, open_with_passphrase, parse_otpauth, seal_with_passphrase, totp, Account,
-    FileVaultStore, OtpAlgorithm, OtpType, StoredAccount, Tombstone, VaultDocument, VaultStore,
-    NONCE_LEN, SALT_LEN,
+    base32_decode, derive_key, hotp, merge, open_with_passphrase, parse_otpauth, salt_of, seal,
+    seal_with_passphrase, totp, Account, FileVaultStore, OtpAlgorithm, OtpType, StoredAccount,
+    Tombstone, VaultDocument, VaultStore, NONCE_LEN, SALT_LEN,
 };
 use uuid::Uuid;
 
@@ -51,6 +51,14 @@ struct Unlocked {
 pub enum ReplaceOutcome {
     Committed { revision: u64 },
     Conflict { revision: u64, blob: Vec<u8> },
+}
+
+/// Result of a desktop-mediated merge: the new desktop revision and the merged
+/// document re-sealed under the *sender's* salt so they can open it themselves.
+#[derive(Debug)]
+pub struct MergeResult {
+    pub revision: u64,
+    pub blob: Vec<u8>,
 }
 
 pub struct AppVault {
@@ -296,6 +304,32 @@ impl AppVault {
         }
         Ok(ReplaceOutcome::Committed { revision: new_rev })
     }
+
+    /// Fold an externally-sealed blob (same passphrase, any salt) into this
+    /// vault and return the merged document re-sealed under the sender's salt.
+    /// Requires the vault unlocked — only the passphrase can open a foreign salt.
+    pub fn merge_incoming(&self, incoming: &[u8]) -> Result<MergeResult, String> {
+        let (merged, pass, sender_salt) = {
+            let mut guard = self.inner.lock().expect("vault mutex");
+            let u = guard.as_mut().ok_or("vault is locked")?;
+            let doc_ext = open_with_passphrase(incoming, &u.passphrase)
+                .map_err(|_| "passphrase mismatch".to_string())?;
+            let merged = merge(&u.doc, &doc_ext);
+            u.doc = merged.clone();
+            let sender_salt = salt_of(incoming).map_err(str_err)?;
+            (merged, u.passphrase.clone(), sender_salt)
+        };
+        // Persist the merged doc as our own next generation (fresh salt + rev).
+        self.seal_and_save(&merged, &pass)?;
+        // Re-seal it under the sender's salt so the extension's existing key opens it.
+        let key = derive_key(&pass, &sender_salt);
+        let nonce = random::<NONCE_LEN>();
+        let blob = seal(&merged, &key, &sender_salt, &nonce).map_err(str_err)?;
+        Ok(MergeResult {
+            revision: self.revision(),
+            blob,
+        })
+    }
 }
 
 fn keyring_entry() -> Result<keyring::Entry, keyring::Error> {
@@ -386,5 +420,58 @@ mod tests {
             ReplaceOutcome::Committed { .. } => panic!("expected conflict"),
         }
         assert_eq!(vault.revision(), current, "a conflict must not bump");
+    }
+
+    #[test]
+    fn merge_incoming_merges_both_sides_and_replies_under_the_senders_salt() {
+        let (desktop, _d) = fresh();
+        desktop.unlock(PASS.into(), false).unwrap();
+        let d = desktop
+            .add_uri("otpauth://totp/D:d?secret=JBSWY3DPEHPK3PXP")
+            .unwrap();
+
+        // A second vault stands in for the extension: same passphrase, its own salt.
+        let (ext, _e) = fresh();
+        ext.unlock(PASS.into(), false).unwrap();
+        let e = ext
+            .add_uri("otpauth://totp/E:e?secret=JBSWY3DPEHPK3PXP")
+            .unwrap();
+        let ext_blob = ext.sealed_blob().unwrap().unwrap();
+        let ext_salt = salt_of(&ext_blob).unwrap();
+
+        let before = desktop.revision();
+        let res = desktop.merge_incoming(&ext_blob).unwrap();
+        assert!(res.revision > before);
+
+        // The desktop now holds both accounts.
+        let ids: Vec<_> = desktop.list().unwrap().into_iter().map(|a| a.id).collect();
+        assert!(ids.contains(&d.id) && ids.contains(&e.id));
+
+        // The reply is sealed under the sender's salt (so the extension's key
+        // opens it) and carries the merged document.
+        assert_eq!(salt_of(&res.blob).unwrap(), ext_salt);
+        let doc = open_with_passphrase(&res.blob, PASS).unwrap();
+        assert_eq!(doc.entries.len(), 2);
+    }
+
+    #[test]
+    fn merge_incoming_rejects_a_different_passphrase() {
+        let (desktop, _d) = fresh();
+        desktop.unlock(PASS.into(), false).unwrap();
+        let (ext, _e) = fresh();
+        ext.unlock("a-different-passphrase".into(), false).unwrap();
+        let ext_blob = ext.sealed_blob().unwrap().unwrap();
+        let err = desktop.merge_incoming(&ext_blob).unwrap_err();
+        assert!(err.contains("passphrase"), "got {err}");
+    }
+
+    #[test]
+    fn merge_incoming_needs_an_unlocked_vault() {
+        let (desktop, _d) = fresh(); // never unlocked
+        let (ext, _e) = fresh();
+        ext.unlock(PASS.into(), false).unwrap();
+        let ext_blob = ext.sealed_blob().unwrap().unwrap();
+        let err = desktop.merge_incoming(&ext_blob).unwrap_err();
+        assert!(err.contains("locked"), "got {err}");
     }
 }
