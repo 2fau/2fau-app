@@ -4,12 +4,21 @@ import { AUTO_LOCK_ALARM, clearSessionKey } from "../vault/session-key";
 import { initWasm } from "../wasm";
 import { copyToClipboard } from "./clipboard";
 import { accountIdFromMenuItem, refreshContextMenu } from "./context-menu";
+import { ensureSyncAlarm, SYNC_ALARM } from "./sync-alarm";
+import { syncOnce } from "./sync-engine";
 
 // No module-level state beyond these listener registrations: the worker is torn
 // down whenever Chrome feels like it, so every handler re-reads from storage.
 
-chrome.runtime.onInstalled.addListener(() => void refreshContextMenu());
-chrome.runtime.onStartup.addListener(() => void refreshContextMenu());
+chrome.runtime.onInstalled.addListener(() => {
+  void refreshContextMenu();
+  void ensureSyncAlarm();
+});
+chrome.runtime.onStartup.addListener(() => {
+  void refreshContextMenu();
+  void ensureSyncAlarm();
+  void syncOnce(); // sync on connect
+});
 
 // Lock state and the account list both live in storage; rebuild the menu when
 // either changes.
@@ -18,12 +27,22 @@ chrome.storage.onChanged.addListener((changes, area) => {
     (area === "session" && "vault.key" in changes) ||
     (area !== "session" && ("vault.manifest" in changes || "recent" in changes));
   if (relevant) void refreshContextMenu();
+
+  if (area === "local" && "settings" in changes) void ensureSyncAlarm();
+  // A local vault edit should push promptly; the engine's canonical-diff guard
+  // makes its own resulting write a no-op, so this can't loop.
+  if (area !== "session" && "vault.manifest" in changes) void syncOnce();
 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
-  if (alarm.name !== AUTO_LOCK_ALARM) return;
-  await clearSessionKey();
-  await refreshContextMenu();
+  if (alarm.name === AUTO_LOCK_ALARM) {
+    await clearSessionKey();
+    await refreshContextMenu();
+    return;
+  }
+  if (alarm.name === SYNC_ALARM) {
+    await syncOnce();
+  }
 });
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
