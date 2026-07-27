@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { UnlockView } from "@/components/unlock-view";
 import type { Account } from "@/core/types";
 import { type AddPrefill, prefillFromClipboardText } from "@/lib/prefill";
+import { useClipboard } from "@/state/clipboard";
 import { useVault } from "@/state/vault-provider";
 
 type Screen =
@@ -24,27 +25,23 @@ export function RootView({
   onQuit,
   settingsSlot,
   onOpenSettings,
-  readClipboard,
 }: {
   onScan?: () => void;
   onQuit?: () => void;
   settingsSlot?: ReactNode;
   onOpenSettings?: () => void;
-  /** Host-supplied clipboard reader (desktop uses the Tauri plugin); falls back
-   * to the webview's `navigator.clipboard`. */
-  readClipboard?: () => Promise<string>;
 }) {
   const { locked, needsSetup } = useVault();
+  const { readText } = useClipboard();
   const [screen, setScreen] = useState<Screen>({ name: "list" });
 
   // Open the Add screen seeded from the clipboard, but only when it holds a
   // valid otpauth:// URI or Base32 secret. Returns false (so the caller can
   // flash the icon) when there's nothing usable to import.
   async function openAddFromClipboard(): Promise<boolean> {
-    const read = readClipboard ?? (() => navigator.clipboard.readText());
     let prefill: AddPrefill | null = null;
     try {
-      prefill = await prefillFromClipboardText(await read());
+      prefill = await prefillFromClipboardText(await readText());
     } catch {
       prefill = null;
     }

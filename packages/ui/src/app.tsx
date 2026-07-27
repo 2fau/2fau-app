@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { RootView } from "@/components/root-view";
 import type { VaultService } from "@/core/vault-service";
+import { ClipboardProvider } from "@/state/clipboard";
 import { VaultProvider } from "@/state/vault-provider";
 
 /** Top-level entry: wraps the panel in a VaultProvider bound to a host's
@@ -13,6 +14,7 @@ export function TwoFAUApp({
   settingsSlot,
   onOpenSettings,
   readClipboard,
+  writeClipboard,
 }: {
   service: VaultService;
   onScan?: () => void;
@@ -22,20 +24,22 @@ export function TwoFAUApp({
   /** External settings action (extension): the gear calls this instead — e.g.
    * opening the options page. Takes precedence over `settingsSlot`. */
   onOpenSettings?: () => void;
-  /** How to read clipboard text for the quick-add icon. Injected because the
-   * desktop must go through the Tauri clipboard plugin (the webview's
-   * `navigator.clipboard` is unreliable); defaults to `navigator.clipboard`. */
+  /** How to read/write the clipboard. Injected because the desktop must go
+   * through the Tauri clipboard plugin (the webview's `navigator.clipboard` is
+   * unreliable and ACL-gated); both default to `navigator.clipboard`. */
   readClipboard?: () => Promise<string>;
+  writeClipboard?: (text: string) => Promise<void>;
 }) {
   return (
-    <VaultProvider service={service}>
-      <RootView
-        onScan={onScan}
-        onQuit={onQuit}
-        settingsSlot={settingsSlot}
-        onOpenSettings={onOpenSettings}
-        readClipboard={readClipboard}
-      />
-    </VaultProvider>
+    <ClipboardProvider readText={readClipboard} writeText={writeClipboard}>
+      <VaultProvider service={service}>
+        <RootView
+          onScan={onScan}
+          onQuit={onQuit}
+          settingsSlot={settingsSlot}
+          onOpenSettings={onOpenSettings}
+        />
+      </VaultProvider>
+    </ClipboardProvider>
   );
 }

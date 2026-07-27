@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { readText } from "@tauri-apps/plugin-clipboard-manager";
+import { readText, writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import { TwoFAUApp } from "@twofau/ui";
 import { useEffect, useRef } from "react";
@@ -36,6 +36,7 @@ function Root({ startUnlocked, needsSetup }: { startUnlocked: boolean; needsSetu
         onQuit={() => void invoke("quit")}
         settingsSlot={<BridgeSettings />}
         readClipboard={async () => (await readText()) ?? ""}
+        writeClipboard={(text) => writeText(text)}
       />
     </div>
   );
