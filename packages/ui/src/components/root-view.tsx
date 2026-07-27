@@ -24,11 +24,15 @@ export function RootView({
   onQuit,
   settingsSlot,
   onOpenSettings,
+  readClipboard,
 }: {
   onScan?: () => void;
   onQuit?: () => void;
   settingsSlot?: ReactNode;
   onOpenSettings?: () => void;
+  /** Host-supplied clipboard reader (desktop uses the Tauri plugin); falls back
+   * to the webview's `navigator.clipboard`. */
+  readClipboard?: () => Promise<string>;
 }) {
   const { locked, needsSetup } = useVault();
   const [screen, setScreen] = useState<Screen>({ name: "list" });
@@ -37,9 +41,10 @@ export function RootView({
   // valid otpauth:// URI or Base32 secret. Returns false (so the caller can
   // flash the icon) when there's nothing usable to import.
   async function openAddFromClipboard(): Promise<boolean> {
+    const read = readClipboard ?? (() => navigator.clipboard.readText());
     let prefill: AddPrefill | null = null;
     try {
-      prefill = await prefillFromClipboardText(await navigator.clipboard.readText());
+      prefill = await prefillFromClipboardText(await read());
     } catch {
       prefill = null;
     }

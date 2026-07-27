@@ -12,6 +12,7 @@ export function TwoFAUApp({
   onQuit,
   settingsSlot,
   onOpenSettings,
+  readClipboard,
 }: {
   service: VaultService;
   onScan?: () => void;
@@ -21,6 +22,10 @@ export function TwoFAUApp({
   /** External settings action (extension): the gear calls this instead — e.g.
    * opening the options page. Takes precedence over `settingsSlot`. */
   onOpenSettings?: () => void;
+  /** How to read clipboard text for the quick-add icon. Injected because the
+   * desktop must go through the Tauri clipboard plugin (the webview's
+   * `navigator.clipboard` is unreliable); defaults to `navigator.clipboard`. */
+  readClipboard?: () => Promise<string>;
 }) {
   return (
     <VaultProvider service={service}>
@@ -29,6 +34,7 @@ export function TwoFAUApp({
         onQuit={onQuit}
         settingsSlot={settingsSlot}
         onOpenSettings={onOpenSettings}
+        readClipboard={readClipboard}
       />
     </VaultProvider>
   );
