@@ -133,7 +133,7 @@ export function MenuBarView({
             </p>
           ) : (
             <div
-              className="divide-y overflow-y-auto"
+              className="macos-scroll divide-y overflow-y-auto"
               style={{ maxHeight: MAX_VISIBLE_ROWS * ROW_HEIGHT }}
             >
               {filtered.map((a) => (

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Account } from "@/core/types";
 import { cn } from "@/lib/utils";
-import { formatCode, primaryName, secondaryName } from "@/lib/format";
+import { formatCode } from "@/lib/format";
 import { useVault } from "@/state/vault-provider";
 
 /** Port of the Swift `RowView`: two-line account cell, tap-to-copy, hover
@@ -16,7 +16,6 @@ export function AccountRow({ account, onEdit }: { account: Account; onEdit: () =
   const [actionError, setActionError] = useState<string | null>(null);
 
   const raw = codes[account.id] ?? "";
-  const secondary = secondaryName(account);
 
   async function copy() {
     if (!raw) return;
@@ -53,14 +52,13 @@ export function AccountRow({ account, onEdit }: { account: Account; onEdit: () =
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
     >
-      <div className="flex h-12 items-center gap-2">
+      <div className="flex min-h-12 items-center gap-2">
         <div className="flex min-w-0 flex-col gap-0.5">
-          <div className="flex items-baseline gap-1.5">
-            <span className="truncate text-[13px] font-semibold">{primaryName(account)}</span>
-            {secondary && (
-              <span className="truncate text-[11px] text-muted-foreground">{secondary}</span>
-            )}
-          </div>
+          {account.issuer && (
+            <span className="truncate text-[11px] font-medium text-muted-foreground">
+              {account.issuer}
+            </span>
+          )}
           <div className="flex items-center gap-1.5">
             <span
               className={cn(
@@ -72,6 +70,9 @@ export function AccountRow({ account, onEdit }: { account: Account; onEdit: () =
             </span>
             {copied && <CheckCircle2 className="size-4 text-success" />}
           </div>
+          {account.label && (
+            <span className="truncate text-[11px] text-muted-foreground">{account.label}</span>
+          )}
         </div>
 
         <div className="ml-auto" />
