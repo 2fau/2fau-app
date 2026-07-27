@@ -95,3 +95,76 @@ jobs:
           releaseDraft: ${{ github.ref_type == 'tag' }}
           prerelease: ${{ github.ref_type != 'tag' }}
           args: ${{ matrix.target && format('--target {0}', matrix.target) || '' }}
+
+  # Build the Chrome extension and attach it to the SAME release as the app
+  # installers, as both a .zip (unpacked / Web Store) and a signed .crx.
+  # Runs after `bundle` so the release already exists to upload into.
+  extension:
+    needs: [bundle]
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write # upload to the release
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: dtolnay/rust-toolchain@4be7066ada62dd38de10e7b70166bc74ed198c30 # stable
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        with:
+          workspaces: "./ -> target"
+
+      - uses: jetli/wasm-pack-action@0d096b08b4e5a7de8c28de67e11e945404e9eefa # v0.4.0
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      # Same prerequisites as the app frontend: ts-rs bindings + the WASM pkg.
+      - run: cargo test -p twofau-core
+      - run: pnpm install --frozen-lockfile=false
+      - run: pnpm build:core-wasm
+      - name: Build the extension
+        run: pnpm --filter @twofau/extension build
+
+      - name: Zip the unpacked extension
+        run: |
+          cd apps/twofau-extension/dist
+          zip -qr "$GITHUB_WORKSPACE/twofau-extension.zip" .
+
+      - name: Install Chrome (for --pack-extension)
+        run: |
+          wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt-get update
+          sudo apt-get install -y /tmp/chrome.deb
+
+      - name: Pack a signed .crx
+        env:
+          CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
+        run: |
+          # A stable key (repo secret CRX_PRIVATE_KEY, a PEM RSA private key)
+          # keeps the extension ID constant across releases. Without it we mint a
+          # throwaway key so the build still succeeds — but the ID then changes
+          # every run, which breaks updates and pinning.
+          if [ -n "$CRX_PRIVATE_KEY" ]; then
+            printf '%s' "$CRX_PRIVATE_KEY" > key.pem
+          else
+            echo "::warning::CRX_PRIVATE_KEY secret is not set — generating a throwaway key; the extension ID will not be stable across releases."
+            openssl genrsa 2048 > key.pem 2>/dev/null
+          fi
+          google-chrome-stable --no-sandbox \
+            --user-data-dir="$(mktemp -d)" \
+            --pack-extension="$GITHUB_WORKSPACE/apps/twofau-extension/dist" \
+            --pack-extension-key="$GITHUB_WORKSPACE/key.pem"
+          mv apps/twofau-extension/dist.crx twofau-extension.crx
+          rm -f key.pem
+
+      - name: Attach the extension to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          # tag push -> that version's release; otherwise the rolling "tip".
+          TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'tip' }}
+        run: |
+          gh release upload "$TAG" \
+            twofau-extension.crx twofau-extension.zip \
+            --repo "$REPO" --clobber
