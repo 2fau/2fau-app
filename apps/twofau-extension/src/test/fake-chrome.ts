@@ -88,6 +88,23 @@ export interface FakePermissions {
   remove(perms: { origins?: string[] }): Promise<boolean>;
 }
 
+export interface FakeInjection {
+  target: { tabId: number };
+  func: (...args: unknown[]) => unknown;
+  args?: unknown[];
+}
+
+export interface FakeScripting {
+  calls: FakeInjection[];
+  /** Overridable per test; the default runs `func(...args)` in-process (jsdom). */
+  executeScript(injection: FakeInjection): Promise<Array<{ result: unknown }>>;
+}
+
+export interface FakeNotifications {
+  created: chrome.notifications.NotificationOptions[];
+  create(options: chrome.notifications.NotificationOptions): Promise<string>;
+}
+
 export interface FakeChrome {
   sync: FakeArea;
   local: FakeArea;
@@ -95,6 +112,8 @@ export interface FakeChrome {
   alarms: FakeAlarms;
   contextMenus: FakeContextMenus;
   permissions: FakePermissions;
+  scripting: FakeScripting;
+  notifications: FakeNotifications;
 }
 
 /** Install a fake `chrome` global and return its areas for assertions. */
@@ -133,6 +152,20 @@ export function installFakeChrome(): FakeChrome {
       return true;
     },
   };
+  const scripting: FakeScripting = {
+    calls: [],
+    async executeScript(injection) {
+      scripting.calls.push(injection);
+      return [{ result: injection.func(...(injection.args ?? [])) }];
+    },
+  };
+  const notifications: FakeNotifications = {
+    created: [],
+    async create(options) {
+      notifications.created.push(options);
+      return `notif-${notifications.created.length}`;
+    },
+  };
   const fake: FakeChrome = {
     sync: makeArea({ total: SYNC_QUOTA_BYTES, perItem: SYNC_QUOTA_BYTES_PER_ITEM }),
     local: makeArea(null),
@@ -140,6 +173,8 @@ export function installFakeChrome(): FakeChrome {
     alarms,
     contextMenus,
     permissions,
+    scripting,
+    notifications,
   };
   (globalThis as unknown as { chrome: unknown }).chrome = {
     storage: { sync: fake.sync, local: fake.local, session: fake.session },
@@ -147,6 +182,8 @@ export function installFakeChrome(): FakeChrome {
     contextMenus,
     runtime: { id: "abcdefghijklmnop", getURL: (path: string) => `chrome-extension://test/${path}` },
     permissions,
+    scripting,
+    notifications,
   };
   return fake;
 }

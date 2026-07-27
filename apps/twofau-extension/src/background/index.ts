@@ -1,9 +1,12 @@
+import type { Account } from "@twofau/ui";
+import { primaryName, secondaryName } from "@twofau/ui";
 import { createVaultService } from "../vault/backend";
 import { recordUse } from "../vault/recent";
 import { AUTO_LOCK_ALARM, clearSessionKey } from "../vault/session-key";
 import { initWasm } from "../wasm";
 import { copyToClipboard } from "./clipboard";
 import { accountIdFromMenuItem, refreshContextMenu } from "./context-menu";
+import { pasteIntoActiveField } from "./paste";
 import { ensureSyncAlarm, SYNC_ALARM } from "./sync-alarm";
 import { syncOnce } from "./sync-engine";
 
@@ -45,7 +48,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   }
 });
 
-chrome.contextMenus.onClicked.addListener(async (info) => {
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   const id = accountIdFromMenuItem(String(info.menuItemId));
   if (!id) return;
 
@@ -57,7 +60,16 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
     if (!account) return;
 
     const code = await service.code(account, Date.now());
-    await copyToClipboard(code);
+
+    // Paste straight into a focused text field when the click landed on one;
+    // otherwise copy and say what was copied. Page access comes from activeTab
+    // (granted by this very click) — no standing host permission is held.
+    const pasted = tab?.id != null && (await pasteIntoActiveField(tab.id, code));
+    if (!pasted) {
+      await copyToClipboard(code);
+      await notifyCopied(account);
+    }
+
     if (account.otp_type === "Hotp") await service.advanceHotp(account.id);
     await recordUse(account.id);
     await flashBadge("✓", "#2f9e44");
@@ -65,6 +77,19 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
     await flashBadge("!", "#e03131");
   }
 });
+
+/** Toast that an account's code went to the clipboard — named, never the code
+ *  itself (a code sitting in a notification is a needless exposure). */
+async function notifyCopied(account: Account): Promise<void> {
+  const secondary = secondaryName(account);
+  const name = secondary ? `${primaryName(account)} — ${secondary}` : primaryName(account);
+  await chrome.notifications.create({
+    type: "basic",
+    iconUrl: chrome.runtime.getURL("icons/icon-128.png"),
+    title: "Code copied",
+    message: `${name} copied to the clipboard`,
+  });
+}
 
 /** Confirm the action visually — a silent copy is indistinguishable from a
  *  failure. Best-effort: the badge clears on the next copy regardless. */

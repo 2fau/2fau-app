@@ -15,7 +15,9 @@ describe("manifest.json", () => {
 
   it("declares exactly the permissions the spec allows", () => {
     expect([...manifest.permissions].sort()).toEqual(
-      ["activeTab", "alarms", "contextMenus", "offscreen", "storage"].sort(),
+      // `scripting`/`notifications` power the context-menu paste + copy notice;
+      // `activeTab` (not a host permission) is still what grants page access.
+      ["activeTab", "alarms", "contextMenus", "notifications", "offscreen", "scripting", "storage"].sort(),
     );
   });
 
