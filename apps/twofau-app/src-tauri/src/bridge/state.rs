@@ -19,6 +19,22 @@ pub struct PairedBrowser {
     pub origin: String,
     pub token: String,
     pub paired_at: u64,
+    // Self-reported by the extension at pairing time. `#[serde(default)]` keeps
+    // browsers paired before this field existed loadable (they show the origin).
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub version: String,
+    #[serde(default)]
+    pub os: String,
+}
+
+/// Human-readable browser identity the extension sends when it pairs.
+#[derive(Clone, Default)]
+pub struct BrowserIdentity {
+    pub name: String,
+    pub version: String,
+    pub os: String,
 }
 
 #[derive(Serialize, Deserialize, Default)]
@@ -84,9 +100,15 @@ impl BridgeState {
         code
     }
 
-    /// Redeem a code for a token bound to `origin`, recording the browser.
-    /// Consumes the pending code (single use).
-    pub fn redeem_code(&mut self, code: &str, origin: &str, now_ms: u64) -> Option<String> {
+    /// Redeem a code for a token bound to `origin`, recording the browser and
+    /// its self-reported identity. Consumes the pending code (single use).
+    pub fn redeem_code(
+        &mut self,
+        code: &str,
+        origin: &str,
+        browser: BrowserIdentity,
+        now_ms: u64,
+    ) -> Option<String> {
         let (expected, expires) = self.pending.clone()?;
         if now_ms > expires || !constant_time_eq(code, &expected) {
             return None;
@@ -98,6 +120,9 @@ impl BridgeState {
             origin: origin.to_string(),
             token: token.clone(),
             paired_at: now_ms,
+            name: browser.name,
+            version: browser.version,
+            os: browser.os,
         });
         Some(token)
     }
@@ -124,18 +149,39 @@ mod tests {
 
     const ORIGIN: &str = "chrome-extension://abcdefghijklmnop";
 
+    fn chrome() -> BrowserIdentity {
+        BrowserIdentity {
+            name: "Google Chrome".into(),
+            version: "128".into(),
+            os: "macOS".into(),
+        }
+    }
+
     #[test]
     fn code_redeems_once_within_its_window() {
         let mut state = BridgeState::default();
         let code = state.new_pairing_code(1_000);
         // Wrong code, right window.
-        assert!(state.redeem_code("WRONG-CODE", ORIGIN, 1_500).is_none());
+        assert!(state
+            .redeem_code("WRONG-CODE", ORIGIN, chrome(), 1_500)
+            .is_none());
         // Right code, right window -> a token, and the browser is recorded.
-        let token = state.redeem_code(&code, ORIGIN, 1_500).expect("token");
+        let token = state.redeem_code(&code, ORIGIN, chrome(), 1_500).expect("token");
         assert_eq!(state.browsers.len(), 1);
         assert_eq!(state.token_origin(&token), Some(ORIGIN));
         // The code is single-use.
-        assert!(state.redeem_code(&code, ORIGIN, 1_600).is_none());
+        assert!(state.redeem_code(&code, ORIGIN, chrome(), 1_600).is_none());
+    }
+
+    #[test]
+    fn records_the_reported_browser_identity() {
+        let mut state = BridgeState::default();
+        let code = state.new_pairing_code(0);
+        state.redeem_code(&code, ORIGIN, chrome(), 1).unwrap();
+        let b = &state.browsers[0];
+        assert_eq!(b.name, "Google Chrome");
+        assert_eq!(b.version, "128");
+        assert_eq!(b.os, "macOS");
     }
 
     #[test]
@@ -143,7 +189,7 @@ mod tests {
         let mut state = BridgeState::default();
         let code = state.new_pairing_code(1_000);
         assert!(state
-            .redeem_code(&code, ORIGIN, 1_000 + PAIRING_TTL_MS + 1)
+            .redeem_code(&code, ORIGIN, chrome(), 1_000 + PAIRING_TTL_MS + 1)
             .is_none());
     }
 
@@ -157,7 +203,7 @@ mod tests {
     fn revoke_drops_the_browser_and_its_token() {
         let mut state = BridgeState::default();
         let code = state.new_pairing_code(0);
-        let token = state.redeem_code(&code, ORIGIN, 1).unwrap();
+        let token = state.redeem_code(&code, ORIGIN, chrome(), 1).unwrap();
         let id = state.browsers[0].id.clone();
         assert!(state.revoke(&id));
         assert_eq!(state.token_origin(&token), None);
@@ -174,7 +220,7 @@ mod tests {
             ..Default::default()
         };
         let code = state.new_pairing_code(0);
-        state.redeem_code(&code, ORIGIN, 1).unwrap();
+        state.redeem_code(&code, ORIGIN, chrome(), 1).unwrap();
         state.persist(&path).unwrap();
 
         let mut loaded = BridgeState::load(&path);
@@ -182,6 +228,6 @@ mod tests {
         assert_eq!(loaded.port, 4849);
         assert_eq!(loaded.browsers.len(), 1);
         // The pending code is in-memory only and does not survive a reload.
-        assert!(loaded.redeem_code(&code, ORIGIN, 2).is_none());
+        assert!(loaded.redeem_code(&code, ORIGIN, chrome(), 2).is_none());
     }
 }

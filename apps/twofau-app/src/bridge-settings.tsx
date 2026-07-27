@@ -5,6 +5,16 @@ interface BrowserInfo {
   id: string;
   origin: string;
   paired_at: number;
+  name: string;
+  version: string;
+  os: string;
+}
+
+/** "Google Chrome 128 · macOS", falling back to the raw origin for browsers
+ * paired before they reported an identity. */
+function browserLabel(b: BrowserInfo): string {
+  const primary = [b.name, b.version].filter(Boolean).join(" ");
+  return [primary, b.os].filter(Boolean).join(" · ") || b.origin;
 }
 interface BridgeStatus {
   enabled: boolean;
@@ -82,7 +92,9 @@ export function BridgeSettings() {
         ) : (
           status.browsers.map((b) => (
             <div key={b.id} className="flex items-center justify-between gap-2">
-              <span className="truncate text-[11px]">{b.origin}</span>
+              <span className="truncate text-[11px]" title={b.origin}>
+                {browserLabel(b)}
+              </span>
               <button
                 type="button"
                 className="rounded border px-2 py-0.5 text-[11px]"

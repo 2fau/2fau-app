@@ -1,4 +1,5 @@
 import { readSettings } from "../vault/settings";
+import { detectBrowser } from "./browser-info";
 
 /** Port-agnostic loopback pattern — one optional permission covers any port. */
 export const BRIDGE_ORIGIN_PATTERN = "http://127.0.0.1/*";
@@ -65,7 +66,7 @@ export async function pairBridge(code: string): Promise<void> {
     res = await fetch(`${base}/pair`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, extensionId: chrome.runtime.id }),
+      body: JSON.stringify({ code, extensionId: chrome.runtime.id, browser: detectBrowser() }),
     });
   } catch {
     throw new BridgeUnreachableError();

@@ -5,7 +5,7 @@ use std::sync::Mutex;
 
 use tiny_http::{Header, Request, Response};
 
-use super::state::BridgeState;
+use super::state::{BridgeState, BrowserIdentity};
 use crate::vault::{AppVault, ReplaceOutcome};
 
 /// Shared handler context held by the server thread.
@@ -151,13 +151,24 @@ fn handle_pair(ctx: &Ctx, mut req: Request, origin: &str) {
         let _ = req.respond(json(400, r#"{"error":"unreadable body"}"#.into()));
         return;
     }
-    let code = serde_json::from_str::<serde_json::Value>(&body)
-        .ok()
+    let parsed = serde_json::from_str::<serde_json::Value>(&body).ok();
+    let code = parsed
+        .as_ref()
         .and_then(|v| v["code"].as_str().map(String::from))
+        .unwrap_or_default();
+    // Optional self-reported identity; absent fields just stay empty.
+    let str_field = |v: &serde_json::Value, k: &str| v["browser"][k].as_str().unwrap_or_default().to_string();
+    let browser = parsed
+        .as_ref()
+        .map(|v| BrowserIdentity {
+            name: str_field(v, "name"),
+            version: str_field(v, "version"),
+            os: str_field(v, "os"),
+        })
         .unwrap_or_default();
 
     let mut state = ctx.state.lock().expect("state");
-    match state.redeem_code(&code, origin, now_ms()) {
+    match state.redeem_code(&code, origin, browser, now_ms()) {
         Some(token) => {
             let _ = state.persist(ctx.state_path);
             drop(state);
