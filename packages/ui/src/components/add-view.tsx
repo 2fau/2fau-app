@@ -4,37 +4,50 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { decodeQrImage } from "@/lib/qr";
+import { type AddPrefill, prefillFromClipboardText } from "@/lib/prefill";
 import { useVault } from "@/state/vault-provider";
 
-/** Port of the Swift `AddView`: import row + manual fields + TOTP/HOTP toggle. */
-export function AddView({ onDone }: { onDone: () => void }) {
+/** Port of the Swift `AddView`: import row + manual fields + TOTP/HOTP toggle.
+ * An optional `prefill` seeds the fields (e.g. from the clipboard). */
+export function AddView({ onDone, prefill }: { onDone: () => void; prefill?: AddPrefill }) {
   const { addUri, addManual, capabilities } = useVault();
-  const [issuer, setIssuer] = useState("");
-  const [label, setLabel] = useState("");
-  const [secret, setSecret] = useState("");
-  const [type, setType] = useState<"totp" | "hotp">("totp");
+  const [issuer, setIssuer] = useState(prefill?.issuer ?? "");
+  const [label, setLabel] = useState(prefill?.label ?? "");
+  const [secret, setSecret] = useState(prefill?.secret ?? "");
+  const [type, setType] = useState<"totp" | "hotp">(prefill?.type ?? "totp");
+  // The full otpauth URI behind the prefill, if any, and whether the parsed
+  // fields are still untouched — while both hold, Save round-trips via addUri to
+  // keep algorithm/digits/period/counter the manual form can't express.
+  const [uri, setUri] = useState(prefill?.uri);
+  const [pristine, setPristine] = useState(Boolean(prefill?.uri));
   const [error, setError] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  async function ingest(uri: string) {
-    try {
-      await addUri(uri);
-      onDone();
-    } catch (e) {
-      setError(`Could not import: ${msg(e)}`);
-    }
+  function applyPrefill(p: AddPrefill) {
+    setIssuer(p.issuer);
+    setLabel(p.label);
+    setSecret(p.secret);
+    setType(p.type);
+    setUri(p.uri);
+    setPristine(Boolean(p.uri));
+  }
+
+  /** Any manual edit forfeits the URI fast-path. */
+  function edited() {
+    setPristine(false);
   }
 
   async function importFromClipboard() {
     try {
-      const text = await navigator.clipboard.readText();
-      if (text.startsWith("otpauth://")) {
-        await ingest(text);
+      const p = await prefillFromClipboardText(await navigator.clipboard.readText());
+      if (!p) {
+        setError("Clipboard is empty");
         return;
       }
-      setError("No otpauth URI on clipboard");
-    } catch {
-      setError("Could not read clipboard");
+      applyPrefill(p);
+      setError(null);
+    } catch (e) {
+      setError(`Could not read clipboard: ${msg(e)}`);
     }
   }
 
@@ -44,15 +57,21 @@ export function AddView({ onDone }: { onDone: () => void }) {
       setError("No QR code found");
       return;
     }
-    await ingest(uri);
+    try {
+      applyPrefill((await prefillFromClipboardText(uri)) ?? { issuer: "", label: "", secret: "", type: "totp" });
+      setError(null);
+    } catch (e) {
+      setError(`Could not read QR: ${msg(e)}`);
+    }
   }
 
-  async function saveManual() {
+  async function save() {
     try {
-      await addManual({ issuer, label, secretBase32: secret, type });
+      if (pristine && uri) await addUri(uri);
+      else await addManual({ issuer, label, secretBase32: secret, type });
       onDone();
     } catch (e) {
-      setError(`Invalid Base32 secret: ${msg(e)}`);
+      setError(`Could not add account: ${msg(e)}`);
     }
   }
 
@@ -70,7 +89,7 @@ export function AddView({ onDone }: { onDone: () => void }) {
       <div className="flex gap-2">
         {capabilities.paste && (
           <Button variant="secondary" size="sm" onClick={importFromClipboard}>
-            Paste otpauth:// or QR
+            Paste otpauth:// or secret
           </Button>
         )}
         {capabilities.qrImage && (
@@ -91,14 +110,40 @@ export function AddView({ onDone }: { onDone: () => void }) {
         />
       </div>
 
-      <Input placeholder="Issuer (e.g. GitHub)" value={issuer} onChange={(e) => setIssuer(e.target.value)} />
-      <Input placeholder="Label (e.g. me@x.com)" value={label} onChange={(e) => setLabel(e.target.value)} />
-      <Input placeholder="Secret (Base32)" value={secret} onChange={(e) => setSecret(e.target.value)} />
+      <Input
+        placeholder="Issuer (e.g. GitHub)"
+        value={issuer}
+        onChange={(e) => {
+          setIssuer(e.target.value);
+          edited();
+        }}
+      />
+      <Input
+        placeholder="Label (e.g. me@x.com)"
+        value={label}
+        onChange={(e) => {
+          setLabel(e.target.value);
+          edited();
+        }}
+      />
+      <Input
+        placeholder="Secret (Base32)"
+        value={secret}
+        onChange={(e) => {
+          setSecret(e.target.value);
+          edited();
+        }}
+      />
 
       <ToggleGroup
         type="single"
         value={type}
-        onValueChange={(v) => v && setType(v as "totp" | "hotp")}
+        onValueChange={(v) => {
+          if (v) {
+            setType(v as "totp" | "hotp");
+            edited();
+          }
+        }}
         className="w-full"
       >
         <ToggleGroupItem value="totp" className="flex-1">
@@ -115,7 +160,7 @@ export function AddView({ onDone }: { onDone: () => void }) {
         <Button variant="secondary" size="sm" onClick={onDone}>
           Cancel
         </Button>
-        <Button size="sm" onClick={saveManual}>
+        <Button size="sm" onClick={save}>
           Save
         </Button>
       </div>

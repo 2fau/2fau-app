@@ -65,4 +65,8 @@ export class TauriVaultService implements VaultService {
   async advanceHotp(id: string): Promise<void> {
     await invoke("advance_hotp", { id });
   }
+
+  secretUri(id: string): Promise<string> {
+    return invoke("secret_uri", { id });
+  }
 }

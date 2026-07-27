@@ -7,9 +7,9 @@ use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use twofau_core::{
-    base32_decode, derive_key, hotp, merge, open_with_passphrase, parse_otpauth, salt_of, seal,
-    seal_with_passphrase, totp, Account, FileVaultStore, OtpAlgorithm, OtpType, StoredAccount,
-    Tombstone, VaultDocument, VaultStore, NONCE_LEN, SALT_LEN,
+    base32_decode, build_otpauth, derive_key, hotp, merge, open_with_passphrase, parse_otpauth,
+    salt_of, seal, seal_with_passphrase, totp, Account, FileVaultStore, OtpAlgorithm, OtpType,
+    StoredAccount, Tombstone, VaultDocument, VaultStore, NONCE_LEN, SALT_LEN,
 };
 use uuid::Uuid;
 
@@ -156,6 +156,22 @@ impl AppVault {
             ),
             OtpType::Hotp => hotp(&entry.secret, a.counter, a.digits, a.algorithm),
         })
+    }
+
+    /// The account's `otpauth://` URI (secret included), for rendering its QR.
+    /// The secret never leaves this process except inside the URI the user asked
+    /// to reveal. Errors if locked or the id is unknown.
+    pub fn secret_uri(&self, id: &str) -> Result<String, String> {
+        let uuid = Uuid::parse_str(id).map_err(str_err)?;
+        let guard = self.inner.lock().expect("vault mutex");
+        let u = guard.as_ref().ok_or("vault is locked")?;
+        let entry = u
+            .doc
+            .entries
+            .iter()
+            .find(|e| e.account.id == uuid)
+            .ok_or("no such account")?;
+        Ok(build_otpauth(&entry.account, &entry.secret))
     }
 
     pub fn add_uri(&self, uri: &str) -> Result<Account, String> {

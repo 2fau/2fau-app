@@ -7,11 +7,12 @@ import { SetupView } from "@/components/setup-view";
 import { Button } from "@/components/ui/button";
 import { UnlockView } from "@/components/unlock-view";
 import type { Account } from "@/core/types";
+import { type AddPrefill, prefillFromClipboardText } from "@/lib/prefill";
 import { useVault } from "@/state/vault-provider";
 
 type Screen =
   | { name: "list" }
-  | { name: "add" }
+  | { name: "add"; prefill?: AddPrefill }
   | { name: "edit"; account: Account }
   | { name: "settings" };
 
@@ -32,6 +33,18 @@ export function RootView({
   const { locked, needsSetup } = useVault();
   const [screen, setScreen] = useState<Screen>({ name: "list" });
 
+  // Open the Add screen with fields seeded from the clipboard. Any failure
+  // (empty/unreadable clipboard, unparseable otpauth) just opens an empty form.
+  async function openAddFromClipboard() {
+    let prefill: AddPrefill | undefined;
+    try {
+      prefill = (await prefillFromClipboardText(await navigator.clipboard.readText())) ?? undefined;
+    } catch {
+      prefill = undefined;
+    }
+    setScreen({ name: "add", prefill });
+  }
+
   return (
     <div className="w-[320px] bg-background text-foreground">
       {locked ? (
@@ -41,7 +54,7 @@ export function RootView({
           <UnlockView />
         )
       ) : screen.name === "add" ? (
-        <AddView onDone={() => setScreen({ name: "list" })} />
+        <AddView prefill={screen.prefill} onDone={() => setScreen({ name: "list" })} />
       ) : screen.name === "edit" ? (
         <EditView account={screen.account} onDone={() => setScreen({ name: "list" })} />
       ) : screen.name === "settings" ? (
@@ -62,6 +75,7 @@ export function RootView({
       ) : (
         <MenuBarView
           onAdd={() => setScreen({ name: "add" })}
+          onQuickAdd={openAddFromClipboard}
           onEdit={(account) => setScreen({ name: "edit", account })}
           onScan={onScan}
           onQuit={onQuit}

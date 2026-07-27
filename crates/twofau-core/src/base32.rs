@@ -31,9 +31,46 @@ pub fn base32_decode(input: &str) -> Result<Vec<u8>, OtpError> {
     Ok(out)
 }
 
+/// Encode bytes as RFC 4648 Base32, no `=` padding — the form `otpauth://`
+/// secrets and QR codes use. Inverse of [`base32_decode`].
+pub fn base32_encode(bytes: &[u8]) -> String {
+    let mut out = String::with_capacity(bytes.len().div_ceil(5) * 8);
+    let mut buffer: u32 = 0;
+    let mut bits: u32 = 0;
+    for &b in bytes {
+        buffer = (buffer << 8) | b as u32;
+        bits += 8;
+        while bits >= 5 {
+            bits -= 5;
+            out.push(ALPHABET[((buffer >> bits) & 0x1F) as usize] as char);
+        }
+        buffer &= (1 << bits) - 1; // keep only the not-yet-emitted low bits
+    }
+    if bits > 0 {
+        out.push(ALPHABET[((buffer << (5 - bits)) & 0x1F) as usize] as char);
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn encodes_rfc4648_vectors() {
+        assert_eq!(base32_encode(b""), "");
+        assert_eq!(base32_encode(b"f"), "MY");
+        assert_eq!(base32_encode(b"foo"), "MZXW6");
+        assert_eq!(base32_encode(b"foobar"), "MZXW6YTBOI");
+    }
+
+    #[test]
+    fn encode_decode_round_trips_the_rfc_otp_seed() {
+        let seed = b"12345678901234567890";
+        let encoded = base32_encode(seed);
+        assert_eq!(encoded, "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ");
+        assert_eq!(base32_decode(&encoded).unwrap(), seed);
+    }
 
     #[test]
     fn decodes_rfc4648_vectors() {

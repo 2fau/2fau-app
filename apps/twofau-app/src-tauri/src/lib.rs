@@ -75,6 +75,11 @@ fn advance_hotp(vault: State<Arc<AppVault>>, id: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn secret_uri(vault: State<Arc<AppVault>>, id: String) -> Result<String, String> {
+    vault.secret_uri(&id)
+}
+
+#[tauri::command]
 fn bridge_status(bridge: State<BridgeController>) -> BridgeStatus {
     bridge.status()
 }
@@ -196,6 +201,7 @@ pub fn run() {
             update_account,
             remove_account,
             advance_hotp,
+            secret_uri,
             bridge_status,
             bridge_enable,
             bridge_pairing_code,
