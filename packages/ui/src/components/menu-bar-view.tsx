@@ -43,7 +43,7 @@ export function MenuBarView({
     const opened = (await onQuickAdd?.()) ?? false;
     if (!opened) {
       setPasteFailed(true);
-      window.setTimeout(() => setPasteFailed(false), 300);
+      window.setTimeout(() => setPasteFailed(false), 600);
     }
   }
 

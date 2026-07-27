@@ -1,18 +1,8 @@
-// @vitest-environment node
-import { readFileSync } from "node:fs";
-import { ensureReady } from "@twofau/core-wasm";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { prefillFromClipboardText } from "./prefill";
 
-// Uses the real WASM core so otpauth parsing (and the base64→base32 secret
-// round-trip) is exercised end to end.
-beforeAll(async () => {
-  const wasm = readFileSync(
-    new URL("../../../core-wasm/pkg/twofau_wasm_bg.wasm", import.meta.url),
-  );
-  await ensureReady({ module_or_path: wasm });
-});
-
+// Pure TS (no WASM) so it also works in the desktop webview, which never
+// initializes the core module.
 describe("prefillFromClipboardText", () => {
   it("returns null for empty or whitespace text", async () => {
     expect(await prefillFromClipboardText("")).toBeNull();
@@ -32,15 +22,20 @@ describe("prefillFromClipboardText", () => {
     expect(p?.uri).toContain("otpauth://totp/");
   });
 
-  it("marks an hotp URI as hotp", async () => {
+  it("derives the issuer from an 'Issuer:Account' label when no issuer param", async () => {
     const p = await prefillFromClipboardText(
-      "otpauth://hotp/x?secret=GEZDGNBVGY3TQOJQ&counter=3",
+      "otpauth://totp/GitHub:octocat?secret=GEZDGNBVGY3TQOJQ",
     );
+    expect(p).toMatchObject({ issuer: "GitHub", label: "octocat" });
+  });
+
+  it("marks an hotp URI as hotp", async () => {
+    const p = await prefillFromClipboardText("otpauth://hotp/x?secret=GEZDGNBVGY3TQOJQ&counter=3");
     expect(p?.type).toBe("hotp");
   });
 
-  it("treats non-otpauth text as a raw base32 secret with no URI", async () => {
-    const p = await prefillFromClipboardText("  GEZDGNBVGY3TQOJQ  ");
+  it("accepts a raw base32 secret (trimmed/upper-cased), with no URI", async () => {
+    const p = await prefillFromClipboardText("  gezdgnbvgy3tqojq  ");
     expect(p).toEqual({
       issuer: "",
       label: "",
@@ -50,8 +45,9 @@ describe("prefillFromClipboardText", () => {
     expect(p?.uri).toBeUndefined();
   });
 
-  it("returns null for a malformed otpauth:// URI", async () => {
+  it("returns null for a malformed or secret-less otpauth:// URI", async () => {
     expect(await prefillFromClipboardText("otpauth://totp/no-secret")).toBeNull();
+    expect(await prefillFromClipboardText("otpauth://sms/x?secret=GEZDGNBVGY3TQOJQ")).toBeNull();
   });
 
   it("returns null for text that isn't valid base32 (URL, prose, punctuation)", async () => {
