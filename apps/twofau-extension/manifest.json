@@ -12,7 +12,15 @@
       "suggested_key": { "default": "Ctrl+Shift+U", "mac": "Command+Shift+U" }
     }
   },
-  "permissions": ["storage", "contextMenus", "offscreen", "activeTab", "alarms"],
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "offscreen",
+    "activeTab",
+    "alarms",
+    "scripting",
+    "notifications"
+  ],
   "optional_host_permissions": ["http://127.0.0.1/*"],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
