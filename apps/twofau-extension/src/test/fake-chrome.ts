@@ -61,9 +61,9 @@ function makeArea(quota: Quota | null): FakeArea {
 }
 
 export interface FakeAlarms {
-  /** Alarm name -> the delay it was last armed with, in minutes. */
+  /** Alarm name -> the delay or period it was last armed with, in minutes. */
   created: Record<string, number>;
-  create(name: string, info: { delayInMinutes: number }): void;
+  create(name: string, info: { delayInMinutes?: number; periodInMinutes?: number }): void;
   clear(name: string): Promise<boolean>;
 }
 
@@ -102,7 +102,7 @@ export function installFakeChrome(): FakeChrome {
   const alarms: FakeAlarms = {
     created: {},
     create(name, info) {
-      alarms.created[name] = info.delayInMinutes;
+      alarms.created[name] = info.delayInMinutes ?? info.periodInMinutes ?? 0;
     },
     async clear(name) {
       const existed = name in alarms.created;
