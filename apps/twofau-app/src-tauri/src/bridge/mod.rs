@@ -21,6 +21,9 @@ pub struct BrowserInfo {
     pub id: String,
     pub origin: String,
     pub paired_at: u64,
+    pub name: String,
+    pub version: String,
+    pub os: String,
 }
 
 #[derive(Serialize)]
@@ -144,6 +147,9 @@ impl BridgeController {
                     id: b.id.clone(),
                     origin: b.origin.clone(),
                     paired_at: b.paired_at,
+                    name: b.name.clone(),
+                    version: b.version.clone(),
+                    os: b.os.clone(),
                 })
                 .collect(),
         }
