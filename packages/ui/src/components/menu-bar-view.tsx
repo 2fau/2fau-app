@@ -26,8 +26,10 @@ export function MenuBarView({
   onOpenSettings,
 }: {
   onAdd: () => void;
-  /** Open the Add screen prefilled from the clipboard (otpauth:// or a raw secret). */
-  onQuickAdd?: () => void;
+  /** Open the Add screen prefilled from the clipboard (otpauth:// or a raw
+   * secret). Resolves false when the clipboard holds nothing importable, so the
+   * icon can flash red instead of navigating. */
+  onQuickAdd?: () => Promise<boolean>;
   onEdit: (a: Account) => void;
   onScan?: () => void;
   onQuit?: () => void;
@@ -35,6 +37,15 @@ export function MenuBarView({
 }) {
   const { accounts, now, capabilities } = useVault();
   const [search, setSearch] = useState("");
+  const [pasteFailed, setPasteFailed] = useState(false);
+
+  async function handleQuickAdd() {
+    const opened = (await onQuickAdd?.()) ?? false;
+    if (!opened) {
+      setPasteFailed(true);
+      window.setTimeout(() => setPasteFailed(false), 300);
+    }
+  }
 
   const q = search.trim().toLowerCase();
   const filtered = q
@@ -70,7 +81,8 @@ export function MenuBarView({
               size="icon-xs"
               variant="ghost"
               title="Add from clipboard"
-              onClick={onQuickAdd}
+              className={pasteFailed ? "text-destructive" : undefined}
+              onClick={handleQuickAdd}
             >
               <ClipboardPaste />
             </Button>
