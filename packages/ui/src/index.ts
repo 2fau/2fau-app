@@ -28,4 +28,6 @@ export type {
 // Host apps need these to render account names and call the WASM OTP functions
 // exactly the way the shared components do.
 export { algorithmArg, formatCode, primaryName, secondaryName } from "@/lib/format";
+export { base32Encode, base32FromBase64, buildOtpauthUri } from "@/lib/otpauth";
+export { type AddPrefill, prefillFromClipboardText } from "@/lib/prefill";
 export { decodeQrDataUrl, decodeQrImage } from "@/lib/qr";

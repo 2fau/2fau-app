@@ -27,6 +27,12 @@ function b64ToBytes(b64: string): Uint8Array {
   return out;
 }
 
+/** RFC 4648 base32 (no padding) of a base64-encoded secret — the vault's wire
+ * form is base64, but the manual-entry field and QR expect base32. */
+export function base32FromBase64(secretBase64: string): string {
+  return base32Encode(b64ToBytes(secretBase64));
+}
+
 function algorithmName(a: Account["algorithm"]): string {
   return a === "Sha256" ? "SHA256" : a === "Sha512" ? "SHA512" : "SHA1";
 }

@@ -19,7 +19,7 @@ import type {
   VaultDocument,
   VaultService,
 } from "@twofau/ui";
-import { algorithmArg } from "@twofau/ui";
+import { algorithmArg, buildOtpauthUri } from "@twofau/ui";
 import { clearSessionKey, getSessionKey, setSessionKey, touchSessionKey } from "./session-key";
 import { VaultRepo, type VaultManifest, type VaultRepoPort } from "./vault-repo";
 
@@ -191,6 +191,12 @@ export class ExtensionVaultService implements VaultService {
       account.digits,
       algo,
     );
+  }
+
+  async secretUri(id: string): Promise<string> {
+    const entry = (await this.listStored()).find((e) => e.account.id === id);
+    if (!entry) throw new Error(`no account with id ${id}`);
+    return buildOtpauthUri(entry.account, entry.secret);
   }
 
   /** Re-derive under a new passphrase and re-seal with a fresh salt. */

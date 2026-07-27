@@ -13,14 +13,14 @@ mod otpauth;
 mod store;
 mod vault;
 
-pub use base32::base32_decode;
+pub use base32::{base32_decode, base32_encode};
 pub use error::OtpError;
 pub use merge::merge;
 pub use model::{
     Account, OtpAlgorithm, OtpType, ParsedOtp, StoredAccount, Tombstone, VaultDocument,
 };
 pub use otp::{hotp, totp};
-pub use otpauth::parse_otpauth;
+pub use otpauth::{build_otpauth, parse_otpauth};
 pub use store::{InMemoryVaultStore, StoreError, VaultStore};
 pub use vault::{
     derive_key, open, open_with_passphrase, salt_of, seal, seal_with_passphrase, Kdf, Key,

@@ -19,20 +19,22 @@ const ROW_HEIGHT = 64;
 
 export function MenuBarView({
   onAdd,
+  onQuickAdd,
   onEdit,
   onScan,
   onQuit,
   onOpenSettings,
 }: {
   onAdd: () => void;
+  /** Open the Add screen prefilled from the clipboard (otpauth:// or a raw secret). */
+  onQuickAdd?: () => void;
   onEdit: (a: Account) => void;
   onScan?: () => void;
   onQuit?: () => void;
   onOpenSettings?: () => void;
 }) {
-  const { accounts, now, capabilities, addUri } = useVault();
+  const { accounts, now, capabilities } = useVault();
   const [search, setSearch] = useState("");
-  const [pasteFailed, setPasteFailed] = useState(false);
 
   const q = search.trim().toLowerCase();
   const filtered = q
@@ -42,22 +44,6 @@ export function MenuBarView({
           a.label.toLowerCase().includes(q),
       )
     : accounts;
-
-  // Quick-add: import an otpauth:// URI from the clipboard, refreshing the list
-  // through the provider. Flashes the icon red when there's nothing to import.
-  async function handlePaste() {
-    try {
-      const text = await navigator.clipboard.readText();
-      if (text.startsWith("otpauth://")) {
-        await addUri(text);
-        return;
-      }
-    } catch {
-      // clipboard unreadable — fall through to the failure flash
-    }
-    setPasteFailed(true);
-    window.setTimeout(() => setPasteFailed(false), 300);
-  }
 
   return (
     <div className="flex flex-col">
@@ -79,13 +65,12 @@ export function MenuBarView({
               <ScanLine />
             </Button>
           )}
-          {capabilities.paste && (
+          {capabilities.paste && onQuickAdd && (
             <Button
               size="icon-xs"
               variant="ghost"
-              title="Paste from clipboard"
-              className={pasteFailed ? "text-destructive" : undefined}
-              onClick={handlePaste}
+              title="Add from clipboard"
+              onClick={onQuickAdd}
             >
               <ClipboardPaste />
             </Button>
