@@ -33,16 +33,19 @@ export function RootView({
   const { locked, needsSetup } = useVault();
   const [screen, setScreen] = useState<Screen>({ name: "list" });
 
-  // Open the Add screen with fields seeded from the clipboard. Any failure
-  // (empty/unreadable clipboard, unparseable otpauth) just opens an empty form.
-  async function openAddFromClipboard() {
-    let prefill: AddPrefill | undefined;
+  // Open the Add screen seeded from the clipboard, but only when it holds a
+  // valid otpauth:// URI or Base32 secret. Returns false (so the caller can
+  // flash the icon) when there's nothing usable to import.
+  async function openAddFromClipboard(): Promise<boolean> {
+    let prefill: AddPrefill | null = null;
     try {
-      prefill = (await prefillFromClipboardText(await navigator.clipboard.readText())) ?? undefined;
+      prefill = await prefillFromClipboardText(await navigator.clipboard.readText());
     } catch {
-      prefill = undefined;
+      prefill = null;
     }
+    if (!prefill) return false;
     setScreen({ name: "add", prefill });
+    return true;
   }
 
   return (

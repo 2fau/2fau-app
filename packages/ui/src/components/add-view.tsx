@@ -41,7 +41,7 @@ export function AddView({ onDone, prefill }: { onDone: () => void; prefill?: Add
     try {
       const p = await prefillFromClipboardText(await navigator.clipboard.readText());
       if (!p) {
-        setError("Clipboard is empty");
+        setError("No otpauth:// URI or Base32 secret on the clipboard");
         return;
       }
       applyPrefill(p);

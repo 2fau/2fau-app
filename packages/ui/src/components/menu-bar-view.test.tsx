@@ -1,5 +1,6 @@
-import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { MenuBarView } from "@/components/menu-bar-view";
 import { account, fakeService, renderWithVault } from "@/test/test-utils";
 
@@ -25,5 +26,33 @@ describe("MenuBarView", () => {
     await screen.findByText("Issuer0");
     expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
     expect(screen.getByText("6 accounts")).toBeInTheDocument();
+  });
+
+  it("flashes the clipboard icon red when nothing is importable", async () => {
+    const user = userEvent.setup();
+    const onQuickAdd = vi.fn().mockResolvedValue(false);
+    renderWithVault(
+      <MenuBarView onAdd={() => {}} onQuickAdd={onQuickAdd} onEdit={() => {}} />,
+      fakeService([account()]),
+    );
+    const btn = screen.getByTitle("Add from clipboard");
+    await user.click(btn);
+
+    expect(onQuickAdd).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(btn).toHaveClass("text-destructive"));
+  });
+
+  it("does not flash when the clipboard opens the Add view", async () => {
+    const user = userEvent.setup();
+    const onQuickAdd = vi.fn().mockResolvedValue(true);
+    renderWithVault(
+      <MenuBarView onAdd={() => {}} onQuickAdd={onQuickAdd} onEdit={() => {}} />,
+      fakeService([account()]),
+    );
+    const btn = screen.getByTitle("Add from clipboard");
+    await user.click(btn);
+
+    expect(onQuickAdd).toHaveBeenCalledTimes(1);
+    expect(btn).not.toHaveClass("text-destructive");
   });
 });

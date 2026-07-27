@@ -50,7 +50,14 @@ describe("prefillFromClipboardText", () => {
     expect(p?.uri).toBeUndefined();
   });
 
-  it("throws on a malformed otpauth:// URI", async () => {
-    await expect(prefillFromClipboardText("otpauth://totp/no-secret")).rejects.toThrow();
+  it("returns null for a malformed otpauth:// URI", async () => {
+    expect(await prefillFromClipboardText("otpauth://totp/no-secret")).toBeNull();
+  });
+
+  it("returns null for text that isn't valid base32 (URL, prose, punctuation)", async () => {
+    expect(await prefillFromClipboardText("https://example.com/login")).toBeNull();
+    expect(await prefillFromClipboardText("just a note, not a secret!")).toBeNull();
+    // Digits 0/1/8/9 are outside the base32 alphabet.
+    expect(await prefillFromClipboardText("10891089")).toBeNull();
   });
 });
