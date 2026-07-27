@@ -1,5 +1,6 @@
 import { base32Decode, hotp, newId, nowMs, parseOtpauth, totp } from "@twofau/core-wasm";
 import { algorithmArg } from "@/lib/format";
+import { buildOtpauthUri } from "@/lib/otpauth";
 import type { AddManualFields, Capabilities, VaultService } from "./vault-service";
 import type { Account, StoredAccount, VaultDocument } from "./types";
 
@@ -102,6 +103,12 @@ export class MockVaultService implements VaultService {
       return hotp(e.secret, BigInt(account.counter), account.digits, algo);
     }
     return totp(e.secret, BigInt(Math.floor(unixTimeMs / 1000)), account.period, account.digits, algo);
+  }
+
+  async secretUri(id: string): Promise<string> {
+    const e = this.doc.entries.find((x) => x.account.id === id);
+    if (!e) throw new Error(`no account with id ${id}`);
+    return buildOtpauthUri(e.account, e.secret);
   }
 
   async advanceHotp(id: string): Promise<void> {

@@ -18,6 +18,7 @@ interface VaultContextValue {
   update: (account: Account) => Promise<void>;
   remove: (id: string) => Promise<void>;
   advanceHotp: (id: string) => Promise<void>;
+  secretUri: (id: string) => Promise<string>;
 }
 
 const VaultContext = createContext<VaultContextValue | null>(null);
@@ -90,6 +91,7 @@ export function VaultProvider({
       await service.advanceHotp(id);
       await refresh();
     },
+    secretUri: (id) => service.secretUri(id),
   };
 
   return <VaultContext.Provider value={value}>{children}</VaultContext.Provider>;

@@ -27,6 +27,7 @@ export function fakeService(
     },
     code: async (a) => codes[a.id] ?? "000000",
     advanceHotp: async () => {},
+    secretUri: async (id) => `otpauth://totp/${id}?secret=AA`,
   };
 }
 
