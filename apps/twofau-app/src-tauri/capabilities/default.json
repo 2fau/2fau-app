@@ -10,6 +10,6 @@
     "core:window:allow-set-size",
     "opener:default",
     "positioner:default",
-    "clipboard-manager:default"
+    "clipboard-manager:allow-read-text"
   ]
 }
