@@ -110,7 +110,12 @@ jobs:
       # whole matrix) means it never waits on the other OS legs — an Intel-macOS
       # runner that never gets scheduled used to block the extension entirely.
       # The frontend prereqs (ts-rs bindings, WASM, node deps) are already set up
-      # above, so only the extension build + pack remain.
+      # above, so only the extension build + zip remain.
+      #
+      # We ship a .zip, not a .crx: Chrome refuses to install self-signed CRX
+      # files ("CRX_REQUIRED_PROOF_MISSING"). Install via chrome://extensions ->
+      # Developer mode -> Load unpacked (unzip first), or upload the .zip to the
+      # Chrome Web Store.
       - name: Build the Chrome extension
         if: matrix.platform == 'ubuntu-22.04'
         run: pnpm --filter @twofau/extension build
@@ -121,35 +126,6 @@ jobs:
           cd apps/twofau-extension/dist
           zip -qr "$GITHUB_WORKSPACE/twofau-extension.zip" .
 
-      - name: Install Chrome (for --pack-extension)
-        if: matrix.platform == 'ubuntu-22.04'
-        run: |
-          wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo apt-get update
-          sudo apt-get install -y /tmp/chrome.deb
-
-      - name: Pack a signed .crx
-        if: matrix.platform == 'ubuntu-22.04'
-        env:
-          CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
-        run: |
-          # A stable key (repo secret CRX_PRIVATE_KEY, a PEM RSA private key)
-          # keeps the extension ID constant across releases. Without it we mint a
-          # throwaway key so the build still succeeds — but the ID then changes
-          # every run, which breaks updates and pinning.
-          if [ -n "$CRX_PRIVATE_KEY" ]; then
-            printf '%s' "$CRX_PRIVATE_KEY" > key.pem
-          else
-            echo "::warning::CRX_PRIVATE_KEY secret is not set — generating a throwaway key; the extension ID will not be stable across releases."
-            openssl genrsa 2048 > key.pem 2>/dev/null
-          fi
-          google-chrome-stable --no-sandbox \
-            --user-data-dir="$(mktemp -d)" \
-            --pack-extension="$GITHUB_WORKSPACE/apps/twofau-extension/dist" \
-            --pack-extension-key="$GITHUB_WORKSPACE/key.pem"
-          mv apps/twofau-extension/dist.crx twofau-extension.crx
-          rm -f key.pem
-
       - name: Attach the extension to the release
         if: matrix.platform == 'ubuntu-22.04'
         env:
@@ -158,6 +134,4 @@ jobs:
           # tag push -> that version's release; otherwise the rolling "tip".
           TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'tip' }}
         run: |
-          gh release upload "$TAG" \
-            twofau-extension.crx twofau-extension.zip \
-            --repo "$REPO" --clobber
+          gh release upload "$TAG" twofau-extension.zip --repo "$REPO" --clobber
