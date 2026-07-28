@@ -57,6 +57,9 @@ jobs:
           - platform: windows-latest
             target: ""
     runs-on: ${{ matrix.platform }}
+    # The self-hosted Apple-Silicon runner is best-effort: if that build fails,
+    # don't fail the release — Linux, Windows, and the extension still ship.
+    continue-on-error: ${{ matrix.platform == 'self-hosted' }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
