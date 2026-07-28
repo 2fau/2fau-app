@@ -14,6 +14,12 @@ on:
     tags: ["v*"]
   workflow_dispatch:
 
+# Only one release run per ref at a time: rapid pushes otherwise spawn runs that
+# each delete + recreate the `tip` release and fight over its assets. Newer wins.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
 # Least privilege by default; the jobs that touch releases elevate to write.
 permissions:
   contents: read
