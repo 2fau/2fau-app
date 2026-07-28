@@ -38,7 +38,7 @@ jobs:
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
       # Emit ts-rs bindings so the typed index has its types.
       - run: cargo test -p twofau-core
@@ -58,7 +58,7 @@ jobs:
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
       # Tauri's Linux build deps (webkit2gtk etc.).
       - run: |
@@ -83,11 +83,10 @@ jobs:
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
       - run: cargo test -p twofau-core # emit ts-rs bindings
       - run: pnpm install --frozen-lockfile=false
       - run: pnpm build:core-wasm
       - run: pnpm --filter @twofau/extension test
       - run: pnpm --filter @twofau/extension build
-
