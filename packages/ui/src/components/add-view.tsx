@@ -1,6 +1,7 @@
 import { ChevronLeft } from "lucide-react";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ColorPicker } from "@/components/color-picker";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { decodeQrImage } from "@/lib/qr";
@@ -16,11 +17,12 @@ export function AddView({
   onDone: () => void;
   prefill?: AddPrefill;
 }) {
-  const { addUri, addManual, capabilities } = useVault();
+  const { addUri, addManual, update, capabilities } = useVault();
   const [issuer, setIssuer] = useState(prefill?.issuer ?? "");
   const [label, setLabel] = useState(prefill?.label ?? "");
   const [secret, setSecret] = useState(prefill?.secret ?? "");
   const [type, setType] = useState<"totp" | "hotp">(prefill?.type ?? "totp");
+  const [color, setColor] = useState("");
   // The full otpauth URI behind the prefill, if any, and whether the parsed
   // fields are still untouched — while both hold, Save round-trips via addUri to
   // keep algorithm/digits/period/counter the manual form can't express.
@@ -82,8 +84,13 @@ export function AddView({
 
   async function save() {
     try {
-      if (pristine && uri) await addUri(uri);
-      else await addManual({ issuer, label, secretBase32: secret, type });
+      // Color isn't part of the add/import path, so set it with a follow-up
+      // update on the created account when one was chosen.
+      const created =
+        pristine && uri
+          ? await addUri(uri)
+          : await addManual({ issuer, label, secretBase32: secret, type });
+      if (color) await update({ ...created, color });
       onDone();
     } catch (e) {
       setError(`Could not add account: ${msg(e)}`);
@@ -175,6 +182,11 @@ export function AddView({
           HOTP
         </ToggleGroupItem>
       </ToggleGroup>
+
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[11px] text-muted-foreground">Row color</span>
+        <ColorPicker value={color} onChange={setColor} />
+      </div>
 
       {error && <p className="text-[11px] text-destructive">{error}</p>}
 

@@ -133,6 +133,7 @@ mod tests {
             digits: 8,
             period: 60,
             counter: 4,
+            color: String::new(),
         }
     }
 

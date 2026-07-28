@@ -22,6 +22,7 @@ describe("buildOtpauthUri", () => {
     digits: 6,
     period: 30,
     counter: 0,
+    color: "",
   };
 
   it("builds a totp uri with issuer, label, and base32 secret", () => {

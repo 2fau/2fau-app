@@ -61,6 +61,7 @@ export class MockVaultService implements VaultService {
       digits: parsed.digits,
       period: parsed.period,
       counter: parsed.counter,
+      color: "",
     };
     this.doc.entries.push({ account, secret: parsed.secret, modified_at: await nowMs() });
     return account;
@@ -77,6 +78,7 @@ export class MockVaultService implements VaultService {
       digits: 6,
       period: 30,
       counter: 0,
+      color: "",
     };
     this.doc.entries.push({ account, secret, modified_at: await nowMs() });
     return account;

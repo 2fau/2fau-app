@@ -2,6 +2,7 @@ import { ChevronLeft, QrCode } from "lucide-react";
 import QRCode from "qrcode";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ColorPicker } from "@/components/color-picker";
 import { Input } from "@/components/ui/input";
 import type { Account } from "@/core/types";
 import { useVault } from "@/state/vault-provider";
@@ -12,12 +13,13 @@ export function EditView({ account, onDone }: { account: Account; onDone: () => 
   const { update, secretUri } = useVault();
   const [issuer, setIssuer] = useState(account.issuer);
   const [label, setLabel] = useState(account.label);
+  const [color, setColor] = useState(account.color);
   const [error, setError] = useState<string | null>(null);
   const [qr, setQr] = useState<string | null>(null);
 
   async function save() {
     try {
-      await update({ ...account, issuer, label });
+      await update({ ...account, issuer, label, color });
       onDone();
     } catch (e) {
       setError(`Could not save: ${e instanceof Error ? e.message : String(e)}`);
@@ -46,6 +48,11 @@ export function EditView({ account, onDone }: { account: Account; onDone: () => 
 
       <Input placeholder="Issuer" value={issuer} onChange={(e) => setIssuer(e.target.value)} />
       <Input placeholder="Label" value={label} onChange={(e) => setLabel(e.target.value)} />
+
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[11px] text-muted-foreground">Row color</span>
+        <ColorPicker value={color} onChange={setColor} />
+      </div>
 
       {qr ? (
         <div className="flex flex-col items-center gap-1">

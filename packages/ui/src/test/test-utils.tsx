@@ -45,6 +45,7 @@ export function account(overrides: Partial<Account> = {}): Account {
     digits: 6,
     period: 30,
     counter: 0,
+    color: "",
     ...overrides,
   };
 }

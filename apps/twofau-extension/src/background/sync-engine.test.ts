@@ -21,6 +21,7 @@ function account(id: string, issuer: string) {
       digits: 6,
       period: 30,
       counter: 0,
+      color: "",
     },
     secret: btoa(SECRET),
     modified_at: 1,

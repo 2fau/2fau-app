@@ -49,6 +49,31 @@
   }
 }
 
+/* Account row tints (see lib/colors.ts). Light, airy fills in light mode; muted
+   dark fills in dark mode — both keep the row text readable. */
+:root {
+  --acct-red: #fce4e4;
+  --acct-orange: #fceada;
+  --acct-yellow: #fbf4d3;
+  --acct-green: #e1f3e5;
+  --acct-teal: #d9f2f1;
+  --acct-blue: #e1ecfd;
+  --acct-purple: #ece4fb;
+  --acct-pink: #fce3ef;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --acct-red: #4a2e2e;
+    --acct-orange: #4a3a2a;
+    --acct-yellow: #45402a;
+    --acct-green: #2c3f30;
+    --acct-teal: #274040;
+    --acct-blue: #2a3b52;
+    --acct-purple: #38304e;
+    --acct-pink: #462e3c;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
