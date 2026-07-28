@@ -206,6 +206,7 @@ impl AppVault {
             digits: parsed.digits,
             period: parsed.period,
             counter: parsed.counter,
+            color: String::new(),
         };
         let stored = StoredAccount {
             account: account.clone(),
@@ -238,6 +239,7 @@ impl AppVault {
             digits: 6,
             period: 30,
             counter: 0,
+            color: String::new(),
         };
         let stored = StoredAccount {
             account: account.clone(),

@@ -27,3 +27,17 @@ describe("EditView QR reveal", () => {
     );
   });
 });
+
+describe("EditView row color", () => {
+  it("saves the picked color via update", async () => {
+    const user = userEvent.setup();
+    const svc = fakeService([account({ id: "abc" })]);
+    const update = vi.spyOn(svc, "update");
+    renderWithVault(<EditView account={account({ id: "abc" })} onDone={() => {}} />, svc);
+
+    await user.click(screen.getByRole("button", { name: "Blue" }));
+    await user.click(screen.getByRole("button", { name: /^save$/i }));
+
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ id: "abc", color: "blue" }));
+  });
+});

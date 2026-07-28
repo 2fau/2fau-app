@@ -34,6 +34,11 @@ pub struct Account {
     pub period: u32,
     #[ts(type = "number")]
     pub counter: u64,
+    /// Optional UI tint for the account's row: a palette key ("blue", "green",
+    /// …) resolved to a theme-aware colour by the UI, or "" for none. Defaulted
+    /// so vaults written before this field still load.
+    #[serde(default)]
+    pub color: String,
 }
 
 /// On-disk / sync record: account metadata bundled with its secret and a

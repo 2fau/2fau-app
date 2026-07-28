@@ -27,6 +27,7 @@ const DOC: VaultDocument = {
         digits: 6,
         period: 30,
         counter: 0,
+        color: "",
       },
       secret: "SGVsbG8h",
       modified_at: 42,

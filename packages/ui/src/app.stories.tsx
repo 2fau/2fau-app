@@ -8,7 +8,7 @@ const secret = btoa("12345678901234567890");
 
 function stored(id: string, issuer: string, label: string, type: "Totp" | "Hotp" = "Totp"): StoredAccount {
   return {
-    account: { id, issuer, label, otp_type: type, algorithm: "Sha1", digits: 6, period: 30, counter: 0 },
+    account: { id, issuer, label, otp_type: type, algorithm: "Sha1", digits: 6, period: 30, counter: 0, color: "" },
     secret,
     modified_at: 0,
   };

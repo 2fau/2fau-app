@@ -216,6 +216,7 @@ mod tests {
                     digits: 6,
                     period: 30,
                     counter: 0,
+                    color: String::new(),
                 },
                 secret: b"TOPSECRETVALUE".to_vec(),
                 modified_at: 42,

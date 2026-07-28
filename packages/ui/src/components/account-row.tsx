@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Account } from "@/core/types";
 import { cn } from "@/lib/utils";
+import { accountColorVar } from "@/lib/colors";
 import { formatCode } from "@/lib/format";
 import { useClipboard } from "@/state/clipboard";
 import { useVault } from "@/state/vault-provider";
@@ -59,6 +60,7 @@ export function AccountRow({ account, onEdit }: { account: Account; onEdit: () =
   return (
     <div
       className="flex cursor-default flex-col gap-1 px-2 py-2"
+      style={{ backgroundColor: accountColorVar(account.color) }}
       onClick={copy}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}

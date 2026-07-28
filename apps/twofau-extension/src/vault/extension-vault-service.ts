@@ -125,6 +125,7 @@ export class ExtensionVaultService implements VaultService {
       digits: parsed.digits,
       period: parsed.period,
       counter: parsed.counter,
+      color: "",
     };
     await this.mutate((doc) => {
       doc.entries.push({ account, secret: parsed.secret, modified_at: Date.now() });
@@ -143,6 +144,7 @@ export class ExtensionVaultService implements VaultService {
       digits: 6,
       period: 30,
       counter: 0,
+      color: "",
     };
     await this.mutate((doc) => {
       doc.entries.push({ account, secret, modified_at: Date.now() });

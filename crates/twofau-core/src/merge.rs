@@ -86,6 +86,7 @@ mod tests {
                 digits: 6,
                 period: 30,
                 counter: 0,
+                color: String::new(),
             },
             secret: vec![1, 2, 3],
             modified_at,
