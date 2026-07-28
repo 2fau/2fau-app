@@ -50,10 +50,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: macos-latest # Apple Silicon
+          - platform: self-hosted # Apple Silicon (self-hosted macOS arm64)
             target: aarch64-apple-darwin
-          - platform: macos-13 # Intel
-            target: x86_64-apple-darwin
           - platform: ubuntu-22.04
             target: ""
           - platform: windows-latest
