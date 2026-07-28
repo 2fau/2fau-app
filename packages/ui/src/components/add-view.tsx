@@ -9,7 +9,13 @@ import { useVault } from "@/state/vault-provider";
 
 /** Port of the Swift `AddView`: import row + manual fields + TOTP/HOTP toggle.
  * An optional `prefill` seeds the fields (e.g. from the clipboard). */
-export function AddView({ onDone, prefill }: { onDone: () => void; prefill?: AddPrefill }) {
+export function AddView({
+  onDone,
+  prefill,
+}: {
+  onDone: () => void;
+  prefill?: AddPrefill;
+}) {
   const { addUri, addManual, capabilities } = useVault();
   const [issuer, setIssuer] = useState(prefill?.issuer ?? "");
   const [label, setLabel] = useState(prefill?.label ?? "");
@@ -39,7 +45,9 @@ export function AddView({ onDone, prefill }: { onDone: () => void; prefill?: Add
 
   async function importFromClipboard() {
     try {
-      const p = await prefillFromClipboardText(await navigator.clipboard.readText());
+      const p = await prefillFromClipboardText(
+        await navigator.clipboard.readText(),
+      );
       if (!p) {
         setError("No otpauth:// URI or Base32 secret on the clipboard");
         return;
@@ -58,7 +66,14 @@ export function AddView({ onDone, prefill }: { onDone: () => void; prefill?: Add
       return;
     }
     try {
-      applyPrefill((await prefillFromClipboardText(uri)) ?? { issuer: "", label: "", secret: "", type: "totp" });
+      applyPrefill(
+        (await prefillFromClipboardText(uri)) ?? {
+          issuer: "",
+          label: "",
+          secret: "",
+          type: "totp",
+        },
+      );
       setError(null);
     } catch (e) {
       setError(`Could not read QR: ${msg(e)}`);
@@ -86,17 +101,24 @@ export function AddView({ onDone, prefill }: { onDone: () => void; prefill?: Add
 
       <div className="border-t" />
 
-      <div className="flex gap-2">
-        {capabilities.paste && (
-          <Button variant="secondary" size="sm" onClick={importFromClipboard}>
-            Paste otpauth:// or secret
-          </Button>
-        )}
-        {capabilities.qrImage && (
-          <Button variant="secondary" size="sm" onClick={() => fileInput.current?.click()}>
-            QR image file…
-          </Button>
-        )}
+      <div className="flex flex-col gap-2">
+        <div>Paste from:</div>
+        <div className="flex gap-2">
+          {capabilities.paste && (
+            <Button variant="secondary" size="sm" onClick={importFromClipboard}>
+              otpauth:// or secret
+            </Button>
+          )}
+          {capabilities.qrImage && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => fileInput.current?.click()}
+            >
+              QR image
+            </Button>
+          )}
+        </div>
         <input
           ref={fileInput}
           type="file"

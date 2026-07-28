@@ -8,9 +8,17 @@ import { BridgeSettings } from "./bridge-settings";
 import { TauriVaultService } from "./tauri-vault-service";
 import "./index.css";
 
-function Root({ startUnlocked, needsSetup }: { startUnlocked: boolean; needsSetup: boolean }) {
+function Root({
+  startUnlocked,
+  needsSetup,
+}: {
+  startUnlocked: boolean;
+  needsSetup: boolean;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const service = useRef(new TauriVaultService(startUnlocked, needsSetup)).current;
+  const service = useRef(
+    new TauriVaultService(startUnlocked, needsSetup),
+  ).current;
 
   // Keep the OS window's height matched to the panel content (like the Swift
   // resizePanelToFit) so the popup never has dead space or clips.
@@ -29,7 +37,7 @@ function Root({ startUnlocked, needsSetup }: { startUnlocked: boolean; needsSetu
   return (
     <div
       ref={containerRef}
-      className="w-[320px] overflow-hidden rounded-xl border bg-background shadow-2xl"
+      className="w-[320px] min-h-[458px] overflow-hidden rounded-xl border bg-background shadow-2xl"
     >
       <TwoFAUApp
         service={service}
