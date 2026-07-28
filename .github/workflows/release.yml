@@ -6,8 +6,10 @@ name: Release
 #   - push to main / manual dispatch -> "Continuous Release" prerelease (tag: tip)
 #   - v* tag                          -> draft GitHub Release for that version
 #
-# Everything publishes in a single run with the default GITHUB_TOKEN, so no PAT
-# is needed (a tag push would otherwise not re-trigger a separate workflow).
+# Release steps authenticate with `secrets.RELEASE_TOKEN` when set, else the
+# default GITHUB_TOKEN. This org disables write for GITHUB_TOKEN, so publishing
+# requires a RELEASE_TOKEN secret (a fine-grained PAT with Contents: read/write
+# on this repo) — otherwise release creation fails "Resource not accessible".
 on:
   push:
     branches: [main]
@@ -35,7 +37,7 @@ jobs:
     steps:
       - name: Delete previous continuous release and tag
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
           REPO: ${{ github.repository }}
         run: gh release delete tip --repo "$REPO" --cleanup-tag --yes || true
 
@@ -92,7 +94,7 @@ jobs:
 
       - uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
         with:
           projectPath: apps/twofau-app
           # tag push -> versioned draft; otherwise the rolling "tip" prerelease.
@@ -151,7 +153,7 @@ jobs:
       - name: Attach the extension to the release
         if: matrix.platform == 'ubuntu-22.04'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
           REPO: ${{ github.repository }}
           # tag push -> that version's release; otherwise the rolling "tip".
           TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'tip' }}
