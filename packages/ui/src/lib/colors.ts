@@ -1,7 +1,8 @@
-/** Predefined account row tints. The actual colours are theme-aware CSS custom
- * properties (`--acct-<key>`, defined in globals.css) so each key renders a
- * light tint in light mode and a muted dark tint in dark mode. This list drives
- * the picker and validates stored keys. */
+/** Predefined account row tints. Each key maps to a vivid base accent CSS
+ * variable (`--acct-<key>`, defined per-theme in globals.css); row backgrounds
+ * and avatars derive translucent tints from it via `color-mix`, so a single
+ * base colour drives a theme-aware gradient. This list drives the picker and
+ * validates stored keys. */
 export interface AccountColor {
   key: string;
   label: string;
@@ -20,8 +21,25 @@ export const ACCOUNT_COLORS: AccountColor[] = [
 
 const KEYS = new Set(ACCOUNT_COLORS.map((c) => c.key));
 
-/** The CSS background value for a stored colour key, or undefined for none /
- * an unknown key (which then renders untinted). */
+/** The vivid base accent for a key, or undefined for none/unknown. Used for the
+ * picker's solid swatches. */
 export function accountColorVar(key: string): string | undefined {
   return key && KEYS.has(key) ? `var(--acct-${key})` : undefined;
+}
+
+/** A soft diagonal gradient for a row's background — the accent at low opacity,
+ * composited over the theme background so it reads as a light tint in light mode
+ * and a muted one in dark mode. Undefined for none. */
+export function accountRowBackground(key: string): string | undefined {
+  const c = accountColorVar(key);
+  return c
+    ? `linear-gradient(135deg, color-mix(in srgb, ${c} 26%, transparent), color-mix(in srgb, ${c} 8%, transparent))`
+    : undefined;
+}
+
+/** A slightly stronger fill for the row's avatar, keeping it distinct from the
+ * row tint. Undefined for none (the avatar then falls back to a muted fill). */
+export function accountColorAccent(key: string): string | undefined {
+  const c = accountColorVar(key);
+  return c ? `color-mix(in srgb, ${c} 30%, transparent)` : undefined;
 }

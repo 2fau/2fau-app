@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { AccountRow } from "@/components/account-row";
+import { ItemGroup } from "@/components/ui/item";
 import { TimerRing } from "@/components/timer-ring";
 import { Button } from "@/components/ui/button";
 import type { Account } from "@/core/types";
@@ -129,14 +130,14 @@ export function MenuBarView({
               No matches
             </p>
           ) : (
-            <div
-              className="macos-scroll divide-y overflow-y-auto"
+            <ItemGroup
+              className="macos-scroll gap-1 overflow-y-auto px-1.5 py-1"
               style={{ maxHeight: MAX_VISIBLE_ROWS * ROW_HEIGHT }}
             >
               {filtered.map((a) => (
                 <AccountRow key={a.id} account={a} onEdit={() => onEdit(a)} />
               ))}
-            </div>
+            </ItemGroup>
           )}
         </>
       )}
