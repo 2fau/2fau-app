@@ -33,7 +33,7 @@ export function accountColorVar(key: string): string | undefined {
 export function accountRowBackground(key: string): string | undefined {
   const c = accountColorVar(key);
   return c
-    ? `linear-gradient(135deg, color-mix(in srgb, ${c} 26%, transparent), color-mix(in srgb, ${c} 8%, transparent))`
+    ? `conic-gradient(from 270deg at 50% -40%, color-mix(in srgb, ${c} 15%, transparent), color-mix(in srgb, ${c} 4%, transparent) 50%, color-mix(in srgb, ${c} 15%, transparent))`
     : undefined;
 }
 
@@ -42,4 +42,11 @@ export function accountRowBackground(key: string): string | undefined {
 export function accountColorAccent(key: string): string | undefined {
   const c = accountColorVar(key);
   return c ? `color-mix(in srgb, ${c} 30%, transparent)` : undefined;
+}
+
+/** A crisp colored edge for the row card, so a tinted row reads as intentional
+ * rather than a muddy fill (especially in dark mode). Undefined for none. */
+export function accountColorBorder(key: string): string | undefined {
+  const c = accountColorVar(key);
+  return c ? `color-mix(in srgb, ${c} 24%, transparent)` : undefined;
 }

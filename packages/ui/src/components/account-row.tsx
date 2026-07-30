@@ -10,7 +10,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import type { Account } from "@/core/types";
-import { accountColorAccent, accountRowBackground } from "@/lib/colors";
+import { accountColorAccent, accountColorBorder, accountRowBackground } from "@/lib/colors";
 import { formatCode } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useClipboard } from "@/state/clipboard";
@@ -72,7 +72,10 @@ export function AccountRow({ account, onEdit }: { account: Account; onEdit: () =
     <Item
       size="sm"
       className="cursor-default gap-3 rounded-lg px-3 py-2.5"
-      style={{ backgroundImage: accountRowBackground(account.color) }}
+      style={{
+        backgroundImage: accountRowBackground(account.color),
+        borderColor: accountColorBorder(account.color),
+      }}
       onClick={copy}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
