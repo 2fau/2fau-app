@@ -6,9 +6,15 @@ import type { StoredAccount } from "@/core/types";
 // base64 of the 20-byte RFC seed, so codes are real in the browser.
 const secret = btoa("12345678901234567890");
 
-function stored(id: string, issuer: string, label: string, type: "Totp" | "Hotp" = "Totp"): StoredAccount {
+function stored(
+  id: string,
+  issuer: string,
+  label: string,
+  type: "Totp" | "Hotp" = "Totp",
+  color = "",
+): StoredAccount {
   return {
-    account: { id, issuer, label, otp_type: type, algorithm: "Sha1", digits: 6, period: 30, counter: 0, color: "" },
+    account: { id, issuer, label, otp_type: type, algorithm: "Sha1", digits: 6, period: 30, counter: 0, color },
     secret,
     modified_at: 0,
   };
@@ -19,6 +25,11 @@ const few: StoredAccount[] = [
   stored("2", "GitHub", "alice"),
   stored("3", "AWS", "root", "Hotp"),
 ];
+
+const COLORS = ["red", "orange", "yellow", "green", "teal", "blue", "purple", "pink"];
+const colored: StoredAccount[] = COLORS.map((c, i) =>
+  stored(String(i), c[0].toUpperCase() + c.slice(1), `user@${c}.com`, "Totp", c),
+);
 
 const many: StoredAccount[] = Array.from({ length: 8 }, (_, i) =>
   stored(String(i), `Service ${i}`, `user${i}@example.com`),
@@ -35,6 +46,10 @@ type Story = StoryObj<typeof TwoFAUApp>;
 
 export const Default: Story = {
   render: () => <TwoFAUApp service={new MockVaultService({ seed: few })} onQuit={() => {}} />,
+};
+
+export const ColoredRows: Story = {
+  render: () => <TwoFAUApp service={new MockVaultService({ seed: colored })} onQuit={() => {}} />,
 };
 
 export const Empty: Story = {
