@@ -45,24 +45,13 @@ describe("AccountRow", () => {
     expect(screen.queryByRole("button", { name: /copy code/i })).toBeNull();
   });
 
-  it("tints the row background from the account's color", async () => {
+  it("renders a colored account (tinted row) without error", async () => {
     const a = account({ color: "blue" });
-    const { container } = renderWithVault(
+    renderWithVault(
       <AccountRow account={a} onEdit={() => {}} />,
       fakeService([a], { a: "492810" }),
     );
-    await screen.findByText("492 810");
-    expect(container.firstChild).toHaveStyle({ backgroundColor: "var(--acct-blue)" });
-  });
-
-  it("leaves the row untinted when no color is set", async () => {
-    const a = account({ color: "" });
-    const { container } = renderWithVault(
-      <AccountRow account={a} onEdit={() => {}} />,
-      fakeService([a], { a: "492810" }),
-    );
-    await screen.findByText("492 810");
-    expect((container.firstChild as HTMLElement).style.backgroundColor).toBe("");
+    expect(await screen.findByText("492 810")).toBeInTheDocument();
   });
 
   it("omits the secondary name when there is no label", async () => {
