@@ -11,11 +11,13 @@ describe("account colours", () => {
     expect(accountColorVar("blue")).toBe("var(--acct-blue)");
   });
 
-  it("builds a translucent conic gradient background for a known key", () => {
+  it("builds a translucent radial-mesh background for a known key", () => {
     const bg = accountRowBackground("blue");
-    expect(bg).toContain("conic-gradient");
+    expect(bg).toContain("radial-gradient");
     expect(bg).toContain("var(--acct-blue)");
     expect(bg).toContain("color-mix");
+    // A mesh of several blobs, not a single gradient.
+    expect(bg?.match(/radial-gradient/g)?.length).toBeGreaterThan(1);
   });
 
   it("builds an avatar fill and a card border for a known key", () => {

@@ -32,9 +32,16 @@ export function accountColorVar(key: string): string | undefined {
  * and a muted one in dark mode. Undefined for none. */
 export function accountRowBackground(key: string): string | undefined {
   const c = accountColorVar(key);
-  return c
-    ? `conic-gradient(from 270deg at 50% -40%, color-mix(in srgb, ${c} 15%, transparent), color-mix(in srgb, ${c} 4%, transparent) 50%, color-mix(in srgb, ${c} 15%, transparent))`
-    : undefined;
+  if (!c) return undefined;
+  const mix = (pct: number) => `color-mix(in srgb, ${c} ${pct}%, transparent)`;
+  // A soft "mesh" of overlapping radial blobs of the one accent — organic depth
+  // rather than a flat wash. Blobs sit off the edges so the pooling reads as a
+  // gentle glow behind the row content.
+  return [
+    `radial-gradient(110% 170% at 100% 0%, ${mix(34)} 0%, transparent 55%)`,
+    `radial-gradient(90% 150% at 88% 115%, ${mix(26)} 0%, transparent 55%)`,
+    `radial-gradient(80% 130% at 45% 130%, ${mix(14)} 0%, transparent 55%)`,
+  ].join(", ");
 }
 
 /** A slightly stronger fill for the row's avatar, keeping it distinct from the
