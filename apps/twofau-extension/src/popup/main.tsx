@@ -1,5 +1,6 @@
 import type { VaultService } from "@twofau/ui";
 import { StatusScreen, TwoFAUApp } from "@twofau/ui";
+import { parseMigration } from "@twofau/core-wasm";
 import { MonitorOff } from "lucide-react";
 import ReactDOM from "react-dom/client";
 import { BridgeUnreachableError } from "../bridge/connection";
@@ -68,6 +69,7 @@ async function bootstrap() {
     <TwoFAUApp
       service={service}
       matchAccount={host ? (a) => accountMatchesSite(a, host) : undefined}
+      parseMigration={parseMigration}
       onOpenSettings={() => chrome.runtime.openOptionsPage()}
       onScan={() => {
         // The worker drives the drag-to-select scan: the popup closes the

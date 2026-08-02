@@ -12,9 +12,12 @@ import { useVault } from "@/state/vault-provider";
  * An optional `prefill` seeds the fields (e.g. from the clipboard). */
 export function AddView({
   onDone,
+  onImport,
   prefill,
 }: {
   onDone: () => void;
+  /** Open the bulk / Google-Authenticator import screen. */
+  onImport?: () => void;
   prefill?: AddPrefill;
 }) {
   const { addUri, addManual, update, capabilities } = useVault();
@@ -123,6 +126,11 @@ export function AddView({
               onClick={() => fileInput.current?.click()}
             >
               QR image
+            </Button>
+          )}
+          {onImport && (
+            <Button variant="secondary" size="sm" onClick={onImport}>
+              Bulk / Google Auth
             </Button>
           )}
         </div>

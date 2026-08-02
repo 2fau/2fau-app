@@ -12,7 +12,7 @@ use tauri::{
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_positioner::{Position, WindowExt};
-use twofau_core::Account;
+use twofau_core::{Account, ParsedOtp};
 use vault::{fallback_vault_path, AppVault};
 
 /// Tray menu id for looking it up to rebuild after the vault changes.
@@ -174,6 +174,13 @@ fn change_passphrase(
     next: String,
 ) -> Result<(), String> {
     vault.change_passphrase(&current, &next)
+}
+
+/// Decode a Google Authenticator `otpauth-migration://` export into accounts.
+/// Pure parsing — no vault access, so it works before unlock.
+#[tauri::command]
+fn parse_migration(uri: String) -> Result<Vec<ParsedOtp>, String> {
+    twofau_core::parse_migration(&uri).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -356,6 +363,7 @@ pub fn run() {
             export_vault,
             import_vault,
             change_passphrase,
+            parse_migration,
             code,
             add_uri,
             add_manual,

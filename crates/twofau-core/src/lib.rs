@@ -7,6 +7,7 @@
 mod base32;
 mod error;
 mod merge;
+mod migration;
 mod model;
 mod otp;
 mod otpauth;
@@ -16,6 +17,7 @@ mod vault;
 pub use base32::{base32_decode, base32_encode};
 pub use error::OtpError;
 pub use merge::merge;
+pub use migration::parse_migration;
 pub use model::{
     Account, OtpAlgorithm, OtpType, ParsedOtp, StoredAccount, Tombstone, VaultDocument,
 };

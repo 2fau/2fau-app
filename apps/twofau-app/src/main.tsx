@@ -3,6 +3,7 @@ import { getVersion } from "@tauri-apps/api/app";
 import { readText, writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import { TwoFAUApp } from "@twofau/ui";
+import type { ParsedOtp } from "@twofau/ui";
 import { useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom/client";
 import { initAutoLock } from "./auto-lock";
@@ -50,6 +51,7 @@ function Root({
         service={service}
         onQuit={() => void invoke("quit")}
         settingsBackend={settingsBackend}
+        parseMigration={(uri) => invoke<ParsedOtp[]>("parse_migration", { uri })}
         readClipboard={async () => (await readText()) ?? ""}
         writeClipboard={(text) => writeText(text)}
       />

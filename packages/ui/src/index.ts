@@ -4,6 +4,7 @@ export { MenuBarView } from "@/components/menu-bar-view";
 export { AccountRow } from "@/components/account-row";
 export { AddView } from "@/components/add-view";
 export { EditView } from "@/components/edit-view";
+export { ImportView } from "@/components/import-view";
 export { UnlockView } from "@/components/unlock-view";
 export { SetupView } from "@/components/setup-view";
 export { StatusScreen } from "@/components/status-screen";

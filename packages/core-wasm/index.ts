@@ -12,6 +12,7 @@ import init, {
   steam as _steam,
   base32_decode as _base32Decode,
   parse_otpauth as _parseOtpauth,
+  parse_migration as _parseMigration,
   merge as _merge,
   seal_vault as _sealVault,
   open_vault as _openVault,
@@ -78,6 +79,12 @@ export async function base32Decode(secret: string): Promise<string> {
 export async function parseOtpauth(uri: string): Promise<ParsedOtp> {
   await ensureReady();
   return _parseOtpauth(uri) as ParsedOtp;
+}
+
+/** Decode a Google Authenticator `otpauth-migration://` export into accounts. */
+export async function parseMigration(uri: string): Promise<ParsedOtp[]> {
+  await ensureReady();
+  return _parseMigration(uri) as ParsedOtp[];
 }
 
 export async function merge(local: VaultDocument, remote: VaultDocument): Promise<VaultDocument> {

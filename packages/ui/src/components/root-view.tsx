@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AddView } from "@/components/add-view";
 import { EditView } from "@/components/edit-view";
+import { ImportView } from "@/components/import-view";
 import { MenuBarView } from "@/components/menu-bar-view";
 import { SetupView } from "@/components/setup-view";
 import { UnlockView } from "@/components/unlock-view";
@@ -11,13 +12,14 @@ import { SettingsView } from "@/components/settings-view";
 
 import type { ReactNode } from "react";
 import type { AddPrefill } from "@/lib/prefill";
-import type { Account } from "@/core/types";
+import type { Account, ParsedOtp } from "@/core/types";
 import type { SettingsBackend } from "@/core/settings";
 
 type Screen =
   | { name: "list" }
   | { name: "add"; prefill?: AddPrefill }
   | { name: "edit"; account: Account }
+  | { name: "import" }
   | { name: "settings" };
 
 /** Port of the Swift `RootView`: inline list/add/edit navigation within a fixed
@@ -29,12 +31,14 @@ export function RootView({
   settingsBackend,
   onOpenSettings,
   matchAccount,
+  parseMigration,
 }: {
   onScan?: () => void;
   onQuit?: () => void;
   settingsBackend?: SettingsBackend;
   onOpenSettings?: () => void;
   matchAccount?: (a: Account) => boolean;
+  parseMigration?: (uri: string) => Promise<ParsedOtp[]>;
 }) {
   const { locked, needsSetup } = useVault();
   const { readText } = useClipboard();
@@ -75,7 +79,17 @@ export function RootView({
         }
 
         if (screen.name === "add") {
-          return fill(<AddView prefill={screen.prefill} onDone={onDone} />);
+          return fill(
+            <AddView
+              prefill={screen.prefill}
+              onDone={onDone}
+              onImport={() => setScreen({ name: "import" })}
+            />,
+          );
+        }
+
+        if (screen.name === "import") {
+          return fill(<ImportView onDone={onDone} parseMigration={parseMigration} />);
         }
 
         if (screen.name === "edit") {

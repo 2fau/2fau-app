@@ -88,6 +88,14 @@ pub fn parse_otpauth(uri: &str) -> Result<JsValue, JsError> {
     Ok(serde_wasm_bindgen::to_value(&parsed)?)
 }
 
+/// Decode a Google Authenticator `otpauth-migration://` export. Returns an array
+/// of `ParsedOtp` objects.
+#[wasm_bindgen]
+pub fn parse_migration(uri: &str) -> Result<JsValue, JsError> {
+    let parsed = twofau_core::parse_migration(uri).map_err(|e| JsError::new(&e.to_string()))?;
+    Ok(serde_wasm_bindgen::to_value(&parsed)?)
+}
+
 /// Merge two `VaultDocument` objects. Returns the merged `VaultDocument`.
 #[wasm_bindgen]
 pub fn merge(local: JsValue, remote: JsValue) -> Result<JsValue, JsError> {

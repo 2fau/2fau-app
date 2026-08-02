@@ -1,5 +1,5 @@
 import { RootView } from "@/components/root-view";
-import type { Account } from "@/core/types";
+import type { Account, ParsedOtp } from "@/core/types";
 import type { VaultService } from "@/core/vault-service";
 import type { SettingsBackend } from "@/core/settings";
 import { ClipboardProvider } from "@/state/clipboard";
@@ -15,6 +15,7 @@ export function TwoFAUApp({
   settingsBackend,
   onOpenSettings,
   matchAccount,
+  parseMigration,
   readClipboard,
   writeClipboard,
 }: {
@@ -24,6 +25,9 @@ export function TwoFAUApp({
   /** Optional "belongs to the current page" test (extension smart-filter): the
    * list floats matching accounts to the top under a "For this site" caption. */
   matchAccount?: (a: Account) => boolean;
+  /** Host decoder for Google Authenticator `otpauth-migration://` exports, used
+   * by the bulk Import screen (WASM in the extension, a command on desktop). */
+  parseMigration?: (uri: string) => Promise<ParsedOtp[]>;
   /** In-panel settings (desktop): the gear opens the shared SettingsView driven
    * by this backend. */
   settingsBackend?: SettingsBackend;
@@ -45,6 +49,7 @@ export function TwoFAUApp({
           settingsBackend={settingsBackend}
           onOpenSettings={onOpenSettings}
           matchAccount={matchAccount}
+          parseMigration={parseMigration}
         />
       </VaultProvider>
     </ClipboardProvider>
