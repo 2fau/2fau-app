@@ -8,6 +8,7 @@ import {
   openWithKey,
   parseOtpauth,
   sealWithKey,
+  steam,
   totp,
   vaultSalt,
 } from "@twofau/core-wasm";
@@ -135,13 +136,16 @@ export class ExtensionVaultService implements VaultService {
 
   async addManual(fields: AddManualFields): Promise<Account> {
     const secret = await base32Decode(fields.secretBase32);
+    const otp_type =
+      fields.type === "hotp" ? "Hotp" : fields.type === "steam" ? "Steam" : "Totp";
     const account: Account = {
       id: await newId(),
       issuer: fields.issuer,
       label: fields.label,
-      otp_type: fields.type === "hotp" ? "Hotp" : "Totp",
+      otp_type,
       algorithm: "Sha1",
-      digits: 6,
+      // Steam codes are 5 alphabet chars; everything else defaults to 6.
+      digits: otp_type === "Steam" ? 5 : 6,
       period: 30,
       counter: 0,
       color: "",
@@ -183,6 +187,9 @@ export class ExtensionVaultService implements VaultService {
     const entry = (await this.listStored()).find((e) => e.account.id === account.id);
     if (!entry) return "-".repeat(account.digits);
     const algo = algorithmArg(account.algorithm);
+    if (account.otp_type === "Steam") {
+      return steam(entry.secret, BigInt(Math.floor(unixTimeMs / 1000)));
+    }
     if (account.otp_type === "Hotp") {
       return hotp(entry.secret, BigInt(account.counter), account.digits, algo);
     }

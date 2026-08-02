@@ -37,12 +37,12 @@ export function AccountRow({
 
   const raw = codes[account.id] ?? "";
 
-  // TOTP codes blink in their last few seconds so a copy right before rollover
-  // is an obvious risk. HOTP has no timer, so it never blinks.
+  // Time-based codes (TOTP + Steam) blink in their last few seconds so a copy
+  // right before rollover is an obvious risk. HOTP has no timer, so never blinks.
+  const timeBased = account.otp_type !== "Hotp";
   const period = account.period || 30;
   const secondsLeft = period - (Math.floor(now / 1000) % period);
-  const expiring =
-    account.otp_type === "Totp" && secondsLeft <= EXPIRY_WARNING_S;
+  const expiring = timeBased && secondsLeft <= EXPIRY_WARNING_S;
 
   async function copy() {
     if (!raw) return;
@@ -191,7 +191,7 @@ export function AccountRow({
       {/* Per-account countdown: fills empty→full as the code ages, in the row's
        * own accent (periods can differ). In its final seconds it blinks in sync
        * with the code numbers to warn of an imminent roll. HOTP has no timer. */}
-      {account.otp_type === "Totp" && (
+      {timeBased && (
         <span
           aria-hidden="true"
           className="absolute inset-x-0 bottom-0 h-[3px] bg-foreground/10"

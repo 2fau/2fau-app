@@ -48,6 +48,29 @@ pub fn totp(secret: &[u8], unix_time: u64, period: u32, digits: u8, algo: OtpAlg
     hotp(secret, counter, digits, algo)
 }
 
+/// The 26 characters a Steam Guard code is drawn from.
+const STEAM_ALPHABET: &[u8] = b"23456789BCDFGHJKMNPQRTVWXY";
+
+/// Steam Guard code: HMAC-SHA1 over `unix_time / 30`, dynamically truncated like
+/// RFC 4226, then mapped to 5 characters of Steam's alphabet instead of decimal
+/// digits. Fixed 30-second period and SHA-1, matching the Steam mobile app.
+pub fn steam(secret: &[u8], unix_time: u64) -> String {
+    let counter = (unix_time / 30).to_be_bytes();
+    let hash = hmac_sha1(secret, &counter);
+    let offset = (hash[hash.len() - 1] & 0x0f) as usize;
+    let mut bin = ((hash[offset] as u32 & 0x7f) << 24)
+        | ((hash[offset + 1] as u32) << 16)
+        | ((hash[offset + 2] as u32) << 8)
+        | (hash[offset + 3] as u32);
+
+    let mut code = String::with_capacity(5);
+    for _ in 0..5 {
+        code.push(STEAM_ALPHABET[(bin as usize) % STEAM_ALPHABET.len()] as char);
+        bin /= STEAM_ALPHABET.len() as u32;
+    }
+    code
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -98,5 +121,21 @@ mod tests {
                 "sha512 @ {t}"
             );
         }
+    }
+
+    #[test]
+    fn steam_code_is_five_alphabet_chars_stable_per_window() {
+        let alphabet: Vec<char> = "23456789BCDFGHJKMNPQRTVWXY".chars().collect();
+        for t in [0u64, 59, 1_000_000, 2_000_000_000] {
+            let code = steam(SEED_SHA1, t);
+            assert_eq!(code.chars().count(), 5, "5 chars @ {t}");
+            assert!(
+                code.chars().all(|c| alphabet.contains(&c)),
+                "outside alphabet @ {t}: {code}"
+            );
+        }
+        // Constant across a 30s window (both counter = 1), then changes.
+        assert_eq!(steam(SEED_SHA1, 30), steam(SEED_SHA1, 59));
+        assert_ne!(steam(SEED_SHA1, 59), steam(SEED_SHA1, 90));
     }
 }

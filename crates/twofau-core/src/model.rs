@@ -2,12 +2,14 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use uuid::Uuid;
 
-/// TOTP (time-based) or HOTP (counter-based).
+/// TOTP (time-based), HOTP (counter-based), or Steam Guard (time-based, but the
+/// code is 5 characters from Steam's alphabet instead of decimal digits).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS)]
 #[ts(export, export_to = "../../../packages/core-wasm/bindings/")]
 pub enum OtpType {
     Totp,
     Hotp,
+    Steam,
 }
 
 /// HMAC hash backing the OTP.

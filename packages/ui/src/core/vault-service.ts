@@ -14,7 +14,7 @@ export interface AddManualFields {
   issuer: string;
   label: string;
   secretBase32: string;
-  type: "totp" | "hotp";
+  type: "totp" | "hotp" | "steam";
 }
 
 /**

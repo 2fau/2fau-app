@@ -12,9 +12,10 @@ pub fn parse_otpauth(uri: &str) -> Result<ParsedOtp, OtpError> {
         return Err(OtpError::UnsupportedScheme);
     }
 
-    let otp_type = match url.host_str() {
+    let mut otp_type = match url.host_str() {
         Some("totp") => OtpType::Totp,
         Some("hotp") => OtpType::Hotp,
+        Some("steam") => OtpType::Steam,
         _ => return Err(OtpError::UnsupportedScheme),
     };
 
@@ -58,12 +59,23 @@ pub fn parse_otpauth(uri: &str) -> Result<ParsedOtp, OtpError> {
         }
     }
 
+    // Steam codes are commonly shared as plain TOTP with issuer=Steam; promote
+    // them so they generate Steam's alphabet codes rather than 6 digits.
+    if otp_type == OtpType::Totp && issuer.eq_ignore_ascii_case("steam") {
+        otp_type = OtpType::Steam;
+    }
+
     let secret_b32 = secret_b32.ok_or(OtpError::MissingSecret)?;
     let secret = base32_decode(&secret_b32)?;
     if secret.is_empty() {
         return Err(OtpError::MissingSecret);
     }
-    if !(6..=10).contains(&digits) {
+    if otp_type == OtpType::Steam {
+        // Steam is fixed: 5 alphabet chars, SHA-1, 30s.
+        digits = 5;
+        period = 30;
+        algorithm = OtpAlgorithm::Sha1;
+    } else if !(6..=10).contains(&digits) {
         return Err(OtpError::InvalidDigits);
     }
 
@@ -92,8 +104,10 @@ fn algorithm_name(a: OtpAlgorithm) -> &'static str {
 /// on another device. Mirrors the shared UI's `buildOtpauthUri`.
 pub fn build_otpauth(account: &Account, secret: &[u8]) -> String {
     let enc = |s: &str| utf8_percent_encode(s, NON_ALPHANUMERIC).to_string();
+    // Steam is emitted as TOTP with issuer=Steam so other apps can import it;
+    // parse_otpauth promotes it back to Steam via that issuer.
     let kind = match account.otp_type {
-        OtpType::Totp => "totp",
+        OtpType::Totp | OtpType::Steam => "totp",
         OtpType::Hotp => "hotp",
     };
     let label = if account.issuer.is_empty() {
@@ -105,6 +119,8 @@ pub fn build_otpauth(account: &Account, secret: &[u8]) -> String {
     let mut params = format!("secret={}", base32_encode(secret));
     if !account.issuer.is_empty() {
         params.push_str(&format!("&issuer={}", enc(&account.issuer)));
+    } else if account.otp_type == OtpType::Steam {
+        params.push_str("&issuer=Steam");
     }
     params.push_str(&format!(
         "&algorithm={}&digits={}",
@@ -112,7 +128,7 @@ pub fn build_otpauth(account: &Account, secret: &[u8]) -> String {
         account.digits
     ));
     match account.otp_type {
-        OtpType::Totp => params.push_str(&format!("&period={}", account.period)),
+        OtpType::Totp | OtpType::Steam => params.push_str(&format!("&period={}", account.period)),
         OtpType::Hotp => params.push_str(&format!("&counter={}", account.counter)),
     }
     format!("otpauth://{kind}/{label}?{params}")

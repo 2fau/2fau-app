@@ -19,7 +19,7 @@ pub use merge::merge;
 pub use model::{
     Account, OtpAlgorithm, OtpType, ParsedOtp, StoredAccount, Tombstone, VaultDocument,
 };
-pub use otp::{hotp, totp};
+pub use otp::{hotp, steam, totp};
 pub use otpauth::{build_otpauth, parse_otpauth};
 pub use store::{InMemoryVaultStore, StoreError, VaultStore};
 pub use vault::{

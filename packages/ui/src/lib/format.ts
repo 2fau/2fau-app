@@ -1,7 +1,9 @@
 import type { OtpAlgorithm } from "@/core/types";
 
-/** Split a code down the middle with a space: "492810" -> "492 810". */
+/** Split a numeric code down the middle with a space: "492810" -> "492 810".
+ * Non-numeric codes (Steam's 5-letter alphabet) are shown whole. */
 export function formatCode(code: string): string {
+  if (!/^\d+$/.test(code)) return code;
   const mid = Math.floor(code.length / 2);
   return `${code.slice(0, mid)} ${code.slice(mid)}`;
 }

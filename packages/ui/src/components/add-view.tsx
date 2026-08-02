@@ -21,7 +21,7 @@ export function AddView({
   const [issuer, setIssuer] = useState(prefill?.issuer ?? "");
   const [label, setLabel] = useState(prefill?.label ?? "");
   const [secret, setSecret] = useState(prefill?.secret ?? "");
-  const [type, setType] = useState<"totp" | "hotp">(prefill?.type ?? "totp");
+  const [type, setType] = useState<"totp" | "hotp" | "steam">(prefill?.type ?? "totp");
   const [color, setColor] = useState("");
   // The full otpauth URI behind the prefill, if any, and whether the parsed
   // fields are still untouched — while both hold, Save round-trips via addUri to
@@ -169,7 +169,7 @@ export function AddView({
         value={type}
         onValueChange={(v) => {
           if (v) {
-            setType(v as "totp" | "hotp");
+            setType(v as "totp" | "hotp" | "steam");
             edited();
           }
         }}
@@ -180,6 +180,9 @@ export function AddView({
         </ToggleGroupItem>
         <ToggleGroupItem value="hotp" className="flex-1">
           HOTP
+        </ToggleGroupItem>
+        <ToggleGroupItem value="steam" className="flex-1">
+          Steam
         </ToggleGroupItem>
       </ToggleGroup>
 

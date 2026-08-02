@@ -8,8 +8,8 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use twofau_core::{
     base32_decode, build_otpauth, derive_key, hotp, merge, open_with_passphrase, parse_otpauth,
-    salt_of, seal, seal_with_passphrase, totp, Account, FileVaultStore, OtpAlgorithm, OtpType,
-    StoredAccount, Tombstone, VaultDocument, VaultStore, NONCE_LEN, SALT_LEN,
+    salt_of, seal, seal_with_passphrase, steam, totp, Account, FileVaultStore, OtpAlgorithm,
+    OtpType, StoredAccount, Tombstone, VaultDocument, VaultStore, NONCE_LEN, SALT_LEN,
 };
 use uuid::Uuid;
 
@@ -183,6 +183,7 @@ impl AppVault {
                 a.algorithm,
             ),
             OtpType::Hotp => hotp(&entry.secret, a.counter, a.digits, a.algorithm),
+            OtpType::Steam => steam(&entry.secret, unix_ms / 1000),
         })
     }
 
@@ -232,10 +233,10 @@ impl AppVault {
         kind: String,
     ) -> Result<Account, String> {
         let secret = base32_decode(&secret_base32).map_err(str_err)?;
-        let otp_type = if kind == "hotp" {
-            OtpType::Hotp
-        } else {
-            OtpType::Totp
+        let otp_type = match kind.as_str() {
+            "hotp" => OtpType::Hotp,
+            "steam" => OtpType::Steam,
+            _ => OtpType::Totp,
         };
         let account = Account {
             id: Uuid::new_v4(),
@@ -243,7 +244,8 @@ impl AppVault {
             label,
             otp_type,
             algorithm: OtpAlgorithm::Sha1,
-            digits: 6,
+            // Steam codes are 5 alphabet chars; everything else defaults to 6.
+            digits: if otp_type == OtpType::Steam { 5 } else { 6 },
             period: 30,
             counter: 0,
             color: String::new(),

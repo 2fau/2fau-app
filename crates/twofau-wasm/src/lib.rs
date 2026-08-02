@@ -67,6 +67,13 @@ pub fn hotp(
     ))
 }
 
+/// Steam Guard code (5 alphabet chars, fixed 30s period + SHA-1).
+#[wasm_bindgen]
+pub fn steam(secret_b64: &str, unix_time: u64) -> Result<String, JsError> {
+    let secret = decode_secret(secret_b64)?;
+    Ok(twofau_core::steam(&secret, unix_time))
+}
+
 /// Decode a Base32 secret and return it as base64 (the wire form for secrets).
 #[wasm_bindgen]
 pub fn base32_decode(s: &str) -> Result<String, JsError> {

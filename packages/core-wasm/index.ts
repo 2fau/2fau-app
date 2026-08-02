@@ -9,6 +9,7 @@
 import init, {
   totp as _totp,
   hotp as _hotp,
+  steam as _steam,
   base32_decode as _base32Decode,
   parse_otpauth as _parseOtpauth,
   merge as _merge,
@@ -61,6 +62,12 @@ export async function hotp(
 ): Promise<string> {
   await ensureReady();
   return _hotp(secretB64, counter, digits, algo);
+}
+
+/** Steam Guard code (5 alphabet chars, fixed 30s period + SHA-1). */
+export async function steam(secretB64: string, unixTime: bigint): Promise<string> {
+  await ensureReady();
+  return _steam(secretB64, unixTime);
 }
 
 export async function base32Decode(secret: string): Promise<string> {
