@@ -7,8 +7,10 @@ import { initWasm } from "../wasm";
 import { copyToClipboard } from "./clipboard";
 import { accountIdFromMenuItem, refreshContextMenu } from "./context-menu";
 import { pasteIntoActiveField } from "./paste";
+import { startRegionScan } from "./region-scan";
 import { ensureSyncAlarm, SYNC_ALARM } from "./sync-alarm";
 import { syncOnce } from "./sync-engine";
+import { SCAN_MESSAGE } from "../shared/messages";
 
 // No module-level state beyond these listener registrations: the worker is torn
 // down whenever Chrome feels like it, so every handler re-reads from storage.
@@ -35,6 +37,12 @@ chrome.storage.onChanged.addListener((changes, area) => {
   // A local vault edit should push promptly; the engine's canonical-diff guard
   // makes its own resulting write a no-op, so this can't loop.
   if (area !== "session" && "vault.manifest" in changes) void syncOnce();
+});
+
+// Popup asks the worker to run a region scan (it can't itself — clicking the
+// page closes the popup). Fire-and-forget: feedback comes back as a notification.
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg?.type === SCAN_MESSAGE) void startRegionScan();
 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {

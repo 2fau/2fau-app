@@ -29,4 +29,4 @@ export type {
 export { algorithmArg, formatCode, primaryName, secondaryName } from "@/lib/format";
 export { base32Encode, base32FromBase64, buildOtpauthUri } from "@/lib/otpauth";
 export { type AddPrefill, prefillFromClipboardText } from "@/lib/prefill";
-export { decodeQrDataUrl, decodeQrImage } from "@/lib/qr";
+export { decodeQrDataUrl, decodeQrImage, decodeQrRegion, type PixelRect } from "@/lib/qr";

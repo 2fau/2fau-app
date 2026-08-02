@@ -1,6 +1,7 @@
 import type { VaultService } from "@twofau/ui";
 import { TwoFAUApp } from "@twofau/ui";
 import ReactDOM from "react-dom/client";
+import { SCAN_MESSAGE } from "../shared/messages";
 import { createVaultService } from "../vault/backend";
 import { initWasm } from "../wasm";
 import "../index.css";
@@ -26,17 +27,12 @@ async function bootstrap() {
       service={service}
       onOpenSettings={() => chrome.runtime.openOptionsPage()}
       onScan={() => {
-        void (async () => {
-          const { scanCurrentTab } = await import("../vault/scan");
-          try {
-            await service.addUri(await scanCurrentTab());
-            // Reopening is the simplest reliable refresh: the provider reloads
-            // its account list on mount.
-            window.location.reload();
-          } catch (err) {
-            console.error(err);
-          }
-        })();
+        // The worker drives the drag-to-select scan: the popup closes the
+        // instant the user clicks into the page, so it can't run the overlay
+        // itself. It captures the tab, injects the selection UI, decodes the
+        // chosen region, and reports back with a notification.
+        void chrome.runtime.sendMessage({ type: SCAN_MESSAGE });
+        window.close();
       }}
     />,
   );
