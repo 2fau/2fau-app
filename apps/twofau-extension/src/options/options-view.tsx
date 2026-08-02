@@ -1,106 +1,127 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useEffect, useState } from "react";
+import { SettingsGroup, SettingsView, type SettingsBackend } from "@twofau/ui";
+import { useEffect, useMemo, useState } from "react";
 import {
   BridgeUnreachableError,
   ensureBridgePermission,
+  getBridgeToken,
   pairBridge,
   pingBridge,
 } from "../bridge/connection";
-import { readSettings, type Settings, writeSettings } from "../vault/settings";
+import { type BridgeMode, readSettings, writeSettings } from "../vault/settings";
+import { clearSessionKey } from "../vault/session-key";
+import { downloadBlob, readFileBytes } from "../vault/transfer";
 import { syncUsage, type SyncUsage } from "../vault/usage";
 
+/** External links surfaced in Settings. Edit these to point at the real repo. */
+const LINKS = {
+  sourceCode: "https://github.com/2fau/2fau-app",
+  feedback: "https://github.com/2fau/2fau-app/issues",
+  translate: "https://github.com/2fau/2fau-app",
+};
+
+const SYNC_SUMMARY: Record<BridgeMode, string> = {
+  independent: "This browser",
+  sync: "Sync with desktop",
+  client: "Desktop vault",
+};
+
+async function vaultService() {
+  const { ExtensionVaultService } = await import("../vault/extension-vault-service");
+  return ExtensionVaultService.create();
+}
+
 export function OptionsView() {
-  const [settings, setSettings] = useState<Settings | null>(null);
-  const [usage, setUsage] = useState<SyncUsage | null>(null);
+  const [mode, setMode] = useState<BridgeMode | null>(null);
 
   useEffect(() => {
-    void (async () => {
-      setSettings(await readSettings());
-      setUsage(await syncUsage());
-    })();
+    void readSettings().then((s) => setMode(s.mode));
   }, []);
 
-  if (!settings) return <p className="p-6 text-[13px]">Loading…</p>;
-
-  async function patch(next: Partial<Settings>) {
-    setSettings(await writeSettings(next));
-  }
+  const backend: SettingsBackend = useMemo(
+    () => ({
+      version: chrome.runtime.getManifest().version,
+      links: LINKS,
+      exportVault: async () => {
+        downloadBlob(await (await vaultService()).exportBlob(), "2fau-vault.dat");
+        return true;
+      },
+      import: {
+        kind: "file",
+        run: async (file, passphrase) =>
+          (await vaultService()).importBlob(await readFileBytes(file), passphrase),
+      },
+      changePassphrase: async (current, next) => {
+        await (await vaultService()).changePassphrase(current, next);
+      },
+      autoLock: {
+        get: async () => (await readSettings()).autoLockMinutes,
+        set: async (minutes) => {
+          await writeSettings({ autoLockMinutes: minutes });
+        },
+      },
+      sync: {
+        summary: mode ? SYNC_SUMMARY[mode] : undefined,
+        screen: <SyncScreen onModeChange={setMode} />,
+      },
+      openLink: (url) => window.open(url, "_blank", "noopener,noreferrer"),
+    }),
+    [mode],
+  );
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-6 p-6">
-      <h1 className="text-[17px] font-semibold">2FAU settings</h1>
-
-      <section className="flex flex-col gap-1.5">
-        <label className="text-[13px] font-medium" htmlFor="auto-lock">
-          Auto-lock after
-        </label>
-        <Input
-          id="auto-lock"
-          type="number"
-          min={1}
-          max={480}
-          value={settings.autoLockMinutes}
-          onChange={(e) => void patch({ autoLockMinutes: Number(e.target.value) || 1 })}
-        />
-        <p className="text-[11px] text-muted-foreground">
-          Minutes of inactivity before the passphrase is required again.
-        </p>
-      </section>
-
-      <section className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-medium">Storage</span>
-        <label className="flex items-center gap-2 text-[13px]">
-          <input
-            type="checkbox"
-            checked={settings.storageArea === "sync"}
-            onChange={(e) => void patch({ storageArea: e.target.checked ? "sync" : "local" })}
-          />
-          Sync the encrypted vault across my Chrome profile
-        </label>
-        {usage && (
-          <p className="text-[11px] text-muted-foreground">
-            Using {(usage.bytes / 1024).toFixed(1)} KB of {(usage.quota / 1024).toFixed(0)} KB (
-            {usage.percent.toFixed(0)}%).
-          </p>
-        )}
-      </section>
-
-      <ConnectionSection />
-      <VaultSection />
+    <div className="mx-auto h-screen max-w-md">
+      <SettingsView backend={backend} />
     </div>
   );
 }
 
-function ConnectionSection() {
-  const [mode, setMode] = useState<"independent" | "client" | "sync">("independent");
+/** The extension's Sync sub-screen: where the vault lives, and (for the bridge
+ * modes) the desktop pairing flow. */
+function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void }) {
+  const [mode, setMode] = useState<BridgeMode>("independent");
+  const [storageArea, setStorageArea] = useState<"sync" | "local">("sync");
   const [port, setPort] = useState(4849);
   const [code, setCode] = useState("");
+  const [usage, setUsage] = useState<SyncUsage | null>(null);
+  const [conn, setConn] = useState<{ paired: boolean; reachable: boolean } | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  async function refreshConn() {
+    const token = await getBridgeToken();
+    const reachable = token !== null && (await pingBridge());
+    setConn({ paired: token !== null, reachable });
+  }
 
   useEffect(() => {
     void (async () => {
       const s = await readSettings();
       setMode(s.mode);
+      setStorageArea(s.storageArea);
       setPort(s.bridgePort);
+      setUsage(await syncUsage());
+      await refreshConn();
     })();
   }, []);
 
-  async function choose(next: "independent" | "client" | "sync") {
+  async function choose(next: BridgeMode) {
     setError(null);
     setStatus(null);
-    // Both bridge modes need the loopback permission.
-    if (next !== "independent") {
-      const granted = await ensureBridgePermission();
-      if (!granted) {
-        setError("Permission to reach the desktop app was declined.");
-        return;
-      }
+    if (next !== "independent" && !(await ensureBridgePermission())) {
+      setError("Permission to reach the desktop app was declined.");
+      return;
+    }
+    // The desktop vault and the local vault use different keys, so a session key
+    // unlocked for one can't open the other. Drop it when crossing that boundary
+    // so the popup re-prompts for the right passphrase instead of showing an
+    // empty list it silently failed to decrypt.
+    if (next === "client" || mode === "client") {
+      await clearSessionKey();
     }
     setMode(next);
+    onModeChange(next);
     await writeSettings({ mode: next });
+    await refreshConn();
   }
 
   async function pair() {
@@ -113,179 +134,128 @@ function ConnectionSection() {
       }
       await pairBridge(code.trim());
       setCode("");
-      setStatus("Paired. This browser now uses the desktop vault.");
+      setStatus("Paired. Open the popup and unlock with your desktop passphrase.");
+      await refreshConn();
     } catch (err) {
       setError(err instanceof BridgeUnreachableError ? err.message : String(err));
     }
   }
 
+  const MODE_LABELS: { value: BridgeMode; label: string }[] = [
+    { value: "independent", label: "This browser" },
+    { value: "sync", label: "Sync with desktop" },
+    { value: "client", label: "Desktop vault" },
+  ];
+
   return (
-    <section className="flex flex-col gap-2">
-      <span className="text-[13px] font-medium">Connection</span>
-
-      <ToggleGroup
-        type="single"
-        variant="outline"
-        value={mode}
-        onValueChange={(v) => {
-          if (v === "independent" || v === "client" || v === "sync") void choose(v);
-        }}
-        className="w-full"
-      >
-        <ToggleGroupItem value="independent" className="flex-1">
-          This browser
-        </ToggleGroupItem>
-        <ToggleGroupItem value="sync" className="flex-1">
-          Sync
-        </ToggleGroupItem>
-        <ToggleGroupItem value="client" className="flex-1">
-          Desktop
-        </ToggleGroupItem>
-      </ToggleGroup>
-      <p className="text-[11px] text-muted-foreground">
-        {mode === "client"
-          ? "Vaults live in the desktop app; this browser is a client."
-          : mode === "sync"
-            ? "This browser keeps its own vault and syncs it with the desktop app when it's running."
-            : "This browser keeps its own vault (synced across your Chrome profile)."}
-      </p>
-
-      {mode !== "independent" && (
-        <div className="flex flex-col gap-1.5 pl-5">
-          <label className="flex items-center gap-2 text-[12px]">
-            Port
+    <>
+      <SettingsGroup header="Where the vault lives" footer={modeHelp(mode)}>
+        {MODE_LABELS.map((m) => (
+          <label
+            key={m.value}
+            className="flex min-h-[42px] cursor-pointer items-center gap-3 px-3.5 text-[13px]"
+          >
             <input
-              type="number"
-              className="w-20 rounded border px-1"
-              value={port}
-              min={1}
-              max={65535}
+              type="radio"
+              name="sync-mode"
+              className="accent-primary"
+              checked={mode === m.value}
+              onChange={() => void choose(m.value)}
+            />
+            {m.label}
+          </label>
+        ))}
+      </SettingsGroup>
+
+      {mode === "independent" && (
+        <SettingsGroup
+          footer={
+            usage
+              ? `Using ${(usage.bytes / 1024).toFixed(1)} KB of ${(usage.quota / 1024).toFixed(0)} KB (${usage.percent.toFixed(0)}%).`
+              : undefined
+          }
+        >
+          <label className="flex min-h-[42px] cursor-pointer items-center gap-3 px-3.5 text-[13px]">
+            <input
+              type="checkbox"
+              className="accent-primary"
+              checked={storageArea === "sync"}
               onChange={(e) => {
-                const p = Number(e.target.value) || 4849;
-                setPort(p);
-                void writeSettings({ bridgePort: p });
+                const area = e.target.checked ? "sync" : "local";
+                setStorageArea(area);
+                void writeSettings({ storageArea: area });
               }}
             />
+            Sync across my Chrome profile
           </label>
-          <input
-            className="rounded border px-2 py-1 text-[13px]"
-            placeholder="Pairing code from the desktop app"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
-          <button
-            type="button"
-            className="rounded border px-2 py-1 text-[13px]"
-            onClick={() => void pair()}
-          >
-            Pair with desktop
-          </button>
-        </div>
+        </SettingsGroup>
       )}
 
-      {status && <p className="text-[11px] text-muted-foreground">{status}</p>}
-      {error && <p className="text-[11px] text-destructive">{error}</p>}
-    </section>
+      {mode !== "independent" && (
+        <SettingsGroup header="Desktop pairing">
+          <div className="flex items-center gap-2 px-3.5 py-2.5 text-[13px]">
+            <span
+              aria-hidden="true"
+              className={`size-2 shrink-0 rounded-full ${
+                conn?.reachable
+                  ? "bg-success"
+                  : conn?.paired
+                    ? "bg-[color:var(--acct-orange)]"
+                    : "bg-destructive"
+              }`}
+            />
+            <span>
+              {conn == null
+                ? "Checking…"
+                : conn.reachable
+                  ? "Paired — desktop connected"
+                  : conn.paired
+                    ? "Paired — desktop unreachable"
+                    : "Not paired yet"}
+            </span>
+          </div>
+          <div className="flex flex-col gap-2 p-3 text-[13px]">
+            <label className="flex items-center justify-between gap-2">
+              Port
+              <input
+                type="number"
+                className="w-24 rounded-md border px-2 py-1"
+                value={port}
+                min={1}
+                max={65535}
+                onChange={(e) => {
+                  const p = Number(e.target.value) || 4849;
+                  setPort(p);
+                  void writeSettings({ bridgePort: p });
+                }}
+              />
+            </label>
+            <input
+              className="rounded-md border px-2 py-1.5"
+              placeholder="Pairing code from the desktop app"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+            <button
+              type="button"
+              className="rounded-md border px-2 py-1.5 active:bg-muted"
+              onClick={() => void pair()}
+            >
+              Pair with desktop
+            </button>
+          </div>
+        </SettingsGroup>
+      )}
+
+      {status && <p className="px-1 text-[11px] text-muted-foreground">{status}</p>}
+      {error && <p className="px-1 text-[11px] text-destructive">{error}</p>}
+    </>
   );
 }
 
-function VaultSection() {
-  const [current, setCurrent] = useState("");
-  const [next, setNext] = useState("");
-  const [importPassphrase, setImportPassphrase] = useState("");
-  const [status, setStatus] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  async function service() {
-    const { ExtensionVaultService } = await import("../vault/extension-vault-service");
-    return ExtensionVaultService.create();
-  }
-
-  async function run(work: () => Promise<string>) {
-    setError(null);
-    setStatus(null);
-    try {
-      setStatus(await work());
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    }
-  }
-
-  return (
-    <section className="flex flex-col gap-3">
-      <span className="text-[13px] font-medium">Vault</span>
-
-      <div className="flex flex-col gap-1.5">
-        <Input
-          type="password"
-          placeholder="Current passphrase"
-          value={current}
-          onChange={(e) => setCurrent(e.target.value)}
-        />
-        <Input
-          type="password"
-          placeholder="New passphrase"
-          value={next}
-          onChange={(e) => setNext(e.target.value)}
-        />
-        <Button
-          size="sm"
-          disabled={current.length === 0 || next.length < 8}
-          onClick={() =>
-            void run(async () => {
-              await (await service()).changePassphrase(current, next);
-              setCurrent("");
-              setNext("");
-              return "Passphrase changed.";
-            })
-          }
-        >
-          Change passphrase
-        </Button>
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() =>
-            void run(async () => {
-              const { downloadBlob } = await import("../vault/transfer");
-              downloadBlob(await (await service()).exportBlob(), "2fau-vault.dat");
-              return "Exported. The file is encrypted with your passphrase.";
-            })
-          }
-        >
-          Export encrypted vault
-        </Button>
-
-        <Input
-          type="password"
-          placeholder="Passphrase of the file to import"
-          value={importPassphrase}
-          onChange={(e) => setImportPassphrase(e.target.value)}
-        />
-        <input
-          type="file"
-          accept=".dat,application/octet-stream"
-          className="text-[12px]"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            void run(async () => {
-              const { readFileBytes } = await import("../vault/transfer");
-              const count = await (await service()).importBlob(
-                await readFileBytes(file),
-                importPassphrase,
-              );
-              return `Imported. The vault now holds ${count} account${count === 1 ? "" : "s"}.`;
-            });
-          }}
-        />
-      </div>
-
-      {status && <p className="text-[11px] text-muted-foreground">{status}</p>}
-      {error && <p className="text-[11px] text-destructive">{error}</p>}
-    </section>
-  );
+function modeHelp(mode: BridgeMode): string {
+  if (mode === "client") return "Vaults live in the desktop app; this browser is a client.";
+  if (mode === "sync")
+    return "This browser keeps its own vault and syncs it with the desktop app when it's running.";
+  return "This browser keeps its own vault.";
 }

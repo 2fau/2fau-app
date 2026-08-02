@@ -10,6 +10,7 @@ use tauri::{
     AppHandle, Manager, State, WindowEvent,
 };
 use tauri_plugin_clipboard_manager::ClipboardExt;
+use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_positioner::{Position, WindowExt};
 use twofau_core::Account;
 use vault::{fallback_vault_path, AppVault};
@@ -121,6 +122,60 @@ fn list_accounts(vault: State<Arc<AppVault>>) -> Result<Vec<Account>, String> {
     vault.list()
 }
 
+/// Save the encrypted vault to a file the user picks. Returns false if they
+/// cancel the dialog. The blob is sealed with the current passphrase.
+// `async` so Tauri runs these off the main thread — the blocking file dialog
+// deadlocks the event loop if invoked on it (macOS).
+#[tauri::command]
+async fn export_vault(app: AppHandle, vault: State<'_, Arc<AppVault>>) -> Result<bool, String> {
+    let blob = vault.export_blob()?;
+    let Some(path) = app
+        .dialog()
+        .file()
+        .set_file_name("2fau-vault.dat")
+        .add_filter("2FAU vault", &["dat"])
+        .blocking_save_file()
+    else {
+        return Ok(false);
+    };
+    let path = path.into_path().map_err(|e| e.to_string())?;
+    std::fs::write(&path, &blob).map_err(|e| e.to_string())?;
+    Ok(true)
+}
+
+/// Pick an exported vault file and merge it in under `passphrase` (the one the
+/// file was sealed with). Returns the resulting account count, or None if the
+/// user cancels the file picker.
+#[tauri::command]
+async fn import_vault(
+    app: AppHandle,
+    vault: State<'_, Arc<AppVault>>,
+    passphrase: String,
+) -> Result<Option<usize>, String> {
+    let Some(path) = app
+        .dialog()
+        .file()
+        .add_filter("2FAU vault", &["dat"])
+        .blocking_pick_file()
+    else {
+        return Ok(None);
+    };
+    let path = path.into_path().map_err(|e| e.to_string())?;
+    let blob = std::fs::read(&path).map_err(|e| e.to_string())?;
+    let count = vault.import_blob(&blob, &passphrase)?;
+    refresh_tray(&app);
+    Ok(Some(count))
+}
+
+#[tauri::command]
+fn change_passphrase(
+    vault: State<Arc<AppVault>>,
+    current: String,
+    next: String,
+) -> Result<(), String> {
+    vault.change_passphrase(&current, &next)
+}
+
 #[tauri::command]
 fn code(vault: State<Arc<AppVault>>, id: String, unix_ms: u64) -> Result<String, String> {
     vault.code(&id, unix_ms)
@@ -224,6 +279,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_positioner::init())
         .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             // Menu-bar agent: no Dock icon on macOS.
             #[cfg(target_os = "macos")]
@@ -297,6 +353,9 @@ pub fn run() {
             unlock,
             lock,
             list_accounts,
+            export_vault,
+            import_vault,
+            change_passphrase,
             code,
             add_uri,
             add_manual,

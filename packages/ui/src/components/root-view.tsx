@@ -12,6 +12,7 @@ import { SettingsView } from "@/components/settings-view";
 import type { ReactNode } from "react";
 import type { AddPrefill } from "@/lib/prefill";
 import type { Account } from "@/core/types";
+import type { SettingsBackend } from "@/core/settings";
 
 type Screen =
   | { name: "list" }
@@ -25,12 +26,12 @@ type Screen =
 export function RootView({
   onScan,
   onQuit,
-  settingsSlot,
+  settingsBackend,
   onOpenSettings,
 }: {
   onScan?: () => void;
   onQuit?: () => void;
-  settingsSlot?: ReactNode;
+  settingsBackend?: SettingsBackend;
   onOpenSettings?: () => void;
 }) {
   const { locked, needsSetup } = useVault();
@@ -54,27 +55,33 @@ export function RootView({
 
   const onDone = () => setScreen({ name: "list" });
 
+  // A short view (unlock/setup/add/edit) that fills the fixed panel height and
+  // scrolls when its form is taller than the panel.
+  const fill = (view: ReactNode) => (
+    <div className="macos-scroll min-h-0 flex-1 overflow-y-auto">{view}</div>
+  );
+
   return (
-    <div className="dark w-[320px] bg-background text-foreground">
+    // Fixed panel height so the popup never resizes between views. The desktop
+    // window tracks this (its ResizeObserver now reads a constant height); the
+    // extension popup takes it directly. Each view fills it and scrolls its own
+    // overflow, exactly like the account list.
+    <div className="dark flex h-[458px] w-[320px] flex-col overflow-hidden bg-background text-foreground">
       {(() => {
         if (locked) {
-          if (needsSetup) {
-            return <SetupView />;
-          }
-
-          return <UnlockView />;
+          return fill(needsSetup ? <SetupView /> : <UnlockView />);
         }
 
         if (screen.name === "add") {
-          return <AddView prefill={screen.prefill} onDone={onDone} />;
+          return fill(<AddView prefill={screen.prefill} onDone={onDone} />);
         }
 
         if (screen.name === "edit") {
-          return <EditView account={screen.account} onDone={onDone} />;
+          return fill(<EditView account={screen.account} onDone={onDone} />);
         }
 
-        if (screen.name === "settings") {
-          return <SettingsView onDone={onDone}>{settingsSlot}</SettingsView>;
+        if (screen.name === "settings" && settingsBackend) {
+          return <SettingsView backend={settingsBackend} onClose={onDone} />;
         }
 
         return (
@@ -88,7 +95,7 @@ export function RootView({
               // An explicit external action (extension → options page) wins; else
               // the in-panel slot screen (desktop); else no gear.
               onOpenSettings ??
-              (settingsSlot ? () => setScreen({ name: "settings" }) : undefined)
+              (settingsBackend ? () => setScreen({ name: "settings" }) : undefined)
             }
           />
         );

@@ -1,28 +1,43 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import type { SettingsBackend } from "@/core/settings";
 import { account, fakeService, renderWithVault } from "@/test/test-utils";
 import { RootView } from "./root-view";
 
-function renderRoot(settingsSlot?: React.ReactNode) {
-  return renderWithVault(<RootView settingsSlot={settingsSlot} />, fakeService([account()]));
+const fakeBackend: SettingsBackend = {
+  version: "9.9.9",
+  links: { feedback: "#", translate: "#", sourceCode: "#" },
+  exportVault: async () => true,
+  import: { kind: "native", run: async () => 0 },
+  changePassphrase: async () => {},
+  autoLock: { get: async () => 5, set: async () => {} },
+  sync: { summary: "Off", screen: <p>sync body</p> },
+  openLink: () => {},
+};
+
+function renderRoot(settingsBackend?: SettingsBackend) {
+  return renderWithVault(
+    <RootView settingsBackend={settingsBackend} />,
+    fakeService([account()]),
+  );
 }
 
-describe("RootView settings slot", () => {
-  it("shows no settings gear when no slot is provided", () => {
+describe("RootView settings", () => {
+  it("shows no settings gear when no backend is provided", () => {
     renderRoot();
     expect(screen.queryByRole("button", { name: /settings/i })).toBeNull();
   });
 
-  it("opens the slot content from the gear and returns via Back", async () => {
+  it("opens the settings screen from the gear and returns via Done", async () => {
     const user = userEvent.setup();
-    renderRoot(<p>bridge settings here</p>);
+    renderRoot(fakeBackend);
 
     await user.click(screen.getByRole("button", { name: /settings/i }));
-    expect(screen.getByText("bridge settings here")).toBeInTheDocument();
+    expect(screen.getByText("Export Vault")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /back/i }));
-    expect(screen.queryByText("bridge settings here")).toBeNull();
+    await user.click(screen.getByRole("button", { name: /done/i }));
+    expect(screen.queryByText("Export Vault")).toBeNull();
   });
 
   it("calls onOpenSettings from the gear instead of opening an in-panel screen", async () => {
@@ -32,7 +47,7 @@ describe("RootView settings slot", () => {
 
     await user.click(screen.getByRole("button", { name: /settings/i }));
     expect(onOpenSettings).toHaveBeenCalledTimes(1);
-    // It's an external action (open the options page), not the slot screen.
-    expect(screen.queryByRole("button", { name: /back/i })).toBeNull();
+    // It's an external action (open the options page), not the in-panel screen.
+    expect(screen.queryByText("Export Vault")).toBeNull();
   });
 });

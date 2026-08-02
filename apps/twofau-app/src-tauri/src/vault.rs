@@ -290,6 +290,51 @@ impl AppVault {
         })
     }
 
+    /// Re-seal the current vault under its passphrase with a fresh salt/nonce
+    /// and hand the ciphertext back for the user to save. Requires unlocking —
+    /// the export is the encrypted blob, openable only with the passphrase.
+    pub fn export_blob(&self) -> Result<Vec<u8>, String> {
+        let guard = self.inner.lock().expect("vault mutex");
+        let u = guard.as_ref().ok_or("vault is locked")?;
+        let salt = random::<SALT_LEN>();
+        let nonce = random::<NONCE_LEN>();
+        seal_with_passphrase(&u.doc, &u.passphrase, &salt, &nonce).map_err(str_err)
+    }
+
+    /// Open an exported blob with the passphrase it was sealed under (which may
+    /// differ from this vault's) and merge its accounts in, re-sealing under the
+    /// current passphrase. Returns the resulting account count.
+    pub fn import_blob(&self, blob: &[u8], passphrase: &str) -> Result<usize, String> {
+        let (merged, pass, count) = {
+            let mut guard = self.inner.lock().expect("vault mutex");
+            let u = guard.as_mut().ok_or("vault is locked")?;
+            let incoming = open_with_passphrase(blob, passphrase)
+                .map_err(|_| "Wrong passphrase for the imported file.".to_string())?;
+            let merged = merge(&u.doc, &incoming);
+            u.doc = merged.clone();
+            (merged.clone(), u.passphrase.clone(), merged.entries.len())
+        };
+        self.seal_and_save(&merged, &pass)?;
+        Ok(count)
+    }
+
+    /// Re-seal the vault under a new passphrase after checking the current one.
+    /// Also updates the remembered passphrase so silent auto-unlock keeps working.
+    pub fn change_passphrase(&self, current: &str, next: &str) -> Result<(), String> {
+        let doc = {
+            let mut guard = self.inner.lock().expect("vault mutex");
+            let u = guard.as_mut().ok_or("vault is locked")?;
+            if u.passphrase != current {
+                return Err("Current passphrase is incorrect.".to_string());
+            }
+            u.passphrase = next.to_string();
+            u.doc.clone()
+        };
+        self.seal_and_save(&doc, next)?;
+        let _ = keyring_set(next);
+        Ok(())
+    }
+
     // Apply `f` to the in-memory doc, then re-seal and persist under the same
     // passphrase with a fresh random salt + nonce.
     fn mutate<T>(&self, f: impl FnOnce(&mut VaultDocument) -> T) -> Result<T, String> {
@@ -466,6 +511,49 @@ mod tests {
         }
         let reopened = AppVault::new(path);
         assert_eq!(reopened.revision(), 2);
+    }
+
+    #[test]
+    fn export_then_import_merges_across_passphrases() {
+        // Vault A holds two accounts and exports its (encrypted) blob.
+        let (a, _da) = fresh();
+        a.unlock(PASS.into(), false).unwrap();
+        a.add_uri("otpauth://totp/Acme:me?secret=JBSWY3DPEHPK3PXP&issuer=Acme")
+            .unwrap();
+        a.add_uri("otpauth://totp/Beta:you?secret=JBSWY3DPEHPK3PXP&issuer=Beta")
+            .unwrap();
+        let blob = a.export_blob().unwrap();
+
+        // Vault B has a *different* passphrase but imports A's blob under A's.
+        let (b, _db) = fresh();
+        b.unlock("a-different-passphrase".into(), false).unwrap();
+        let count = b.import_blob(&blob, PASS).unwrap();
+        assert_eq!(count, 2);
+        assert_eq!(b.list().unwrap().len(), 2);
+        // B's own passphrase still opens the merged, re-sealed vault.
+        let reopened = AppVault::new(_db.path().join("vault.dat"));
+        reopened.unlock("a-different-passphrase".into(), false).unwrap();
+        assert_eq!(reopened.list().unwrap().len(), 2);
+    }
+
+    #[test]
+    fn import_rejects_a_wrong_file_passphrase() {
+        let (a, _da) = fresh();
+        a.unlock(PASS.into(), false).unwrap();
+        a.add_uri("otpauth://totp/Acme:me?secret=JBSWY3DPEHPK3PXP&issuer=Acme")
+            .unwrap();
+        let blob = a.export_blob().unwrap();
+
+        let (b, _db) = fresh();
+        b.unlock(PASS.into(), false).unwrap();
+        assert!(b.import_blob(&blob, "not-the-file-passphrase").is_err());
+        assert_eq!(b.list().unwrap().len(), 0, "a rejected import changes nothing");
+    }
+
+    #[test]
+    fn export_requires_an_unlocked_vault() {
+        let (vault, _dir) = fresh();
+        assert!(vault.export_blob().is_err());
     }
 
     #[test]

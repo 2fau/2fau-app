@@ -1,24 +1,27 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getVersion } from "@tauri-apps/api/app";
 import { readText, writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import { TwoFAUApp } from "@twofau/ui";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom/client";
-import { BridgeSettings } from "./bridge-settings";
+import { initAutoLock } from "./auto-lock";
+import { tauriSettingsBackend } from "./settings-backend";
 import { TauriVaultService } from "./tauri-vault-service";
 import "./index.css";
 
 function Root({
   startUnlocked,
   needsSetup,
+  version,
 }: {
   startUnlocked: boolean;
   needsSetup: boolean;
+  version: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const service = useRef(
-    new TauriVaultService(startUnlocked, needsSetup),
-  ).current;
+  const service = useRef(new TauriVaultService(startUnlocked, needsSetup)).current;
+  const settingsBackend = useMemo(() => tauriSettingsBackend(version), [version]);
 
   // Keep the OS window's height matched to the panel content (like the Swift
   // resizePanelToFit) so the popup never has dead space or clips.
@@ -34,6 +37,10 @@ function Root({
     return () => observer.disconnect();
   }, []);
 
+  // Inactivity watchdog: locks the vault (and forgets the passphrase) after the
+  // configured idle time.
+  useEffect(() => initAutoLock(), []);
+
   return (
     <div
       ref={containerRef}
@@ -42,7 +49,7 @@ function Root({
       <TwoFAUApp
         service={service}
         onQuit={() => void invoke("quit")}
-        settingsSlot={<BridgeSettings />}
+        settingsBackend={settingsBackend}
         readClipboard={async () => (await readText()) ?? ""}
         writeClipboard={(text) => writeText(text)}
       />
@@ -62,8 +69,9 @@ async function bootstrap() {
   } catch {
     // stay locked; the unlock screen will handle it
   }
+  const version = await getVersion().catch(() => "0.0.0");
   ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-    <Root startUnlocked={startUnlocked} needsSetup={needsSetup} />,
+    <Root startUnlocked={startUnlocked} needsSetup={needsSetup} version={version} />,
   );
 }
 

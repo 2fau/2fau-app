@@ -56,4 +56,12 @@ describe("prefillFromClipboardText", () => {
     // Digits 0/1/8/9 are outside the base32 alphabet.
     expect(await prefillFromClipboardText("10891089")).toBeNull();
   });
+
+  it("rejects short all-alphabet words that only look like base32", async () => {
+    // Within the Base32 alphabet but far too short to be a real secret, so they
+    // must blink rather than open the form.
+    expect(await prefillFromClipboardText("hello")).toBeNull();
+    expect(await prefillFromClipboardText("helloworld")).toBeNull();
+    expect(await prefillFromClipboardText("meetatnoon")).toBeNull();
+  });
 });

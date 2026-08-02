@@ -1,0 +1,44 @@
+import type { ReactNode } from "react";
+
+/** External links surfaced in the second settings section. */
+export interface SettingsLinks {
+  feedback: string;
+  translate: string;
+  sourceCode: string;
+}
+
+/**
+ * How the host imports a vault file. The two platforms differ:
+ * - `native`: the host opens its own file picker (desktop → Tauri dialog).
+ * - `file`: the shared UI renders an `<input type="file">` and hands the File
+ *   back (extension → browser download/upload).
+ * Both resolve with the resulting account count; `native.run` resolves `null`
+ * when the user cancels the picker.
+ */
+export type ImportSpec =
+  | { kind: "native"; run: (passphrase: string) => Promise<number | null> }
+  | { kind: "file"; run: (file: File, passphrase: string) => Promise<number> };
+
+/** Everything the shared `SettingsView` needs from a host. Sync is a platform
+ * component (the desktop bridge vs. the extension's mode + pairing), injected as
+ * a ready-made sub-screen. */
+export interface SettingsBackend {
+  /** App/extension version, shown in the footer and About screen. */
+  version: string;
+  links: SettingsLinks;
+  /** Save the encrypted vault. Resolves true if saved, false if cancelled. */
+  exportVault: () => Promise<boolean>;
+  import: ImportSpec;
+  changePassphrase: (current: string, next: string) => Promise<void>;
+  autoLock: {
+    get: () => Promise<number>;
+    set: (minutes: number) => Promise<void>;
+  };
+  /** Platform-specific Sync sub-screen, plus a short summary for its row. */
+  sync: { summary?: string; screen: ReactNode };
+  /** Open an external URL (opener plugin on desktop, `window.open` in the ext). */
+  openLink: (url: string) => void;
+}
+
+/** Auto-lock choices offered in the picker, in minutes. */
+export const AUTO_LOCK_OPTIONS = [1, 5, 15, 30, 60] as const;

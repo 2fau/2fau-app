@@ -11,6 +11,12 @@ export interface AddPrefill {
   uri?: string;
 }
 
+/** Shortest bare paste we treat as a secret: 16 Base32 chars = 80 bits, the
+ * real-world floor for TOTP shared secrets. Ordinary clipboard text (words are
+ * often entirely within the Base32 alphabet) falls below this and is rejected,
+ * so the paste button blinks instead of opening the Add form. */
+const MIN_RAW_SECRET_CHARS = 16;
+
 /** Normalize a Base32 string for the secret field: drop whitespace/padding,
  * uppercase. */
 function normalizeBase32(s: string): string {
@@ -63,7 +69,9 @@ export async function prefillFromClipboardText(text: string): Promise<AddPrefill
   const trimmed = text.trim();
   if (!trimmed) return null;
   if (trimmed.startsWith("otpauth://")) return parseOtpauthUri(trimmed);
-  if (isValidBase32(trimmed)) {
+  // A bare paste must look like a deliberate secret, not incidental text.
+  const cleaned = trimmed.replace(/[\s=]/g, "");
+  if (cleaned.length >= MIN_RAW_SECRET_CHARS && isValidBase32(trimmed)) {
     return { issuer: "", label: "", secret: normalizeBase32(trimmed), type: "totp" };
   }
   return null;

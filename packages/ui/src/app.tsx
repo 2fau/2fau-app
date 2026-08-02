@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
 import { RootView } from "@/components/root-view";
 import type { VaultService } from "@/core/vault-service";
+import type { SettingsBackend } from "@/core/settings";
 import { ClipboardProvider } from "@/state/clipboard";
 import { VaultProvider } from "@/state/vault-provider";
 
@@ -11,7 +11,7 @@ export function TwoFAUApp({
   service,
   onScan,
   onQuit,
-  settingsSlot,
+  settingsBackend,
   onOpenSettings,
   readClipboard,
   writeClipboard,
@@ -19,10 +19,11 @@ export function TwoFAUApp({
   service: VaultService;
   onScan?: () => void;
   onQuit?: () => void;
-  /** In-panel settings content (desktop): the gear opens a screen showing this. */
-  settingsSlot?: ReactNode;
+  /** In-panel settings (desktop): the gear opens the shared SettingsView driven
+   * by this backend. */
+  settingsBackend?: SettingsBackend;
   /** External settings action (extension): the gear calls this instead — e.g.
-   * opening the options page. Takes precedence over `settingsSlot`. */
+   * opening the options page. Takes precedence over `settingsBackend`. */
   onOpenSettings?: () => void;
   /** How to read/write the clipboard. Injected because the desktop must go
    * through the Tauri clipboard plugin (the webview's `navigator.clipboard` is
@@ -36,7 +37,7 @@ export function TwoFAUApp({
         <RootView
           onScan={onScan}
           onQuit={onQuit}
-          settingsSlot={settingsSlot}
+          settingsBackend={settingsBackend}
           onOpenSettings={onOpenSettings}
         />
       </VaultProvider>

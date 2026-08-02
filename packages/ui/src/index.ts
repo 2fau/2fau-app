@@ -6,6 +6,18 @@ export { AddView } from "@/components/add-view";
 export { EditView } from "@/components/edit-view";
 export { UnlockView } from "@/components/unlock-view";
 export { SetupView } from "@/components/setup-view";
+export { SettingsView } from "@/components/settings-view";
+export {
+  SettingsPage,
+  SettingsGroup,
+  SettingsRow,
+} from "@/components/ui/settings-list";
+export {
+  AUTO_LOCK_OPTIONS,
+  type SettingsBackend,
+  type SettingsLinks,
+  type ImportSpec,
+} from "@/core/settings";
 
 export { VaultProvider, useVault } from "@/state/vault-provider";
 export { MockVaultService, type MockOptions } from "@/core/mock-vault-service";

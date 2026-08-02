@@ -17,7 +17,6 @@ import { SearchInput } from "@/components/ui/search-input";
 import type { Account } from "@/core/types";
 
 const MAX_VISIBLE_ROWS = 5;
-const ROW_HEIGHT = 64;
 
 /** Seconds before a TOTP code rolls over that it starts blinking. */
 const EXPIRY_WARNING_S = 5;
@@ -141,7 +140,7 @@ export function MenuBarView({
   const expiring = secondsLeft <= EXPIRY_WARNING_S;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex h-full flex-col overflow-hidden">
       {/* header */}
       <div className="flex items-center gap-2 px-3.5 py-[11px]">
         <LogoMark size={26} progress={filled} urgent={expiring} />
@@ -181,31 +180,32 @@ export function MenuBarView({
 
       <div className="border-t" />
 
-      {accounts.length === 0 ? (
-        <EmptyState />
-      ) : (
-        <>
-          {accounts.length > MAX_VISIBLE_ROWS && (
-            <>
-              <SearchInput value={search} setValue={setSearch} />
-              <div className="border-t" />
-            </>
-          )}
+      {/* Fills the panel; the list scrolls its own overflow so the header and
+          footer stay put and the popup height never changes. */}
+      <div className="flex min-h-0 flex-1 flex-col">
+        {accounts.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <>
+            {accounts.length > MAX_VISIBLE_ROWS && (
+              <>
+                <SearchInput value={search} setValue={setSearch} />
+                <div className="border-t" />
+              </>
+            )}
 
-          {filtered.length === 0 ? (
-            <NoMatchesState />
-          ) : (
-            <ItemGroup
-              className="macos-scroll gap-1 overflow-y-auto px-1.5 py-1"
-              style={{ maxHeight: MAX_VISIBLE_ROWS * ROW_HEIGHT }}
-            >
-              {filtered.map((a) => (
-                <AccountRow key={a.id} account={a} onEdit={() => onEdit(a)} />
-              ))}
-            </ItemGroup>
-          )}
-        </>
-      )}
+            {filtered.length === 0 ? (
+              <NoMatchesState />
+            ) : (
+              <ItemGroup className="macos-scroll min-h-0 flex-1 gap-1 overflow-y-auto px-1.5 py-1">
+                {filtered.map((a) => (
+                  <AccountRow key={a.id} account={a} onEdit={() => onEdit(a)} />
+                ))}
+              </ItemGroup>
+            )}
+          </>
+        )}
+      </div>
 
       <div className="border-t" />
 
