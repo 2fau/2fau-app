@@ -10,6 +10,7 @@ import { pasteIntoActiveField } from "./paste";
 import { startRegionScan } from "./region-scan";
 import { ensureSyncAlarm, SYNC_ALARM } from "./sync-alarm";
 import { syncOnce } from "./sync-engine";
+import { accountMatchesSite, hostOf } from "../vault/site-match";
 import { SCAN_MESSAGE } from "../shared/messages";
 
 // No module-level state beyond these listener registrations: the worker is torn
@@ -44,6 +45,57 @@ chrome.storage.onChanged.addListener((changes, area) => {
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg?.type === SCAN_MESSAGE) void startRegionScan();
 });
+
+// Keyboard shortcut: type the code for the current site into the focused field.
+chrome.commands.onCommand.addListener((command) => {
+  if (command === "autofill") void autofillActiveTab();
+});
+
+/** Find the account that belongs to the active tab and type its code into the
+ * focused field (falling back to the clipboard). The command gesture grants the
+ * activeTab needed to capture the tab and inject the code. */
+async function autofillActiveTab(): Promise<void> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const host = hostOf(tab?.url);
+  if (tab?.id == null || !host) {
+    await flashBadge("?", "#e8a33d");
+    return;
+  }
+  try {
+    await initWasm();
+    const service = await createVaultService();
+    if (service.isLocked()) {
+      await notify("Unlock 2FAU, then autofill again.");
+      return;
+    }
+    const match = (await service.list()).find((a) => accountMatchesSite(a, host));
+    if (!match) {
+      await notify(`No 2FAU account matches ${host}.`);
+      return;
+    }
+    const code = await service.code(match, Date.now());
+    const pasted = await pasteIntoActiveField(tab.id, code);
+    if (!pasted) {
+      await copyToClipboard(code);
+      await notifyCopied(match);
+    }
+    if (match.otp_type === "Hotp") await service.advanceHotp(match.id);
+    await recordUse(match.id);
+    await flashBadge("✓", "#2f9e44");
+  } catch {
+    await flashBadge("!", "#e03131");
+  }
+}
+
+/** A plain text notification (autofill has no popup to report into). */
+async function notify(message: string): Promise<void> {
+  await chrome.notifications.create({
+    type: "basic",
+    iconUrl: chrome.runtime.getURL("icons/icon-128.png"),
+    title: "2FAU",
+    message,
+  });
+}
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === AUTO_LOCK_ALARM) {

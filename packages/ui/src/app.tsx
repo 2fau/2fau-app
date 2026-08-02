@@ -1,4 +1,5 @@
 import { RootView } from "@/components/root-view";
+import type { Account } from "@/core/types";
 import type { VaultService } from "@/core/vault-service";
 import type { SettingsBackend } from "@/core/settings";
 import { ClipboardProvider } from "@/state/clipboard";
@@ -13,12 +14,16 @@ export function TwoFAUApp({
   onQuit,
   settingsBackend,
   onOpenSettings,
+  matchAccount,
   readClipboard,
   writeClipboard,
 }: {
   service: VaultService;
   onScan?: () => void;
   onQuit?: () => void;
+  /** Optional "belongs to the current page" test (extension smart-filter): the
+   * list floats matching accounts to the top under a "For this site" caption. */
+  matchAccount?: (a: Account) => boolean;
   /** In-panel settings (desktop): the gear opens the shared SettingsView driven
    * by this backend. */
   settingsBackend?: SettingsBackend;
@@ -39,6 +44,7 @@ export function TwoFAUApp({
           onQuit={onQuit}
           settingsBackend={settingsBackend}
           onOpenSettings={onOpenSettings}
+          matchAccount={matchAccount}
         />
       </VaultProvider>
     </ClipboardProvider>

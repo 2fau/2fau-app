@@ -6,6 +6,7 @@ import { BridgeUnreachableError } from "../bridge/connection";
 import { SCAN_MESSAGE } from "../shared/messages";
 import { createVaultService } from "../vault/backend";
 import { readSettings } from "../vault/settings";
+import { accountMatchesSite, hostOf } from "../vault/site-match";
 import { initWasm } from "../wasm";
 import "../index.css";
 
@@ -59,9 +60,14 @@ async function bootstrap() {
     }
     return;
   }
+  // Smart filter: the active tab's host lets the list surface matching accounts.
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true }).catch(() => []);
+  const host = hostOf(tab?.url);
+
   root.render(
     <TwoFAUApp
       service={service}
+      matchAccount={host ? (a) => accountMatchesSite(a, host) : undefined}
       onOpenSettings={() => chrome.runtime.openOptionsPage()}
       onScan={() => {
         // The worker drives the drag-to-select scan: the popup closes the

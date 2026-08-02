@@ -98,6 +98,7 @@ export function MenuBarView({
   onScan,
   onQuit,
   onOpenSettings,
+  matchAccount,
 }: {
   onAdd: () => void;
   /** Open the Add screen prefilled from the clipboard (otpauth:// or a raw
@@ -108,6 +109,8 @@ export function MenuBarView({
   onScan?: () => void;
   onQuit?: () => void;
   onOpenSettings?: () => void;
+  /** Smart filter: accounts matching the current page float to the top. */
+  matchAccount?: (a: Account) => boolean;
 }) {
   const { accounts, now, capabilities, lock } = useVault();
   const [search, setSearch] = useState("");
@@ -133,6 +136,12 @@ export function MenuBarView({
           a.label.toLowerCase().includes(q),
       )
     : accounts;
+
+  // Smart filter: while not searching, split out accounts that belong to the
+  // current page so they can lead the list under a caption.
+  const matched = !q && matchAccount ? filtered.filter(matchAccount) : [];
+  const matchedIds = new Set(matched.map((a) => a.id));
+  const rest = matched.length ? filtered.filter((a) => !matchedIds.has(a.id)) : filtered;
 
   const period = 30
   const secondsLeft = period - (Math.floor(now / 1000) % period);
@@ -198,7 +207,18 @@ export function MenuBarView({
               <NoMatchesState />
             ) : (
               <ItemGroup className="macos-scroll min-h-0 flex-1 gap-1 overflow-y-auto px-1.5 py-1">
-                {filtered.map((a) => (
+                {matched.length > 0 && (
+                  <>
+                    <p className="px-2 pt-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                      For this site
+                    </p>
+                    {matched.map((a) => (
+                      <AccountRow key={a.id} account={a} onEdit={() => onEdit(a)} />
+                    ))}
+                    <div className="mx-1 my-1 border-t" />
+                  </>
+                )}
+                {rest.map((a) => (
                   <AccountRow key={a.id} account={a} onEdit={() => onEdit(a)} />
                 ))}
               </ItemGroup>

@@ -28,11 +28,13 @@ export function RootView({
   onQuit,
   settingsBackend,
   onOpenSettings,
+  matchAccount,
 }: {
   onScan?: () => void;
   onQuit?: () => void;
   settingsBackend?: SettingsBackend;
   onOpenSettings?: () => void;
+  matchAccount?: (a: Account) => boolean;
 }) {
   const { locked, needsSetup } = useVault();
   const { readText } = useClipboard();
@@ -97,6 +99,7 @@ export function RootView({
               onOpenSettings ??
               (settingsBackend ? () => setScreen({ name: "settings" }) : undefined)
             }
+            matchAccount={matchAccount}
           />
         );
       })()}
