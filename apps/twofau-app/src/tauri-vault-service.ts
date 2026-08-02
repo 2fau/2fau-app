@@ -33,6 +33,11 @@ export class TauriVaultService implements VaultService {
     this.locked = false;
   }
 
+  async lock(): Promise<void> {
+    await invoke("lock");
+    this.locked = true;
+  }
+
   list(): Promise<Account[]> {
     return invoke("list_accounts");
   }

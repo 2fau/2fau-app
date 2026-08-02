@@ -29,6 +29,9 @@ export interface VaultService {
    * instead of the unlock screen. */
   needsSetup(): boolean;
   unlock(passphrase: string): Promise<void>;
+  /** Forget the decrypted vault + any remembered key, returning to the locked
+   * (unlock-screen) state. Safe to call when already locked. */
+  lock(): Promise<void>;
   list(): Promise<Account[]>;
   addUri(otpauthUri: string): Promise<Account>;
   addManual(fields: AddManualFields): Promise<Account>;

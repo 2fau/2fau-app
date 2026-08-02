@@ -1,15 +1,17 @@
-import { ChevronLeft } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { useState } from "react";
 import { AddView } from "@/components/add-view";
 import { EditView } from "@/components/edit-view";
 import { MenuBarView } from "@/components/menu-bar-view";
 import { SetupView } from "@/components/setup-view";
-import { Button } from "@/components/ui/button";
 import { UnlockView } from "@/components/unlock-view";
-import type { Account } from "@/core/types";
-import { type AddPrefill, prefillFromClipboardText } from "@/lib/prefill";
+import { prefillFromClipboardText } from "@/lib/prefill";
 import { useClipboard } from "@/state/clipboard";
 import { useVault } from "@/state/vault-provider";
+import { SettingsView } from "@/components/settings-view";
+
+import type { ReactNode } from "react";
+import type { AddPrefill } from "@/lib/prefill";
+import type { Account } from "@/core/types";
 
 type Screen =
   | { name: "list" }
@@ -50,47 +52,47 @@ export function RootView({
     return true;
   }
 
+  const onDone = () => setScreen({ name: "list" })
+
   return (
     <div className="w-[320px] bg-background text-foreground">
-      {locked ? (
-        needsSetup ? (
-          <SetupView />
-        ) : (
-          <UnlockView />
-        )
-      ) : screen.name === "add" ? (
-        <AddView prefill={screen.prefill} onDone={() => setScreen({ name: "list" })} />
-      ) : screen.name === "edit" ? (
-        <EditView account={screen.account} onDone={() => setScreen({ name: "list" })} />
-      ) : screen.name === "settings" ? (
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1 border-b p-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              aria-label="Back"
-              onClick={() => setScreen({ name: "list" })}
-            >
-              <ChevronLeft className="size-4" />
-            </Button>
-            <span className="text-[13px] font-medium">Settings</span>
-          </div>
-          <div className="p-3">{settingsSlot}</div>
-        </div>
-      ) : (
-        <MenuBarView
-          onAdd={() => setScreen({ name: "add" })}
-          onQuickAdd={openAddFromClipboard}
-          onEdit={(account) => setScreen({ name: "edit", account })}
-          onScan={onScan}
-          onQuit={onQuit}
-          onOpenSettings={
-            // An explicit external action (extension → options page) wins; else
-            // the in-panel slot screen (desktop); else no gear.
-            onOpenSettings ?? (settingsSlot ? () => setScreen({ name: "settings" }) : undefined)
+      {(() =>{
+        if (locked) {
+          if (needsSetup) {
+            return <SetupView />
           }
-        />
-      )}
+
+          return <UnlockView />
+        }
+
+        if (screen.name === "add") {
+          return <AddView prefill={screen.prefill} onDone={onDone} />
+
+        }
+
+        if (screen.name === "edit") {
+          return <EditView account={screen.account} onDone={onDone} />
+        }
+
+        if (screen.name === "settings") {
+          return <SettingsView onDone={onDone}>{settingsSlot}</SettingsView>
+        }
+
+        return (
+            <MenuBarView
+                onAdd={() => setScreen({ name: "add" })}
+                onQuickAdd={openAddFromClipboard}
+                onEdit={(account) => setScreen({ name: "edit", account })}
+                onScan={onScan}
+                onQuit={onQuit}
+                onOpenSettings={
+                    // An explicit external action (extension → options page) wins; else
+                    // the in-panel slot screen (desktop); else no gear.
+                    onOpenSettings ?? (settingsSlot ? () => setScreen({ name: "settings" }) : undefined)
+                }
+            />
+        )
+      })()}
     </div>
   );
 }

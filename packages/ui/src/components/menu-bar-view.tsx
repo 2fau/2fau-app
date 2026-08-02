@@ -1,22 +1,96 @@
 import {
   ClipboardPaste,
+  Lock,
   Plus,
   ScanLine,
-  Search,
   Settings,
   ShieldCheck,
-  X,
 } from "lucide-react";
 import { useState } from "react";
 import { AccountRow } from "@/components/account-row";
 import { ItemGroup } from "@/components/ui/item";
-import { TimerRing } from "@/components/timer-ring";
 import { Button } from "@/components/ui/button";
-import type { Account } from "@/core/types";
 import { useVault } from "@/state/vault-provider";
+import { LogoMark, Wordmark } from "@/components/ui/logo";
+import { SearchInput } from "@/components/ui/search-input";
+
+import type { Account } from "@/core/types";
 
 const MAX_VISIBLE_ROWS = 5;
 const ROW_HEIGHT = 64;
+
+/** Seconds before a TOTP code rolls over that it starts blinking. */
+const EXPIRY_WARNING_S = 5;
+
+function EmptyState() {
+  return (
+      <div className="flex flex-col items-center gap-1.5 py-9">
+        <ShieldCheck className="size-8 text-muted-foreground" />
+        <p className="text-[13px] text-muted-foreground">No accounts yet</p>
+        <p className="text-[11px] text-tertiary-foreground">Tap + to add one</p>
+      </div>
+  );
+}
+
+function NoMatchesState() {
+  return (
+      <p className="py-6 text-center text-[13px] text-muted-foreground">
+        No matches
+      </p>
+  )
+}
+
+type FooterProps = {
+  accounts: Account[]
+  onQuit?: () => void;
+  onOpenSettings?: () => void;
+  onLock?: () => void;
+}
+
+function Footer({
+  accounts,
+  onQuit,
+  onOpenSettings,
+  onLock
+}: FooterProps) {
+  return (
+      <div className="flex items-center px-3.5 py-2">
+        <div className="flex flex-row items-center gap-2">
+          <Button
+              size="icon-xs"
+              variant="ghost"
+              aria-label="Lock vault"
+              title="Lock vault"
+              className="text-muted-foreground"
+              onClick={onLock}
+          >
+            <Lock />
+          </Button>
+          <span className="text-[11px] text-muted-foreground">
+            {accounts.length === 1 ? "1 account" : `${accounts.length} accounts`}
+          </span>
+        </div>
+        <div className="ml-auto flex items-center gap-0.5">
+          {onOpenSettings && (
+              <Button
+                  size="icon-xs"
+                  variant="ghost"
+                  aria-label="Settings"
+                  className="text-muted-foreground"
+                  onClick={onOpenSettings}
+              >
+                <Settings />
+              </Button>
+          )}
+          {onQuit && (
+              <Button size="xs" variant="ghost" className="text-muted-foreground" onClick={onQuit}>
+                Quit
+              </Button>
+          )}
+        </div>
+      </div>
+  )
+}
 
 export function MenuBarView({
   onAdd,
@@ -36,7 +110,7 @@ export function MenuBarView({
   onQuit?: () => void;
   onOpenSettings?: () => void;
 }) {
-  const { accounts, now, capabilities } = useVault();
+  const { accounts, now, capabilities, lock } = useVault();
   const [search, setSearch] = useState("");
   const [pasteFailed, setPasteFailed] = useState(false);
 
@@ -48,6 +122,10 @@ export function MenuBarView({
     }
   }
 
+  async function onLock() {
+    void lock()
+  }
+
   const q = search.trim().toLowerCase();
   const filtered = q
     ? accounts.filter(
@@ -57,15 +135,17 @@ export function MenuBarView({
       )
     : accounts;
 
+  const period = 30
+  const secondsLeft = period - (Math.floor(now / 1000) % period);
+  const filled = (secondsLeft / period);
+  const expiring = secondsLeft <= EXPIRY_WARNING_S;
+
   return (
     <div className="flex flex-col">
       {/* header */}
       <div className="flex items-center gap-2 px-3.5 py-[11px]">
-        <TimerRing now={now} />
-        <ShieldCheck className="size-4 text-primary" />
-        <span className="text-[15px] font-semibold">
-          2FA<span style={{ color: "rgb(10, 132, 255)" }}>u</span>
-        </span>
+        <LogoMark size={26} progress={filled} urgent={expiring} />
+        <Wordmark size={17} />
         <div className="ml-auto flex items-center gap-4">
           {capabilities.scanScreen && onScan && (
             <Button
@@ -107,28 +187,13 @@ export function MenuBarView({
         <>
           {accounts.length > MAX_VISIBLE_ROWS && (
             <>
-              <div className="mx-2.5 my-2 flex items-center gap-1.5 rounded-lg bg-muted px-2 py-1.5">
-                <Search className="size-3.5 text-muted-foreground" />
-                <input
-                  className="w-full bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
-                  placeholder="Search"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                {search && (
-                  <button type="button" onClick={() => setSearch("")}>
-                    <X className="size-3.5 text-muted-foreground" />
-                  </button>
-                )}
-              </div>
+              <SearchInput value={search} setValue={setSearch} />
               <div className="border-t" />
             </>
           )}
 
           {filtered.length === 0 ? (
-            <p className="py-6 text-center text-[13px] text-muted-foreground">
-              No matches
-            </p>
+            <NoMatchesState />
           ) : (
             <ItemGroup
               className="macos-scroll gap-1 overflow-y-auto px-1.5 py-1"
@@ -145,39 +210,7 @@ export function MenuBarView({
       <div className="border-t" />
 
       {/* footer */}
-      <div className="flex items-center px-3.5 py-2">
-        <span className="text-[11px] text-muted-foreground">
-          {accounts.length === 1 ? "1 account" : `${accounts.length} accounts`}
-        </span>
-        <div className="ml-auto flex items-center gap-0.5">
-          {onOpenSettings && (
-            <Button
-              size="icon-xs"
-              variant="ghost"
-              aria-label="Settings"
-              className="text-muted-foreground"
-              onClick={onOpenSettings}
-            >
-              <Settings />
-            </Button>
-          )}
-          {onQuit && (
-            <Button size="xs" variant="ghost" className="text-muted-foreground" onClick={onQuit}>
-              Quit
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center gap-1.5 py-9">
-      <ShieldCheck className="size-8 text-muted-foreground" />
-      <p className="text-[13px] text-muted-foreground">No accounts yet</p>
-      <p className="text-[11px] text-tertiary-foreground">Tap + to add one</p>
+      <Footer accounts={accounts} onQuit={onQuit} onLock={onLock} onOpenSettings={onOpenSettings} />
     </div>
   );
 }

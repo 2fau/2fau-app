@@ -121,6 +121,13 @@ impl AppVault {
         Ok(())
     }
 
+    /// Forget the decrypted vault and the remembered passphrase, so the next
+    /// access requires re-entering it. Mirrors the extension's manual lock.
+    pub fn lock(&self) {
+        *self.inner.lock().expect("vault mutex") = None;
+        let _ = keyring_delete();
+    }
+
     /// Try to unlock silently using a passphrase cached in the OS keyring.
     pub fn try_auto_unlock(&self) -> bool {
         match keyring_get() {
@@ -381,6 +388,10 @@ fn keyring_set(passphrase: &str) -> Result<(), keyring::Error> {
 
 fn keyring_get() -> Option<String> {
     keyring_entry().ok()?.get_password().ok()
+}
+
+fn keyring_delete() -> Result<(), keyring::Error> {
+    keyring_entry()?.delete_credential()
 }
 
 #[cfg(test)]

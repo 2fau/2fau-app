@@ -27,7 +27,7 @@ export function accountColorVar(key: string): string | undefined {
   return key && KEYS.has(key) ? `var(--acct-${key})` : undefined;
 }
 
-// The row's liquid mesh background lives in the `.acct-tint` CSS class
+// The row's flat tint background lives in the `.acct-fill` CSS class
 // (globals.css) so its opacity can be theme-aware; the component only supplies
 // `--row-accent` via accountColorVar().
 

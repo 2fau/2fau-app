@@ -1,7 +1,7 @@
-import { ShieldCheck } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AppIcon } from "@/components/ui/logo";
 import { useVault } from "@/state/vault-provider";
 
 /** Net-new screen (no Swift equivalent): passphrase unlock, since the
@@ -26,20 +26,45 @@ export function UnlockView() {
   }
 
   return (
-    <form className="flex flex-col items-center gap-3 px-6 py-10" onSubmit={submit}>
-      <ShieldCheck className="size-9 text-primary" />
-      <p className="text-[15px] font-semibold">Unlock 2FAU</p>
-      <Input
-        type="password"
-        autoFocus
-        placeholder="Passphrase"
-        value={passphrase}
-        onChange={(e) => setPassphrase(e.target.value)}
-      />
-      {error && <p className="text-[11px] text-destructive">{error}</p>}
-      <Button type="submit" className="w-full" disabled={busy || passphrase.length === 0}>
-        Unlock
-      </Button>
+    <form
+      className="flex min-h-[320px] flex-col items-center justify-center gap-5 px-8 py-10"
+      onSubmit={submit}
+    >
+      <div className="flex flex-col items-center gap-3">
+        <AppIcon size={60} />
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-[19px] font-semibold tracking-[-0.02em]">
+            2FA<span style={{ color: "var(--primary)" }}>u</span>
+          </span>
+          <p className="text-[12px] text-muted-foreground">
+            Enter your passphrase to unlock
+          </p>
+        </div>
+      </div>
+
+      <div className="flex w-full flex-col gap-2.5">
+        <Input
+          type="password"
+          autoFocus
+          placeholder="Passphrase"
+          aria-invalid={!!error}
+          value={passphrase}
+          onChange={(e) => {
+            setPassphrase(e.target.value);
+            if (error) setError(null);
+          }}
+        />
+        {error && (
+          <p className="text-center text-[11px] text-destructive">{error}</p>
+        )}
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={busy || passphrase.length === 0}
+        >
+          {busy ? "Unlocking…" : "Unlock"}
+        </Button>
+      </div>
     </form>
   );
 }

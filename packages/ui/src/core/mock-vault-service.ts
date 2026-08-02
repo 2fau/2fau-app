@@ -46,6 +46,10 @@ export class MockVaultService implements VaultService {
     this.locked = false;
   }
 
+  async lock(): Promise<void> {
+    this.locked = true;
+  }
+
   async list(): Promise<Account[]> {
     return this.doc.entries.map((e) => e.account);
   }

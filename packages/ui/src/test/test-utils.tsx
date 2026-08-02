@@ -16,6 +16,7 @@ export function fakeService(
     isLocked: () => false,
     needsSetup: () => false,
     unlock: async () => {},
+    lock: async () => {},
     list: async () => list,
     addUri: async () => list[0] as Account,
     addManual: async () => list[0] as Account,

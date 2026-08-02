@@ -50,8 +50,8 @@
 }
 
 /* Account row accents (see lib/colors.ts) — vivid Apple system colours matching
-   the app's tint. Row backgrounds/avatars derive translucent gradients from
-   these via color-mix, so one base colour is theme-aware. */
+   the app's tint. Row backgrounds, borders, and the countdown bar all derive
+   from one base colour via color-mix, so a single value is theme-aware. */
 :root {
   --acct-red: #ff3b30;
   --acct-orange: #ff9500;
@@ -128,24 +128,17 @@ body {
   animation: blink 1s ease-in-out infinite;
 }
 
-/* Liquid account tint: overlapping radial blobs of one accent (--row-accent),
-   pooling toward the right so the left stays clear for text. Opacity is theme-
-   aware — subtle over light, vivid over dark (so it never reads as near-black),
-   with a soft top highlight for a glossy, liquid sheen. */
-.acct-tint {
-  background-image:
-    radial-gradient(70% 130% at 100% -10%, color-mix(in srgb, #fff 22%, transparent), transparent 55%),
-    radial-gradient(78% 135% at 100% 8%, color-mix(in srgb, var(--row-accent) 26%, transparent), transparent 60%),
-    radial-gradient(88% 150% at 82% 118%, color-mix(in srgb, var(--row-accent) 20%, transparent), transparent 60%),
-    radial-gradient(60% 110% at 52% 55%, color-mix(in srgb, var(--row-accent) 12%, transparent), transparent 55%);
+/* Flat account tint: a single translucent wash of the row's accent
+   (--row-accent). Opacity is theme-aware — subtle over light, stronger over
+   dark so it never washes out. Paired with a matching border
+   (accountColorBorder) so a tinted row reads as an intentional card. */
+.acct-fill {
+  background-color: color-mix(in srgb, var(--row-accent) 10%, transparent);
 }
+
 @media (prefers-color-scheme: dark) {
-  .acct-tint {
-    background-image:
-      radial-gradient(70% 130% at 100% -10%, color-mix(in srgb, #fff 10%, transparent), transparent 55%),
-      radial-gradient(78% 135% at 100% 8%, color-mix(in srgb, var(--row-accent) 60%, transparent), transparent 62%),
-      radial-gradient(88% 150% at 82% 118%, color-mix(in srgb, var(--row-accent) 46%, transparent), transparent 62%),
-      radial-gradient(60% 110% at 52% 55%, color-mix(in srgb, var(--row-accent) 30%, transparent), transparent 55%);
+  .acct-fill {
+    background-color: color-mix(in srgb, var(--row-accent) 22%, transparent);
   }
 }
 

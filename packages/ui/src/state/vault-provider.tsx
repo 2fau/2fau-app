@@ -13,6 +13,8 @@ interface VaultContextValue {
   codes: Record<string, string>;
   now: number;
   unlock: (passphrase: string) => Promise<void>;
+  /** Lock the vault, returning to the unlock screen. */
+  lock: () => Promise<void>;
   addUri: (uri: string) => Promise<Account>;
   addManual: (fields: AddManualFields) => Promise<Account>;
   update: (account: Account) => Promise<void>;
@@ -68,6 +70,14 @@ export function VaultProvider({
       await service.unlock(passphrase);
       setLocked(false);
       await refresh();
+    },
+    lock: async () => {
+      await service.lock();
+      setLocked(true);
+      // Drop any decrypted account/code state so nothing lingers behind the
+      // unlock screen.
+      setAccounts([]);
+      setCodes({});
     },
     addUri: async (uri) => {
       const a = await service.addUri(uri);

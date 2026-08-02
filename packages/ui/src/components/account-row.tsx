@@ -78,7 +78,10 @@ export function AccountRow({
   return (
     <Item
       size="sm"
-      className={cn("cursor-default gap-3 rounded-lg px-3 py-2.5", account.color && "acct-tint")}
+      className={cn(
+        "relative cursor-default gap-3 rounded-lg px-3 py-2.5",
+        account.color && "acct-fill",
+      )}
       style={
         {
           "--row-accent": accountColorVar(account.color),
@@ -183,6 +186,27 @@ export function AccountRow({
 
       {actionError && (
         <p className="basis-full text-[10px] text-destructive">{actionError}</p>
+      )}
+
+      {/* Per-account countdown: fills empty→full as the code ages, in the row's
+       * own accent (periods can differ). In its final seconds it blinks in sync
+       * with the code numbers to warn of an imminent roll. HOTP has no timer. */}
+      {account.otp_type === "Totp" && (
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-[3px] bg-foreground/10"
+        >
+          <span
+            className={cn(
+              "block h-full transition-[width] duration-300 ease-linear",
+              expiring && "animate-blink",
+            )}
+            style={{
+              width: `${(secondsLeft / period) * 100}%`,
+              backgroundColor: accountColorVar(account.color) ?? "var(--primary)",
+            }}
+          />
+        </span>
       )}
     </Item>
   );

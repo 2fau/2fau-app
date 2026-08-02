@@ -111,6 +111,12 @@ fn unlock(
 }
 
 #[tauri::command]
+fn lock(app: AppHandle, vault: State<Arc<AppVault>>) {
+    vault.lock();
+    refresh_tray(&app);
+}
+
+#[tauri::command]
 fn list_accounts(vault: State<Arc<AppVault>>) -> Result<Vec<Account>, String> {
     vault.list()
 }
@@ -289,6 +295,7 @@ pub fn run() {
             try_auto_unlock,
             has_vault,
             unlock,
+            lock,
             list_accounts,
             code,
             add_uri,
