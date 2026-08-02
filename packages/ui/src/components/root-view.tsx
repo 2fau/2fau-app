@@ -52,46 +52,46 @@ export function RootView({
     return true;
   }
 
-  const onDone = () => setScreen({ name: "list" })
+  const onDone = () => setScreen({ name: "list" });
 
   return (
-    <div className="w-[320px] bg-background text-foreground">
-      {(() =>{
+    <div className="dark w-[320px] bg-background text-foreground">
+      {(() => {
         if (locked) {
           if (needsSetup) {
-            return <SetupView />
+            return <SetupView />;
           }
 
-          return <UnlockView />
+          return <UnlockView />;
         }
 
         if (screen.name === "add") {
-          return <AddView prefill={screen.prefill} onDone={onDone} />
-
+          return <AddView prefill={screen.prefill} onDone={onDone} />;
         }
 
         if (screen.name === "edit") {
-          return <EditView account={screen.account} onDone={onDone} />
+          return <EditView account={screen.account} onDone={onDone} />;
         }
 
         if (screen.name === "settings") {
-          return <SettingsView onDone={onDone}>{settingsSlot}</SettingsView>
+          return <SettingsView onDone={onDone}>{settingsSlot}</SettingsView>;
         }
 
         return (
-            <MenuBarView
-                onAdd={() => setScreen({ name: "add" })}
-                onQuickAdd={openAddFromClipboard}
-                onEdit={(account) => setScreen({ name: "edit", account })}
-                onScan={onScan}
-                onQuit={onQuit}
-                onOpenSettings={
-                    // An explicit external action (extension → options page) wins; else
-                    // the in-panel slot screen (desktop); else no gear.
-                    onOpenSettings ?? (settingsSlot ? () => setScreen({ name: "settings" }) : undefined)
-                }
-            />
-        )
+          <MenuBarView
+            onAdd={() => setScreen({ name: "add" })}
+            onQuickAdd={openAddFromClipboard}
+            onEdit={(account) => setScreen({ name: "edit", account })}
+            onScan={onScan}
+            onQuit={onQuit}
+            onOpenSettings={
+              // An explicit external action (extension → options page) wins; else
+              // the in-panel slot screen (desktop); else no gear.
+              onOpenSettings ??
+              (settingsSlot ? () => setScreen({ name: "settings" }) : undefined)
+            }
+          />
+        );
       })()}
     </div>
   );

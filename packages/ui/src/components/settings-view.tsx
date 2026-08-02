@@ -1,7 +1,6 @@
-import {Button} from "@/components/ui/button.tsx";
-import {ChevronLeft} from "lucide-react";
-import {ReactNode} from "react";
-
+import { ReactNode } from "react";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function SettingsView(props: { onDone: () => void; children: ReactNode; }) {
     const { onDone, children } = props
