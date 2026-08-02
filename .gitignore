@@ -17,3 +17,6 @@ packages/core-wasm/bindings
 
 # OS
 .DS_Store
+
+# IDEA
+.idea

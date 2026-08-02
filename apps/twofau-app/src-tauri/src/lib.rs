@@ -33,7 +33,7 @@ fn build_tray_menu<M: Manager<tauri::Wry>>(
     vault: &AppVault,
 ) -> tauri::Result<Menu<tauri::Wry>> {
     let show = MenuItem::with_id(manager, "show", "Show", true, None::<&str>)?;
-    let quit_item = MenuItem::with_id(manager, "quit", "Quit 2FAu", true, None::<&str>)?;
+    let quit_item = MenuItem::with_id(manager, "quit", "Quit", true, None::<&str>)?;
 
     let menu = Menu::new(manager)?;
     menu.append(&show)?;

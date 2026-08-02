@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "dev.artkost.2fau",
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/icon-color.png",
+      "icons/icon-color.ico"
+    ]
+  }
+}
