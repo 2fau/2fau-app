@@ -6,6 +6,7 @@ export { AddView } from "@/components/add-view";
 export { EditView } from "@/components/edit-view";
 export { UnlockView } from "@/components/unlock-view";
 export { SetupView } from "@/components/setup-view";
+export { StatusScreen } from "@/components/status-screen";
 export { SettingsView } from "@/components/settings-view";
 export {
   SettingsPage,
