@@ -67,8 +67,13 @@ fn parse_params(bytes: &[u8]) -> Option<ParsedOtp> {
         let (field, wire) = read_key(bytes, &mut i).ok()?;
         match (field, wire) {
             (1, 2) => secret = read_len_delimited(bytes, &mut i).ok()?.to_vec(),
-            (2, 2) => name = String::from_utf8_lossy(read_len_delimited(bytes, &mut i).ok()?).into_owned(),
-            (3, 2) => issuer = String::from_utf8_lossy(read_len_delimited(bytes, &mut i).ok()?).into_owned(),
+            (2, 2) => {
+                name = String::from_utf8_lossy(read_len_delimited(bytes, &mut i).ok()?).into_owned()
+            }
+            (3, 2) => {
+                issuer =
+                    String::from_utf8_lossy(read_len_delimited(bytes, &mut i).ok()?).into_owned()
+            }
             (4, 0) => {
                 algorithm = match read_varint(bytes, &mut i).ok()? {
                     2 => OtpAlgorithm::Sha256,
@@ -76,8 +81,20 @@ fn parse_params(bytes: &[u8]) -> Option<ParsedOtp> {
                     _ => OtpAlgorithm::Sha1,
                 }
             }
-            (5, 0) => digits = if read_varint(bytes, &mut i).ok()? == 2 { 8 } else { 6 },
-            (6, 0) => otp_type = if read_varint(bytes, &mut i).ok()? == 1 { OtpType::Hotp } else { OtpType::Totp },
+            (5, 0) => {
+                digits = if read_varint(bytes, &mut i).ok()? == 2 {
+                    8
+                } else {
+                    6
+                }
+            }
+            (6, 0) => {
+                otp_type = if read_varint(bytes, &mut i).ok()? == 1 {
+                    OtpType::Hotp
+                } else {
+                    OtpType::Totp
+                }
+            }
             (7, 0) => counter = read_varint(bytes, &mut i).ok()?,
             _ => skip_field(bytes, &mut i, wire).ok()?,
         }
@@ -188,7 +205,8 @@ mod tests {
 
     #[test]
     fn parses_a_google_authenticator_export() {
-        let accounts = parse_migration(&migration_uri(&[sample_params(), sample_params()])).unwrap();
+        let accounts =
+            parse_migration(&migration_uri(&[sample_params(), sample_params()])).unwrap();
         assert_eq!(accounts.len(), 2);
         let a = &accounts[0];
         assert_eq!(a.otp_type, OtpType::Totp);

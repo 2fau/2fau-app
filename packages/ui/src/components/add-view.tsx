@@ -112,25 +112,38 @@ export function AddView({
       <div className="border-t" />
 
       <div className="flex flex-col gap-2">
-        <div>Paste from:</div>
+        <div className="text-[13px] text-muted-foreground">Paste from:</div>
         <div className="flex gap-2">
           {capabilities.paste && (
-            <Button variant="secondary" size="sm" onClick={importFromClipboard}>
-              otpauth:// or secret
+            <Button
+              variant="secondary"
+              size="sm"
+              className="min-w-0 flex-1 px-2 text-xs"
+              title="Paste an otpauth:// link or Base32 secret"
+              onClick={importFromClipboard}
+            >
+              Clipboard
             </Button>
           )}
           {capabilities.qrImage && (
             <Button
               variant="secondary"
               size="sm"
+              className="min-w-0 flex-1 px-2 text-xs"
               onClick={() => fileInput.current?.click()}
             >
               QR image
             </Button>
           )}
           {onImport && (
-            <Button variant="secondary" size="sm" onClick={onImport}>
-              Bulk / Google Auth
+            <Button
+              variant="secondary"
+              size="sm"
+              className="min-w-0 flex-1 px-2 text-xs"
+              title="Import many, or a Google Authenticator export"
+              onClick={onImport}
+            >
+              Bulk
             </Button>
           )}
         </div>
@@ -183,13 +196,13 @@ export function AddView({
         }}
         className="w-full"
       >
-        <ToggleGroupItem value="totp" className="flex-1">
+        <ToggleGroupItem value="totp" className="min-w-0 flex-1 px-2 text-xs">
           TOTP
         </ToggleGroupItem>
-        <ToggleGroupItem value="hotp" className="flex-1">
+        <ToggleGroupItem value="hotp" className="min-w-0 flex-1 px-2 text-xs">
           HOTP
         </ToggleGroupItem>
-        <ToggleGroupItem value="steam" className="flex-1">
+        <ToggleGroupItem value="steam" className="min-w-0 flex-1 px-2 text-xs">
           Steam
         </ToggleGroupItem>
       </ToggleGroup>

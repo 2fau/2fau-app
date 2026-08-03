@@ -534,7 +534,9 @@ mod tests {
         assert_eq!(b.list().unwrap().len(), 2);
         // B's own passphrase still opens the merged, re-sealed vault.
         let reopened = AppVault::new(_db.path().join("vault.dat"));
-        reopened.unlock("a-different-passphrase".into(), false).unwrap();
+        reopened
+            .unlock("a-different-passphrase".into(), false)
+            .unwrap();
         assert_eq!(reopened.list().unwrap().len(), 2);
     }
 
@@ -549,7 +551,11 @@ mod tests {
         let (b, _db) = fresh();
         b.unlock(PASS.into(), false).unwrap();
         assert!(b.import_blob(&blob, "not-the-file-passphrase").is_err());
-        assert_eq!(b.list().unwrap().len(), 0, "a rejected import changes nothing");
+        assert_eq!(
+            b.list().unwrap().len(),
+            0,
+            "a rejected import changes nothing"
+        );
     }
 
     #[test]
