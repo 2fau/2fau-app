@@ -9,7 +9,7 @@ import {
   Settings,
   ShieldCheck,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AccountRow } from "@/components/account-row";
 import { ItemGroup } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
@@ -83,15 +83,13 @@ function ReorderRow({
   index,
   dragging,
   onGrabStart,
-  onGrabMove,
-  onGrabEnd,
 }: {
   account: Account;
   index: number;
   dragging: boolean;
+  /** Begin a drag. Movement + release are tracked on `window` (see MenuBarView)
+   * so reordering the DOM mid-drag can't drop the pointer stream. */
   onGrabStart: (geom: Geom) => void;
-  onGrabMove: (x: number, y: number) => void;
-  onGrabEnd: () => void;
 }) {
   const accent = accountColorVar(account.color);
   const secondary = secondaryName(account);
@@ -123,7 +121,6 @@ function ReorderRow({
           const rect = (
             e.currentTarget.closest("[data-reorder-index]") as HTMLElement | null
           )?.getBoundingClientRect();
-          e.currentTarget.setPointerCapture(e.pointerId);
           onGrabStart({
             x: e.clientX,
             y: e.clientY,
@@ -132,18 +129,6 @@ function ReorderRow({
             width: rect?.width ?? 0,
           });
         }}
-        onPointerUp={(e) => {
-          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-            e.currentTarget.releasePointerCapture(e.pointerId);
-          }
-          onGrabEnd();
-          return;
-        }}
-        onPointerMove={(e) => {
-          onGrabMove(e.clientX, e.clientY);
-        }}
-        onPointerCancel={onGrabEnd}
-        onLostPointerCapture={onGrabEnd}
       >
         <GripVertical className="size-4" aria-hidden="true" />
       </span>
@@ -264,41 +249,67 @@ export function MenuBarView({
     setDrag({ id, ...geom });
   }
 
-  // Live-reorder the local snapshot: hit-test the row under the pointer and move
-  // the dragged account there. Uses the ref + a functional update so rapid
-  // pointer events never act on stale state.
-  function onGrabMove(x: number, y: number) {
-    const id = dragIdRef.current;
-    if (!id) return;
-    // Move the floating clone with the pointer.
-    setDrag((d) => (d ? { ...d, x, y } : d));
-
-    // Target slot = how many row midpoints sit above the pointer. Counting
-    // midpoints (rather than hit-testing the row under the pointer) is what lets
-    // the item pass its own placeholder and reach the very top or bottom.
-    const rows = document.querySelectorAll("[data-reorder-index]");
-    if (rows.length === 0) return;
-    let target = 0;
-    for (const el of rows) {
-      const r = el.getBoundingClientRect();
-      if (y > r.top + r.height / 2) target += 1;
-    }
-    target = Math.min(target, rows.length - 1);
-
-    setOrdered((cur) => {
-      const from = cur.findIndex((a) => a.id === id);
-      if (from === -1 || from === target) return cur;
-      const next = [...cur];
-      const [item] = next.splice(from, 1);
-      next.splice(target, 0, item);
-      return next;
-    });
-  }
-
-  function onGrabEnd() {
+  // Move + release are tracked on `window` (see the effect below), so these are
+  // stable and rely only on refs / functional updates — never on render state.
+  const onGrabEnd = useCallback(() => {
     dragIdRef.current = null;
     setDrag(null);
-  }
+  }, []);
+
+  const onGrabMove = useCallback(
+    (x: number, y: number) => {
+      const id = dragIdRef.current;
+      if (!id) return;
+      // Move the floating clone with the pointer.
+      setDrag((d) => (d ? { ...d, x, y } : d));
+
+      // Target slot = how many row midpoints sit above the pointer. Counting
+      // midpoints (not the row under the pointer) is what lets the item pass its
+      // own placeholder and reach the very top or bottom.
+      const rows = document.querySelectorAll("[data-reorder-index]");
+      if (rows.length === 0) return;
+      let target = 0;
+      for (const el of rows) {
+        const r = el.getBoundingClientRect();
+        if (y > r.top + r.height / 2) target += 1;
+      }
+      target = Math.min(target, rows.length - 1);
+
+      setOrdered((cur) => {
+        const from = cur.findIndex((a) => a.id === id);
+        if (from === -1 || from === target) return cur;
+        const next = [...cur];
+        const [item] = next.splice(from, 1);
+        next.splice(target, 0, item);
+        return next;
+      });
+    },
+    [],
+  );
+
+  // While dragging, follow the pointer on `window` — immune to the dragged row's
+  // DOM node reordering (which drops element-level pointer capture). A move with
+  // no button held (released off-window, where pointerup never arrives) ends it.
+  const dragging = drag !== null;
+  useEffect(() => {
+    if (!dragging) return;
+    const move = (e: PointerEvent) => {
+      if (e.buttons === 0) {
+        onGrabEnd();
+        return;
+      }
+      onGrabMove(e.clientX, e.clientY);
+    };
+    const end = () => onGrabEnd();
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", end);
+    window.addEventListener("pointercancel", end);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", end);
+      window.removeEventListener("pointercancel", end);
+    };
+  }, [dragging, onGrabMove, onGrabEnd]);
 
   const q = search.trim().toLowerCase();
   const filtered = q
@@ -389,8 +400,6 @@ export function MenuBarView({
                 index={i}
                 dragging={drag?.id === a.id}
                 onGrabStart={(geom) => onGrabStart(a.id, geom)}
-                onGrabMove={onGrabMove}
-                onGrabEnd={onGrabEnd}
               />
             ))}
             {drag &&
