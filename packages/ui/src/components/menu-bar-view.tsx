@@ -93,12 +93,21 @@ function ReorderRow({
           e.currentTarget.setPointerCapture(e.pointerId);
           onGrabStart();
         }}
-        onPointerMove={(e) => onGrabMove(e.clientX, e.clientY)}
-        onPointerUp={(e) => {
-          e.currentTarget.releasePointerCapture(e.pointerId);
-          onGrabEnd();
+        onPointerMove={(e) => {
+          // Only reorder while the button is held. If it was released — including
+          // outside the popup, where pointerup never reaches us — stop dragging.
+          if (e.buttons === 0) {
+            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }
+            onGrabEnd();
+            return;
+          }
+          onGrabMove(e.clientX, e.clientY);
         }}
+        onPointerUp={onGrabEnd}
         onPointerCancel={onGrabEnd}
+        onLostPointerCapture={onGrabEnd}
       >
         <GripVertical className="size-4" aria-hidden="true" />
       </span>
