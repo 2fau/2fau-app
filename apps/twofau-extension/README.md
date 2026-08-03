@@ -30,6 +30,13 @@ That produces two unpacked builds:
 - **Firefox**: `about:debugging#/runtime/this-firefox` → *Load Temporary
   Add-on* → select any file in `dist-firefox/` (e.g. `manifest.json`).
 
+For an auto-reloading Firefox session (Vite rebuild → re-pack → `web-ext run`
+reloads the add-on), run one command instead:
+
+```bash
+pnpm --filter @twofau/extension dev:firefox
+```
+
 ## Lint (Firefox / AMO rules)
 
 ```bash
