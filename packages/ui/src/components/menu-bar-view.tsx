@@ -1,4 +1,26 @@
 import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  restrictToParentElement,
+  restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
   ArrowUpDown,
   Check,
   ClipboardPaste,
@@ -9,7 +31,7 @@ import {
   Settings,
   ShieldCheck,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { AccountRow } from "@/components/account-row";
 import { ItemGroup } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
@@ -45,9 +67,6 @@ function NoMatchesState() {
   )
 }
 
-/** Geometry captured at grab so the floating clone can align to the pointer. */
-type Geom = { x: number; y: number; offsetY: number; left: number; width: number };
-
 const REORDER_ROW_CLASS =
   "flex select-none items-center gap-2.5 rounded-lg border bg-background px-3 py-2";
 
@@ -73,32 +92,29 @@ function ReorderRowBody({ account }: { account: Account }) {
   );
 }
 
-/** A row in order mode: drag by the grip to reorder. Pointer-based (not native
- * HTML5 drag, which aborts when the list re-renders mid-drag). While dragged,
- * this in-list row becomes a dashed placeholder marking the drop slot and a
- * floating clone (rendered by the list) follows the pointer. No code is shown
- * and tap-to-copy is off, so reordering never copies. */
-function ReorderRow({
-  account,
-  index,
-  dragging,
-  onGrabStart,
-}: {
-  account: Account;
-  index: number;
-  dragging: boolean;
-  /** Begin a drag. Movement + release are tracked on `window` (see MenuBarView)
-   * so reordering the DOM mid-drag can't drop the pointer stream. */
-  onGrabStart: (geom: Geom) => void;
-}) {
+/** A row in order mode, made sortable by dnd-kit. Drag by the grip to reorder.
+ * While dragged, this in-list node becomes a dashed placeholder marking the drop
+ * slot; a DragOverlay clone (rendered by the list) follows the pointer. No code
+ * is shown and tap-to-copy is off, so reordering never copies. */
+function SortableReorderRow({ account }: { account: Account }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: account.id });
   const accent = accountColorVar(account.color);
   const secondary = secondaryName(account);
   return (
     <div
-      data-reorder-index={index}
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
         REORDER_ROW_CLASS,
-        dragging && "border-dashed bg-muted/40 [&>*]:opacity-0",
+        isDragging && "border-dashed bg-muted/40 [&>*]:opacity-0",
       )}
     >
       <span
@@ -113,22 +129,11 @@ function ReorderRow({
         )}
       </div>
       <span
-        role="button"
+        ref={setActivatorNodeRef}
         aria-label="Drag to reorder"
         className="shrink-0 cursor-grab touch-none p-1 text-muted-foreground active:cursor-grabbing"
-        onPointerDown={(e) => {
-          e.preventDefault();
-          const rect = (
-            e.currentTarget.closest("[data-reorder-index]") as HTMLElement | null
-          )?.getBoundingClientRect();
-          onGrabStart({
-            x: e.clientX,
-            y: e.clientY,
-            offsetY: rect ? e.clientY - rect.top : 0,
-            left: rect?.left ?? 0,
-            width: rect?.width ?? 0,
-          });
-        }}
+        {...attributes}
+        {...listeners}
       >
         <GripVertical className="size-4" aria-hidden="true" />
       </span>
@@ -215,8 +220,15 @@ export function MenuBarView({
   // Order mode: a local snapshot dragged into place, persisted only on "Done".
   const [reordering, setReordering] = useState(false);
   const [ordered, setOrdered] = useState<Account[]>([]);
-  const [drag, setDrag] = useState<(Geom & { id: string }) | null>(null);
-  const dragIdRef = useRef<string | null>(null);
+  // The id being dragged, so the DragOverlay can render its floating clone.
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  // A small distance gate so a click on the grip doesn't start a drag; keyboard
+  // sensor gives accessible reordering (focus grip, space, arrows, space).
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   async function handleQuickAdd() {
     const opened = (await onQuickAdd?.()) ?? false;
@@ -235,8 +247,7 @@ export function MenuBarView({
       // Apply the new order only now, on "Done".
       void reorder(ordered.map((a) => a.id));
       setReordering(false);
-      dragIdRef.current = null;
-      setDrag(null);
+      setActiveId(null);
     } else {
       setSearch("");
       setOrdered([...accounts]);
@@ -244,72 +255,16 @@ export function MenuBarView({
     }
   }
 
-  function onGrabStart(id: string, geom: Geom) {
-    dragIdRef.current = id;
-    setDrag({ id, ...geom });
+  function handleDragEnd(event: DragEndEvent) {
+    setActiveId(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    setOrdered((cur) => {
+      const from = cur.findIndex((a) => a.id === active.id);
+      const to = cur.findIndex((a) => a.id === over.id);
+      return from === -1 || to === -1 ? cur : arrayMove(cur, from, to);
+    });
   }
-
-  // Move + release are tracked on `window` (see the effect below), so these are
-  // stable and rely only on refs / functional updates — never on render state.
-  const onGrabEnd = useCallback(() => {
-    dragIdRef.current = null;
-    setDrag(null);
-  }, []);
-
-  const onGrabMove = useCallback(
-    (x: number, y: number) => {
-      const id = dragIdRef.current;
-      if (!id) return;
-      // Move the floating clone with the pointer.
-      setDrag((d) => (d ? { ...d, x, y } : d));
-
-      // Target slot = how many row midpoints sit above the pointer. Counting
-      // midpoints (not the row under the pointer) is what lets the item pass its
-      // own placeholder and reach the very top or bottom.
-      const rows = document.querySelectorAll("[data-reorder-index]");
-      if (rows.length === 0) return;
-      let target = 0;
-      for (const el of rows) {
-        const r = el.getBoundingClientRect();
-        if (y > r.top + r.height / 2) target += 1;
-      }
-      target = Math.min(target, rows.length - 1);
-
-      setOrdered((cur) => {
-        const from = cur.findIndex((a) => a.id === id);
-        if (from === -1 || from === target) return cur;
-        const next = [...cur];
-        const [item] = next.splice(from, 1);
-        next.splice(target, 0, item);
-        return next;
-      });
-    },
-    [],
-  );
-
-  // While dragging, follow the pointer on `window` — immune to the dragged row's
-  // DOM node reordering (which drops element-level pointer capture). A move with
-  // no button held (released off-window, where pointerup never arrives) ends it.
-  const dragging = drag !== null;
-  useEffect(() => {
-    if (!dragging) return;
-    const move = (e: PointerEvent) => {
-      if (e.buttons === 0) {
-        onGrabEnd();
-        return;
-      }
-      onGrabMove(e.clientX, e.clientY);
-    };
-    const end = () => onGrabEnd();
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", end);
-    window.addEventListener("pointercancel", end);
-    return () => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", end);
-      window.removeEventListener("pointercancel", end);
-    };
-  }, [dragging, onGrabMove, onGrabEnd]);
 
   const q = search.trim().toLowerCase();
   const filtered = q
@@ -392,33 +347,35 @@ export function MenuBarView({
         {accounts.length === 0 ? (
           <EmptyState />
         ) : reordering ? (
-          <ItemGroup className="macos-scroll min-h-0 flex-1 gap-1 overflow-y-auto px-1.5 py-1">
-            {ordered.map((a, i) => (
-              <ReorderRow
-                key={a.id}
-                account={a}
-                index={i}
-                dragging={drag?.id === a.id}
-                onGrabStart={(geom) => onGrabStart(a.id, geom)}
-              />
-            ))}
-            {drag &&
-              (() => {
-                const acc = ordered.find((a) => a.id === drag.id);
-                if (!acc) return null;
-                return (
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none fixed z-50"
-                    style={{ left: drag.left, top: drag.y - drag.offsetY, width: drag.width }}
-                  >
-                    <div className={cn(REORDER_ROW_CLASS, "scale-[1.02] shadow-xl")}>
-                      <ReorderRowBody account={acc} />
-                    </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+            onDragStart={(e) => setActiveId(String(e.active.id))}
+            onDragEnd={handleDragEnd}
+            onDragCancel={() => setActiveId(null)}
+          >
+            <SortableContext
+              items={ordered.map((a) => a.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <ItemGroup className="macos-scroll min-h-0 flex-1 gap-1 overflow-y-auto px-1.5 py-1">
+                {ordered.map((a) => (
+                  <SortableReorderRow key={a.id} account={a} />
+                ))}
+              </ItemGroup>
+            </SortableContext>
+            <DragOverlay>
+              {(() => {
+                const acc = ordered.find((a) => a.id === activeId);
+                return acc ? (
+                  <div className={cn(REORDER_ROW_CLASS, "scale-[1.02] shadow-xl")}>
+                    <ReorderRowBody account={acc} />
                   </div>
-                );
+                ) : null;
               })()}
-          </ItemGroup>
+            </DragOverlay>
+          </DndContext>
         ) : (
           <>
             {accounts.length > MAX_VISIBLE_ROWS && (
