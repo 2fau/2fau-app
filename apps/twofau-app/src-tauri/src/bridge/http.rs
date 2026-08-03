@@ -40,7 +40,9 @@ fn json(status: u16, body: String) -> Response<std::io::Cursor<Vec<u8>>> {
 /// hostile web origins out of the unauthenticated surface and out of a token
 /// that was pinned to a different origin.
 fn origin_allowed(origin: &str) -> bool {
-    origin.is_empty() || origin.starts_with("chrome-extension://") || origin.starts_with("moz-extension://")
+    origin.is_empty()
+        || origin.starts_with("chrome-extension://")
+        || origin.starts_with("moz-extension://")
 }
 
 /// Host must be loopback on our port — defeats DNS rebinding.
