@@ -9,8 +9,9 @@
 /** Firefox add-on id. Replace with your AMO id before publishing. */
 export const GECKO_ID = "2fau@artkost.dev";
 
-/** Minimum Firefox with MV3 + module background scripts + storage.session. */
-export const MIN_FIREFOX = "121.0";
+/** Minimum Firefox: MV3 + module background scripts + storage.session (121),
+ * and `optional_host_permissions` for the desktop bridge (128). */
+export const MIN_FIREFOX = "128.0";
 
 /** Transform a Chrome MV3 manifest object into a Firefox one. Pure. */
 export function toFirefoxManifest(chrome) {

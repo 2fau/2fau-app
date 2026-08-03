@@ -8,6 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "pack:firefox": "node scripts/pack-firefox.mjs",
     "build:browsers": "pnpm build && pnpm pack:firefox",
+    "lint:firefox": "web-ext lint --source-dir dist-firefox --no-config-discovery",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
@@ -29,6 +30,7 @@
     "typescript": "^5.7.2",
     "vite": "^6.0.7",
     "vite-plugin-static-copy": "^4.1.1",
-    "vitest": "^2.1.9"
+    "vitest": "^2.1.9",
+    "web-ext": "^8.3.0"
   }
 }

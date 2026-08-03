@@ -91,3 +91,5 @@ jobs:
       - run: pnpm --filter @twofau/extension test
       # Builds dist/ (Chrome) and dist-firefox/ (Firefox), so both stay valid.
       - run: pnpm --filter @twofau/extension build:browsers
+      # Validate the Firefox build against AMO rules (fails on errors, not warnings).
+      - run: pnpm --filter @twofau/extension lint:firefox

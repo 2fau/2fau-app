@@ -139,3 +139,35 @@ jobs:
           gh release upload "$TAG" \
             2FAu-extension-chrome.zip 2FAu-extension-firefox.zip \
             --repo "$REPO" --clobber
+
+      # Optional: produce an AMO-signed .xpi that installs in normal Firefox.
+      # Runs only when the two AMO credentials are configured as repo secrets;
+      # otherwise it's skipped and the unsigned .zip above is the Firefox asset.
+      # Create the secrets from an AMO API key (addons.mozilla.org -> Manage API
+      # Keys) and set the real add-on id via GECKO_ID in firefox-manifest.mjs.
+      - name: Check for AMO credentials
+        if: matrix.platform == 'ubuntu-22.04'
+        id: amo
+        run: echo "have=${{ secrets.AMO_JWT_ISSUER != '' && secrets.AMO_JWT_SECRET != '' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Sign the Firefox extension (AMO)
+        if: matrix.platform == 'ubuntu-22.04' && steps.amo.outputs.have == 'true'
+        env:
+          AMO_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          pnpm --filter @twofau/extension exec web-ext sign \
+            --source-dir dist-firefox \
+            --channel unlisted \
+            --api-key "$AMO_ISSUER" \
+            --api-secret "$AMO_SECRET" \
+            --artifacts-dir "$GITHUB_WORKSPACE/amo"
+
+      - name: Attach the signed Firefox add-on
+        if: matrix.platform == 'ubuntu-22.04' && steps.amo.outputs.have == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'tip' }}
+        run: |
+          gh release upload "$TAG" "$GITHUB_WORKSPACE"/amo/*.xpi --repo "$REPO" --clobber
