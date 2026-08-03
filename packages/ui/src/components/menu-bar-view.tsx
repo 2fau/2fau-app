@@ -1,9 +1,8 @@
 import {
-  ArrowDown,
-  ArrowUp,
   ArrowUpDown,
   Check,
   ClipboardPaste,
+  GripVertical,
   Lock,
   Plus,
   ScanLine,
@@ -19,6 +18,7 @@ import { LogoMark, Wordmark } from "@/components/ui/logo";
 import { SearchInput } from "@/components/ui/search-input";
 import { accountColorVar } from "@/lib/colors";
 import { primaryName, secondaryName } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 import type { Account } from "@/core/types";
 
@@ -45,25 +45,41 @@ function NoMatchesState() {
   )
 }
 
-/** A row in order mode: name + move-up/down controls, no code (tap-to-copy is
- * off so a reorder tap never copies). */
+/** A draggable row in order mode: drag by the grip to reorder. No code shown and
+ * tap-to-copy is off, so reordering never copies. */
 function ReorderRow({
   account,
-  first,
-  last,
-  onUp,
-  onDown,
+  dragging,
+  onDragStart,
+  onDragEnter,
+  onDragEnd,
 }: {
   account: Account;
-  first: boolean;
-  last: boolean;
-  onUp: () => void;
-  onDown: () => void;
+  dragging: boolean;
+  onDragStart: () => void;
+  onDragEnter: () => void;
+  onDragEnd: () => void;
 }) {
   const accent = accountColorVar(account.color);
   const secondary = secondaryName(account);
   return (
-    <div className="flex items-center gap-2.5 rounded-lg border px-3 py-2">
+    <div
+      draggable
+      onDragStart={(e) => {
+        // A drag image needs some payload in Firefox; the value is unused.
+        e.dataTransfer.setData("text/plain", account.id);
+        e.dataTransfer.effectAllowed = "move";
+        onDragStart();
+      }}
+      onDragEnter={onDragEnter}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => e.preventDefault()}
+      onDragEnd={onDragEnd}
+      className={cn(
+        "flex cursor-grab select-none items-center gap-2.5 rounded-lg border bg-background px-3 py-2 active:cursor-grabbing",
+        dragging && "opacity-40",
+      )}
+    >
       <span
         aria-hidden="true"
         className="size-2.5 shrink-0 rounded-full"
@@ -75,30 +91,7 @@ function ReorderRow({
           <p className="truncate text-[11px] text-muted-foreground">{secondary}</p>
         )}
       </div>
-      <div className="flex items-center gap-0.5">
-        <Button
-          size="icon-xs"
-          variant="ghost"
-          className="text-muted-foreground"
-          disabled={first}
-          title="Move up"
-          aria-label="Move up"
-          onClick={onUp}
-        >
-          <ArrowUp />
-        </Button>
-        <Button
-          size="icon-xs"
-          variant="ghost"
-          className="text-muted-foreground"
-          disabled={last}
-          title="Move down"
-          aria-label="Move down"
-          onClick={onDown}
-        >
-          <ArrowDown />
-        </Button>
-      </div>
+      <GripVertical className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
     </div>
   );
 }
@@ -179,9 +172,10 @@ export function MenuBarView({
   const { accounts, now, capabilities, lock, reorder } = useVault();
   const [search, setSearch] = useState("");
   const [pasteFailed, setPasteFailed] = useState(false);
-  // Order mode: a local snapshot the move buttons rearrange (persisted per move).
+  // Order mode: a local snapshot dragged into place, persisted only on "Done".
   const [reordering, setReordering] = useState(false);
   const [ordered, setOrdered] = useState<Account[]>([]);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   async function handleQuickAdd() {
     const opened = (await onQuickAdd?.()) ?? false;
@@ -197,7 +191,10 @@ export function MenuBarView({
 
   function toggleReorder() {
     if (reordering) {
+      // Apply the new order only now, on "Done".
+      void reorder(ordered.map((a) => a.id));
       setReordering(false);
+      setDragIndex(null);
     } else {
       setSearch("");
       setOrdered([...accounts]);
@@ -205,13 +202,14 @@ export function MenuBarView({
     }
   }
 
-  function move(from: number, to: number) {
-    if (to < 0 || to >= ordered.length) return;
+  // Live-reorder the local snapshot as the dragged row passes over another.
+  function onDragEnter(target: number) {
+    if (dragIndex === null || dragIndex === target) return;
     const next = [...ordered];
-    const [item] = next.splice(from, 1);
-    next.splice(to, 0, item);
+    const [item] = next.splice(dragIndex, 1);
+    next.splice(target, 0, item);
     setOrdered(next);
-    void reorder(next.map((a) => a.id));
+    setDragIndex(target);
   }
 
   const q = search.trim().toLowerCase();
@@ -300,10 +298,10 @@ export function MenuBarView({
               <ReorderRow
                 key={a.id}
                 account={a}
-                first={i === 0}
-                last={i === ordered.length - 1}
-                onUp={() => move(i, i - 1)}
-                onDown={() => move(i, i + 1)}
+                dragging={dragIndex === i}
+                onDragStart={() => setDragIndex(i)}
+                onDragEnter={() => onDragEnter(i)}
+                onDragEnd={() => setDragIndex(null)}
               />
             ))}
           </ItemGroup>
