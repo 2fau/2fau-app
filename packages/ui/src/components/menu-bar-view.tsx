@@ -132,19 +132,16 @@ function ReorderRow({
             width: rect?.width ?? 0,
           });
         }}
-        onPointerMove={(e) => {
-          // Only reorder while the button is held. If it was released — including
-          // outside the popup, where pointerup never reaches us — stop dragging.
-          if (e.buttons === 0) {
-            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-              e.currentTarget.releasePointerCapture(e.pointerId);
-            }
-            onGrabEnd();
-            return;
+        onPointerUp={(e) => {
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+            e.currentTarget.releasePointerCapture(e.pointerId);
           }
+          onGrabEnd();
+          return;
+        }}
+        onPointerMove={(e) => {
           onGrabMove(e.clientX, e.clientY);
         }}
-        onPointerUp={onGrabEnd}
         onPointerCancel={onGrabEnd}
         onLostPointerCapture={onGrabEnd}
       >
@@ -275,12 +272,19 @@ export function MenuBarView({
     if (!id) return;
     // Move the floating clone with the pointer.
     setDrag((d) => (d ? { ...d, x, y } : d));
-    const row = (document.elementFromPoint(x, y) as HTMLElement | null)?.closest(
-      "[data-reorder-index]",
-    );
-    if (!row) return;
-    const target = Number(row.getAttribute("data-reorder-index"));
-    if (Number.isNaN(target)) return;
+
+    // Target slot = how many row midpoints sit above the pointer. Counting
+    // midpoints (rather than hit-testing the row under the pointer) is what lets
+    // the item pass its own placeholder and reach the very top or bottom.
+    const rows = document.querySelectorAll("[data-reorder-index]");
+    if (rows.length === 0) return;
+    let target = 0;
+    for (const el of rows) {
+      const r = el.getBoundingClientRect();
+      if (y > r.top + r.height / 2) target += 1;
+    }
+    target = Math.min(target, rows.length - 1);
+
     setOrdered((cur) => {
       const from = cur.findIndex((a) => a.id === id);
       if (from === -1 || from === target) return cur;
