@@ -71,7 +71,7 @@ jobs:
       - run: cargo check -p twofau-app
 
   extension:
-    name: Chrome extension (build + tests)
+    name: Extension (Chrome + Firefox build + tests)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -89,4 +89,5 @@ jobs:
       - run: pnpm install --frozen-lockfile=false
       - run: pnpm build:core-wasm
       - run: pnpm --filter @twofau/extension test
-      - run: pnpm --filter @twofau/extension build
+      # Builds dist/ (Chrome) and dist-firefox/ (Firefox), so both stay valid.
+      - run: pnpm --filter @twofau/extension build:browsers

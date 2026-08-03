@@ -105,28 +105,30 @@ jobs:
           prerelease: ${{ github.ref_type != 'tag' }}
           args: ${{ matrix.target && format('--target {0}', matrix.target) || '' }}
 
-      # Package the Chrome extension in the Linux leg only, right after the
-      # release exists. Doing it here (rather than a separate job that needs the
-      # whole matrix) means it never waits on the other OS legs — an Intel-macOS
-      # runner that never gets scheduled used to block the extension entirely.
-      # The frontend prereqs (ts-rs bindings, WASM, node deps) are already set up
-      # above, so only the extension build + zip remain.
+      # Package the Chrome + Firefox extensions in the Linux leg only, right after
+      # the release exists. Doing it here (rather than a separate job that needs
+      # the whole matrix) means it never waits on the other OS legs — an
+      # Intel-macOS runner that never gets scheduled used to block the extension
+      # entirely. The frontend prereqs (ts-rs bindings, WASM, node deps) are
+      # already set up above, so only the extension build + zips remain.
       #
-      # We ship a .zip, not a .crx: Chrome refuses to install self-signed CRX
-      # files ("CRX_REQUIRED_PROOF_MISSING"). Install via chrome://extensions ->
-      # Developer mode -> Load unpacked (unzip first), or upload the .zip to the
-      # Chrome Web Store.
-      - name: Build the Chrome extension
+      # We ship .zip, not .crx/.xpi: Chrome refuses self-signed CRX files
+      # ("CRX_REQUIRED_PROOF_MISSING"). Install via chrome://extensions or
+      # about:debugging -> load the unzipped folder, or upload the .zip to the
+      # Chrome Web Store / AMO.
+      - name: Build the browser extensions (Chrome + Firefox)
         if: matrix.platform == 'ubuntu-22.04'
-        run: pnpm --filter @twofau/extension build
+        run: pnpm --filter @twofau/extension build:browsers
 
-      - name: Zip the unpacked extension
+      - name: Zip the unpacked extensions
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           cd apps/twofau-extension/dist
-          zip -qr "$GITHUB_WORKSPACE/twofau-extension.zip" .
+          zip -qr "$GITHUB_WORKSPACE/2FAu-extension-chrome.zip" .
+          cd ../dist-firefox
+          zip -qr "$GITHUB_WORKSPACE/2FAu-extension-firefox.zip" .
 
-      - name: Attach the extension to the release
+      - name: Attach the extensions to the release
         if: matrix.platform == 'ubuntu-22.04'
         env:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
@@ -134,4 +136,6 @@ jobs:
           # tag push -> that version's release; otherwise the rolling "tip".
           TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'tip' }}
         run: |
-          gh release upload "$TAG" twofau-extension.zip --repo "$REPO" --clobber
+          gh release upload "$TAG" \
+            2FAu-extension-chrome.zip 2FAu-extension-firefox.zip \
+            --repo "$REPO" --clobber

@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite build --watch --mode development",
     "build": "tsc --noEmit && vite build",
+    "pack:firefox": "node scripts/pack-firefox.mjs",
+    "build:browsers": "pnpm build && pnpm pack:firefox",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
