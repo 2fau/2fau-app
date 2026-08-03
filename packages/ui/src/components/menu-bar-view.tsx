@@ -1,4 +1,8 @@
 import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Check,
   ClipboardPaste,
   Lock,
   Plus,
@@ -13,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { useVault } from "@/state/vault-provider";
 import { LogoMark, Wordmark } from "@/components/ui/logo";
 import { SearchInput } from "@/components/ui/search-input";
+import { accountColorVar } from "@/lib/colors";
+import { primaryName, secondaryName } from "@/lib/format";
 
 import type { Account } from "@/core/types";
 
@@ -37,6 +43,64 @@ function NoMatchesState() {
         No matches
       </p>
   )
+}
+
+/** A row in order mode: name + move-up/down controls, no code (tap-to-copy is
+ * off so a reorder tap never copies). */
+function ReorderRow({
+  account,
+  first,
+  last,
+  onUp,
+  onDown,
+}: {
+  account: Account;
+  first: boolean;
+  last: boolean;
+  onUp: () => void;
+  onDown: () => void;
+}) {
+  const accent = accountColorVar(account.color);
+  const secondary = secondaryName(account);
+  return (
+    <div className="flex items-center gap-2.5 rounded-lg border px-3 py-2">
+      <span
+        aria-hidden="true"
+        className="size-2.5 shrink-0 rounded-full"
+        style={{ backgroundColor: accent ?? "var(--muted-foreground)" }}
+      />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-[13px]">{primaryName(account)}</p>
+        {secondary && (
+          <p className="truncate text-[11px] text-muted-foreground">{secondary}</p>
+        )}
+      </div>
+      <div className="flex items-center gap-0.5">
+        <Button
+          size="icon-xs"
+          variant="ghost"
+          className="text-muted-foreground"
+          disabled={first}
+          title="Move up"
+          aria-label="Move up"
+          onClick={onUp}
+        >
+          <ArrowUp />
+        </Button>
+        <Button
+          size="icon-xs"
+          variant="ghost"
+          className="text-muted-foreground"
+          disabled={last}
+          title="Move down"
+          aria-label="Move down"
+          onClick={onDown}
+        >
+          <ArrowDown />
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 type FooterProps = {
@@ -112,9 +176,12 @@ export function MenuBarView({
   /** Smart filter: accounts matching the current page float to the top. */
   matchAccount?: (a: Account) => boolean;
 }) {
-  const { accounts, now, capabilities, lock } = useVault();
+  const { accounts, now, capabilities, lock, reorder } = useVault();
   const [search, setSearch] = useState("");
   const [pasteFailed, setPasteFailed] = useState(false);
+  // Order mode: a local snapshot the move buttons rearrange (persisted per move).
+  const [reordering, setReordering] = useState(false);
+  const [ordered, setOrdered] = useState<Account[]>([]);
 
   async function handleQuickAdd() {
     const opened = (await onQuickAdd?.()) ?? false;
@@ -126,6 +193,25 @@ export function MenuBarView({
 
   async function onLock() {
     void lock()
+  }
+
+  function toggleReorder() {
+    if (reordering) {
+      setReordering(false);
+    } else {
+      setSearch("");
+      setOrdered([...accounts]);
+      setReordering(true);
+    }
+  }
+
+  function move(from: number, to: number) {
+    if (to < 0 || to >= ordered.length) return;
+    const next = [...ordered];
+    const [item] = next.splice(from, 1);
+    next.splice(to, 0, item);
+    setOrdered(next);
+    void reorder(next.map((a) => a.id));
   }
 
   const q = search.trim().toLowerCase();
@@ -155,7 +241,7 @@ export function MenuBarView({
         <LogoMark size={26} progress={filled} urgent={expiring} />
         <Wordmark size={17} />
         <div className="ml-auto flex items-center gap-4">
-          {capabilities.scanScreen && onScan && (
+          {!reordering && capabilities.scanScreen && onScan && (
             <Button
               size="icon-xs"
               variant="ghost"
@@ -165,7 +251,7 @@ export function MenuBarView({
               <ScanLine />
             </Button>
           )}
-          {capabilities.paste && onQuickAdd && (
+          {!reordering && capabilities.paste && onQuickAdd && (
             <Button
               size="icon-xs"
               variant="ghost"
@@ -176,14 +262,28 @@ export function MenuBarView({
               <ClipboardPaste />
             </Button>
           )}
-          <Button
-            size="icon-xs"
-            variant="ghost"
-            title="Add account"
-            onClick={onAdd}
-          >
-            <Plus />
-          </Button>
+          {accounts.length > 1 && (
+            <Button
+              size="icon-xs"
+              variant="ghost"
+              title={reordering ? "Done reordering" : "Reorder accounts"}
+              aria-label={reordering ? "Done reordering" : "Reorder accounts"}
+              className={reordering ? "text-primary" : undefined}
+              onClick={toggleReorder}
+            >
+              {reordering ? <Check /> : <ArrowUpDown />}
+            </Button>
+          )}
+          {!reordering && (
+            <Button
+              size="icon-xs"
+              variant="ghost"
+              title="Add account"
+              onClick={onAdd}
+            >
+              <Plus />
+            </Button>
+          )}
         </div>
       </div>
 
@@ -194,6 +294,19 @@ export function MenuBarView({
       <div className="flex min-h-0 flex-1 flex-col">
         {accounts.length === 0 ? (
           <EmptyState />
+        ) : reordering ? (
+          <ItemGroup className="macos-scroll min-h-0 flex-1 gap-1 overflow-y-auto px-1.5 py-1">
+            {ordered.map((a, i) => (
+              <ReorderRow
+                key={a.id}
+                account={a}
+                first={i === 0}
+                last={i === ordered.length - 1}
+                onUp={() => move(i, i - 1)}
+                onDown={() => move(i, i + 1)}
+              />
+            ))}
+          </ItemGroup>
         ) : (
           <>
             {accounts.length > MAX_VISIBLE_ROWS && (

@@ -281,6 +281,20 @@ impl AppVault {
         })
     }
 
+    /// Reorder entries to match `ids` (top-to-bottom); accounts not named keep
+    /// their relative position after the named ones. A stable sort by rank.
+    pub fn reorder(&self, ids: &[String]) -> Result<(), String> {
+        let rank: std::collections::HashMap<Uuid, usize> = ids
+            .iter()
+            .enumerate()
+            .filter_map(|(i, s)| Uuid::parse_str(s).ok().map(|u| (u, i)))
+            .collect();
+        self.mutate(|doc| {
+            doc.entries
+                .sort_by_key(|e| *rank.get(&e.account.id).unwrap_or(&usize::MAX));
+        })
+    }
+
     pub fn advance_hotp(&self, id: &str) -> Result<(), String> {
         let uuid = Uuid::parse_str(id).map_err(str_err)?;
         let ts = now_ms();

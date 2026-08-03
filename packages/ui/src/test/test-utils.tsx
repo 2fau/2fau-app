@@ -23,6 +23,14 @@ export function fakeService(
     update: async (a) => {
       list = list.map((x) => (x.id === a.id ? a : x));
     },
+    reorder: async (ids) => {
+      const rank = new Map(ids.map((id, i) => [id, i]));
+      list = [...list].sort(
+        (x, y) =>
+          (rank.get(x.id) ?? Number.MAX_SAFE_INTEGER) -
+          (rank.get(y.id) ?? Number.MAX_SAFE_INTEGER),
+      );
+    },
     remove: async (id) => {
       list = list.filter((x) => x.id !== id);
     },

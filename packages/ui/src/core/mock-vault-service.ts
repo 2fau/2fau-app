@@ -96,6 +96,15 @@ export class MockVaultService implements VaultService {
     }
   }
 
+  async reorder(orderedIds: string[]): Promise<void> {
+    const rank = new Map(orderedIds.map((id, i) => [id, i]));
+    this.doc.entries.sort(
+      (a, b) =>
+        (rank.get(a.account.id) ?? Number.MAX_SAFE_INTEGER) -
+        (rank.get(b.account.id) ?? Number.MAX_SAFE_INTEGER),
+    );
+  }
+
   async remove(id: string): Promise<void> {
     this.doc.entries = this.doc.entries.filter((e) => e.account.id !== id);
     this.doc.tombstones.push({ id, deleted_at: await nowMs() });

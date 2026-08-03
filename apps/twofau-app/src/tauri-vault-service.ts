@@ -59,6 +59,10 @@ export class TauriVaultService implements VaultService {
     await invoke("update_account", { account });
   }
 
+  async reorder(orderedIds: string[]): Promise<void> {
+    await invoke("reorder", { ids: orderedIds });
+  }
+
   async remove(id: string): Promise<void> {
     await invoke("remove_account", { id });
   }

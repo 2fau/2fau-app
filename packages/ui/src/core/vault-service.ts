@@ -36,6 +36,9 @@ export interface VaultService {
   addUri(otpauthUri: string): Promise<Account>;
   addManual(fields: AddManualFields): Promise<Account>;
   update(account: Account): Promise<void>;
+  /** Persist a new list order. `orderedIds` lists account ids top-to-bottom;
+   * any account not named keeps its relative position after the named ones. */
+  reorder(orderedIds: string[]): Promise<void>;
   remove(id: string): Promise<void>;
   /** Current OTP for `account` at `unixTimeMs`. */
   code(account: Account, unixTimeMs: number): Promise<string>;

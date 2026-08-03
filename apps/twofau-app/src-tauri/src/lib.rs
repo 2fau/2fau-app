@@ -228,6 +228,13 @@ fn remove_account(app: AppHandle, vault: State<Arc<AppVault>>, id: String) -> Re
 }
 
 #[tauri::command]
+fn reorder(app: AppHandle, vault: State<Arc<AppVault>>, ids: Vec<String>) -> Result<(), String> {
+    vault.reorder(&ids)?;
+    refresh_tray(&app);
+    Ok(())
+}
+
+#[tauri::command]
 fn advance_hotp(app: AppHandle, vault: State<Arc<AppVault>>, id: String) -> Result<(), String> {
     vault.advance_hotp(&id)?;
     refresh_tray(&app);
@@ -369,6 +376,7 @@ pub fn run() {
             add_manual,
             update_account,
             remove_account,
+            reorder,
             advance_hotp,
             secret_uri,
             bridge_status,

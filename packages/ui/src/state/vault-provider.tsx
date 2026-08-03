@@ -18,6 +18,7 @@ interface VaultContextValue {
   addUri: (uri: string) => Promise<Account>;
   addManual: (fields: AddManualFields) => Promise<Account>;
   update: (account: Account) => Promise<void>;
+  reorder: (orderedIds: string[]) => Promise<void>;
   remove: (id: string) => Promise<void>;
   advanceHotp: (id: string) => Promise<void>;
   secretUri: (id: string) => Promise<string>;
@@ -92,6 +93,18 @@ export function VaultProvider({
     update: async (account) => {
       await service.update(account);
       await refresh();
+    },
+    reorder: async (orderedIds) => {
+      // Reflect the new order immediately, then persist.
+      setAccounts((prev) => {
+        const rank = new Map(orderedIds.map((id, i) => [id, i]));
+        return [...prev].sort(
+          (a, b) =>
+            (rank.get(a.id) ?? Number.MAX_SAFE_INTEGER) -
+            (rank.get(b.id) ?? Number.MAX_SAFE_INTEGER),
+        );
+      });
+      await service.reorder(orderedIds);
     },
     remove: async (id) => {
       await service.remove(id);
