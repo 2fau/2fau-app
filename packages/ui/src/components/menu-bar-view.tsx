@@ -45,9 +45,39 @@ function NoMatchesState() {
   )
 }
 
+/** Geometry captured at grab so the floating clone can align to the pointer. */
+type Geom = { x: number; y: number; offsetY: number; left: number; width: number };
+
+const REORDER_ROW_CLASS =
+  "flex select-none items-center gap-2.5 rounded-lg border bg-background px-3 py-2";
+
+/** The dot + name shown in a reorder row (and its floating drag clone). */
+function ReorderRowBody({ account }: { account: Account }) {
+  const accent = accountColorVar(account.color);
+  const secondary = secondaryName(account);
+  return (
+    <>
+      <span
+        aria-hidden="true"
+        className="size-2.5 shrink-0 rounded-full"
+        style={{ backgroundColor: accent ?? "var(--muted-foreground)" }}
+      />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-[13px]">{primaryName(account)}</p>
+        {secondary && (
+          <p className="truncate text-[11px] text-muted-foreground">{secondary}</p>
+        )}
+      </div>
+      <GripVertical className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+    </>
+  );
+}
+
 /** A row in order mode: drag by the grip to reorder. Pointer-based (not native
- * HTML5 drag, which aborts when the list re-renders mid-drag). No code shown and
- * tap-to-copy is off, so reordering never copies. */
+ * HTML5 drag, which aborts when the list re-renders mid-drag). While dragged,
+ * this in-list row becomes a dashed placeholder marking the drop slot and a
+ * floating clone (rendered by the list) follows the pointer. No code is shown
+ * and tap-to-copy is off, so reordering never copies. */
 function ReorderRow({
   account,
   index,
@@ -59,7 +89,7 @@ function ReorderRow({
   account: Account;
   index: number;
   dragging: boolean;
-  onGrabStart: () => void;
+  onGrabStart: (geom: Geom) => void;
   onGrabMove: (x: number, y: number) => void;
   onGrabEnd: () => void;
 }) {
@@ -69,8 +99,8 @@ function ReorderRow({
     <div
       data-reorder-index={index}
       className={cn(
-        "flex select-none items-center gap-2.5 rounded-lg border bg-background px-3 py-2",
-        dragging ? "opacity-70 shadow-lg" : "transition-transform",
+        REORDER_ROW_CLASS,
+        dragging && "border-dashed bg-muted/40 [&>*]:opacity-0",
       )}
     >
       <span
@@ -90,8 +120,17 @@ function ReorderRow({
         className="shrink-0 cursor-grab touch-none p-1 text-muted-foreground active:cursor-grabbing"
         onPointerDown={(e) => {
           e.preventDefault();
+          const rect = (
+            e.currentTarget.closest("[data-reorder-index]") as HTMLElement | null
+          )?.getBoundingClientRect();
           e.currentTarget.setPointerCapture(e.pointerId);
-          onGrabStart();
+          onGrabStart({
+            x: e.clientX,
+            y: e.clientY,
+            offsetY: rect ? e.clientY - rect.top : 0,
+            left: rect?.left ?? 0,
+            width: rect?.width ?? 0,
+          });
         }}
         onPointerMove={(e) => {
           // Only reorder while the button is held. If it was released — including
@@ -194,7 +233,7 @@ export function MenuBarView({
   // Order mode: a local snapshot dragged into place, persisted only on "Done".
   const [reordering, setReordering] = useState(false);
   const [ordered, setOrdered] = useState<Account[]>([]);
-  const [dragId, setDragId] = useState<string | null>(null);
+  const [drag, setDrag] = useState<(Geom & { id: string }) | null>(null);
   const dragIdRef = useRef<string | null>(null);
 
   async function handleQuickAdd() {
@@ -215,7 +254,7 @@ export function MenuBarView({
       void reorder(ordered.map((a) => a.id));
       setReordering(false);
       dragIdRef.current = null;
-      setDragId(null);
+      setDrag(null);
     } else {
       setSearch("");
       setOrdered([...accounts]);
@@ -223,9 +262,9 @@ export function MenuBarView({
     }
   }
 
-  function onGrabStart(id: string) {
+  function onGrabStart(id: string, geom: Geom) {
     dragIdRef.current = id;
-    setDragId(id);
+    setDrag({ id, ...geom });
   }
 
   // Live-reorder the local snapshot: hit-test the row under the pointer and move
@@ -234,6 +273,8 @@ export function MenuBarView({
   function onGrabMove(x: number, y: number) {
     const id = dragIdRef.current;
     if (!id) return;
+    // Move the floating clone with the pointer.
+    setDrag((d) => (d ? { ...d, x, y } : d));
     const row = (document.elementFromPoint(x, y) as HTMLElement | null)?.closest(
       "[data-reorder-index]",
     );
@@ -252,7 +293,7 @@ export function MenuBarView({
 
   function onGrabEnd() {
     dragIdRef.current = null;
-    setDragId(null);
+    setDrag(null);
   }
 
   const q = search.trim().toLowerCase();
@@ -342,12 +383,28 @@ export function MenuBarView({
                 key={a.id}
                 account={a}
                 index={i}
-                dragging={dragId === a.id}
-                onGrabStart={() => onGrabStart(a.id)}
+                dragging={drag?.id === a.id}
+                onGrabStart={(geom) => onGrabStart(a.id, geom)}
                 onGrabMove={onGrabMove}
                 onGrabEnd={onGrabEnd}
               />
             ))}
+            {drag &&
+              (() => {
+                const acc = ordered.find((a) => a.id === drag.id);
+                if (!acc) return null;
+                return (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none fixed z-50"
+                    style={{ left: drag.left, top: drag.y - drag.offsetY, width: drag.width }}
+                  >
+                    <div className={cn(REORDER_ROW_CLASS, "scale-[1.02] shadow-xl")}>
+                      <ReorderRowBody account={acc} />
+                    </div>
+                  </div>
+                );
+              })()}
           </ItemGroup>
         ) : (
           <>
