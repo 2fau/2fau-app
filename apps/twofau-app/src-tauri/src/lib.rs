@@ -85,13 +85,19 @@ fn is_locked(vault: State<Arc<AppVault>>) -> bool {
     vault.is_locked()
 }
 
+// Off the main thread: try_auto_unlock derives the key (600k PBKDF2 rounds,
+// ~1s), which would otherwise freeze the webview. A JoinError only happens if
+// the blocking task panics — treat that as "couldn't unlock".
 #[tauri::command]
-fn try_auto_unlock(app: AppHandle, vault: State<Arc<AppVault>>) -> bool {
-    let ok = vault.try_auto_unlock();
+async fn try_auto_unlock(app: AppHandle, vault: State<'_, Arc<AppVault>>) -> Result<bool, String> {
+    let v = vault.inner().clone();
+    let ok = tauri::async_runtime::spawn_blocking(move || v.try_auto_unlock())
+        .await
+        .unwrap_or(false);
     if ok {
         refresh_tray(&app);
     }
-    ok
+    Ok(ok)
 }
 
 #[tauri::command]
@@ -100,13 +106,16 @@ fn has_vault(vault: State<Arc<AppVault>>) -> bool {
 }
 
 #[tauri::command]
-fn unlock(
+async fn unlock(
     app: AppHandle,
-    vault: State<Arc<AppVault>>,
+    vault: State<'_, Arc<AppVault>>,
     passphrase: String,
     remember: bool,
 ) -> Result<(), String> {
-    vault.unlock(passphrase, remember)?;
+    let v = vault.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || v.unlock(passphrase, remember))
+        .await
+        .map_err(|e| e.to_string())??;
     refresh_tray(&app);
     Ok(())
 }
@@ -168,12 +177,15 @@ async fn import_vault(
 }
 
 #[tauri::command]
-fn change_passphrase(
-    vault: State<Arc<AppVault>>,
+async fn change_passphrase(
+    vault: State<'_, Arc<AppVault>>,
     current: String,
     next: String,
 ) -> Result<(), String> {
-    vault.change_passphrase(&current, &next)
+    let v = vault.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || v.change_passphrase(&current, &next))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 /// Decode a Google Authenticator `otpauth-migration://` export into accounts.
@@ -188,55 +200,93 @@ fn code(vault: State<Arc<AppVault>>, id: String, unix_ms: u64) -> Result<String,
     vault.code(&id, unix_ms)
 }
 
+// Every write below re-seals the vault, which re-derives the key (600k PBKDF2
+// rounds, ~1s). Run that on the blocking pool so the webview's main thread
+// stays responsive instead of freezing on each save/delete/reorder.
 #[tauri::command]
-fn add_uri(app: AppHandle, vault: State<Arc<AppVault>>, uri: String) -> Result<Account, String> {
-    let account = vault.add_uri(&uri)?;
+async fn add_uri(
+    app: AppHandle,
+    vault: State<'_, Arc<AppVault>>,
+    uri: String,
+) -> Result<Account, String> {
+    let v = vault.inner().clone();
+    let account = tauri::async_runtime::spawn_blocking(move || v.add_uri(&uri))
+        .await
+        .map_err(|e| e.to_string())??;
     refresh_tray(&app);
     Ok(account)
 }
 
 #[tauri::command]
-fn add_manual(
+async fn add_manual(
     app: AppHandle,
-    vault: State<Arc<AppVault>>,
+    vault: State<'_, Arc<AppVault>>,
     issuer: String,
     label: String,
     secret_base32: String,
     kind: String,
 ) -> Result<Account, String> {
-    let account = vault.add_manual(issuer, label, secret_base32, kind)?;
+    let v = vault.inner().clone();
+    let account =
+        tauri::async_runtime::spawn_blocking(move || v.add_manual(issuer, label, secret_base32, kind))
+            .await
+            .map_err(|e| e.to_string())??;
     refresh_tray(&app);
     Ok(account)
 }
 
 #[tauri::command]
-fn update_account(
+async fn update_account(
     app: AppHandle,
-    vault: State<Arc<AppVault>>,
+    vault: State<'_, Arc<AppVault>>,
     account: Account,
 ) -> Result<(), String> {
-    vault.update(account)?;
+    let v = vault.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || v.update(account))
+        .await
+        .map_err(|e| e.to_string())??;
     refresh_tray(&app);
     Ok(())
 }
 
 #[tauri::command]
-fn remove_account(app: AppHandle, vault: State<Arc<AppVault>>, id: String) -> Result<(), String> {
-    vault.remove(&id)?;
+async fn remove_account(
+    app: AppHandle,
+    vault: State<'_, Arc<AppVault>>,
+    id: String,
+) -> Result<(), String> {
+    let v = vault.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || v.remove(&id))
+        .await
+        .map_err(|e| e.to_string())??;
     refresh_tray(&app);
     Ok(())
 }
 
 #[tauri::command]
-fn reorder(app: AppHandle, vault: State<Arc<AppVault>>, ids: Vec<String>) -> Result<(), String> {
-    vault.reorder(&ids)?;
+async fn reorder(
+    app: AppHandle,
+    vault: State<'_, Arc<AppVault>>,
+    ids: Vec<String>,
+) -> Result<(), String> {
+    let v = vault.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || v.reorder(&ids))
+        .await
+        .map_err(|e| e.to_string())??;
     refresh_tray(&app);
     Ok(())
 }
 
 #[tauri::command]
-fn advance_hotp(app: AppHandle, vault: State<Arc<AppVault>>, id: String) -> Result<(), String> {
-    vault.advance_hotp(&id)?;
+async fn advance_hotp(
+    app: AppHandle,
+    vault: State<'_, Arc<AppVault>>,
+    id: String,
+) -> Result<(), String> {
+    let v = vault.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || v.advance_hotp(&id))
+        .await
+        .map_err(|e| e.to_string())??;
     refresh_tray(&app);
     Ok(())
 }
