@@ -129,17 +129,29 @@ body {
   animation: blink 1s ease-in-out infinite;
 }
 
-/* Flat account tint: a single translucent wash of the row's accent
-   (--row-accent). Opacity is theme-aware — subtle over light, stronger over
-   dark so it never washes out. Paired with a matching border
-   (accountColorBorder) so a tinted row reads as an intentional card. */
-.acct-fill {
-  background-color: color-mix(in srgb, var(--row-accent) 10%, transparent);
+/* Account glow: a colour aura rising from the bottom-centre of the row — a
+   radial gradient blended in oklab so the accent fades perceptually to nothing,
+   keyed off the row's accent (--row-accent). Opacity is theme-aware: a soft
+   wash over light, a stronger glow over dark so it reads as a lit card. Paired
+   with a matching border (accountColorBorder). Adapted from the reference
+   AccountCard's bottom-rising radial glow. */
+.acct-glow {
+  background-image: radial-gradient(
+    120% 95% at 50% 118%,
+    color-mix(in oklab, var(--row-accent) 38%, transparent) 0%,
+    color-mix(in oklab, var(--row-accent) 19%, transparent) 35%,
+    transparent 70%
+  );
 }
 
 @media (prefers-color-scheme: dark) {
-  .acct-fill {
-    background-color: color-mix(in srgb, var(--row-accent) 22%, transparent);
+  .acct-glow {
+    background-image: radial-gradient(
+      120% 95% at 50% 118%,
+      color-mix(in oklab, var(--row-accent) 60%, transparent) 0%,
+      color-mix(in oklab, var(--row-accent) 32%, transparent) 35%,
+      transparent 70%
+    );
   }
 }
 

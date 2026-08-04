@@ -27,9 +27,9 @@ export function accountColorVar(key: string): string | undefined {
   return key && KEYS.has(key) ? `var(--acct-${key})` : undefined;
 }
 
-// The row's flat tint background lives in the `.acct-fill` CSS class
-// (globals.css) so its opacity can be theme-aware; the component only supplies
-// `--row-accent` via accountColorVar().
+// The row's accent glow lives in the `.acct-glow` CSS class (globals.css) — a
+// bottom-rising radial gradient whose opacity is theme-aware; the component
+// only supplies `--row-accent` via accountColorVar().
 
 /** A slightly stronger fill for the row's avatar, keeping it distinct from the
  * row tint. Undefined for none (the avatar then falls back to a muted fill). */

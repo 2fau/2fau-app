@@ -79,8 +79,8 @@ export function AccountRow({
     <Item
       size="sm"
       className={cn(
-        "relative cursor-default gap-3 rounded-lg px-3 py-2.5",
-        account.color && "acct-fill",
+        "relative cursor-default flex gap-3 rounded-lg px-3 py-2.5",
+        account.color && "acct-glow",
       )}
       style={
         {
@@ -194,7 +194,7 @@ export function AccountRow({
       {timeBased && (
         <span
           aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 h-[3px] bg-foreground/10"
+          className="absolute inset-x-0 bottom-0 h-[3px] rounded-lg bg-foreground/10"
         >
           <span
             className={cn(
