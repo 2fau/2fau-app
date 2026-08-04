@@ -42,5 +42,5 @@ export function accountColorAccent(key: string): string | undefined {
  * rather than a muddy fill (especially in dark mode). Undefined for none. */
 export function accountColorBorder(key: string): string | undefined {
   const c = accountColorVar(key);
-  return c ? `color-mix(in srgb, ${c} 24%, transparent)` : undefined;
+  return c ? `color-mix(in srgb, ${c} 10%, transparent)` : undefined;
 }
