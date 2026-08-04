@@ -66,22 +66,63 @@ export function VaultProvider({
     setAccounts(await service.list());
   }, [service]);
 
+  // Reflect the host's real lock state. The desktop vault can lock out-of-band
+  // (its idle watchdog fires while the persistent popup is hidden), so a stale
+  // "unlocked" view would fail its next write with "vault is locked". On lock,
+  // drop decrypted state so nothing lingers behind the unlock screen.
+  const syncLock = useCallback(async () => {
+    const check = service.refreshLockState;
+    if (!check) return;
+    let nowLocked: boolean;
+    try {
+      nowLocked = await check.call(service);
+    } catch {
+      return;
+    }
+    setLocked(nowLocked);
+    if (nowLocked) {
+      setAccounts([]);
+      setCodes({});
+    }
+  }, [service]);
+
   useEffect(() => {
     if (!locked) void refresh();
   }, [locked, refresh]);
 
+  // Resync when the popup is shown or regains focus — the moment a stale view
+  // would otherwise be acted on.
+  useEffect(() => {
+    const onShow = () => {
+      if (document.visibilityState === "visible") void syncLock();
+    };
+    window.addEventListener("focus", onShow);
+    document.addEventListener("visibilitychange", onShow);
+    return () => {
+      window.removeEventListener("focus", onShow);
+      document.removeEventListener("visibilitychange", onShow);
+    };
+  }, [syncLock]);
+
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const pairs = await Promise.all(
-        accounts.map(async (a) => [a.id, await service.code(a, now)] as const),
-      );
-      if (!cancelled) setCodes(Object.fromEntries(pairs));
+      try {
+        const pairs = await Promise.all(
+          accounts.map(async (a) => [a.id, await service.code(a, now)] as const),
+        );
+        if (!cancelled) setCodes(Object.fromEntries(pairs));
+      } catch {
+        // A code fetch fails if the vault locked out-of-band while the popup
+        // stayed open (idle watchdog). Reflect the real state instead of
+        // freezing on stale codes.
+        if (!cancelled) void syncLock();
+      }
     })();
     return () => {
       cancelled = true;
     };
-  }, [accounts, now, service]);
+  }, [accounts, now, service, syncLock]);
 
   const value: VaultContextValue = {
     service,

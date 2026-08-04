@@ -24,6 +24,14 @@ export class TauriVaultService implements VaultService {
     return this.locked;
   }
 
+  /** Re-read the real lock state from Rust. The webview persists across the
+   * popup's hide/show, so the idle watchdog can lock the vault out from under a
+   * stale unlocked view; the UI calls this on show/focus to resync. */
+  async refreshLockState(): Promise<boolean> {
+    this.locked = await invoke<boolean>("is_locked");
+    return this.locked;
+  }
+
   needsSetup(): boolean {
     return this.setup;
   }

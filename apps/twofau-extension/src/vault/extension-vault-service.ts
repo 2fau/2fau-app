@@ -66,6 +66,15 @@ export class ExtensionVaultService implements VaultService {
     return !this.unlocked;
   }
 
+  /** Re-read the real lock state from the session key — it can be cleared
+   * out-of-band by the auto-lock alarm while a popup stays open. Drops the
+   * decrypted cache if the key is gone. */
+  async refreshLockState(): Promise<boolean> {
+    this.unlocked = (await getSessionKey()) !== null;
+    if (!this.unlocked) this.cached = null;
+    return !this.unlocked;
+  }
+
   needsSetup(): boolean {
     return !this.vaultExists;
   }
