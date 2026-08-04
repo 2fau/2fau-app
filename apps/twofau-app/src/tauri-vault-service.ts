@@ -78,4 +78,10 @@ export class TauriVaultService implements VaultService {
   secretUri(id: string): Promise<string> {
     return invoke("secret_uri", { id });
   }
+
+  /** The Rust-owned network time offset (trusted − local ms). Matches what the
+   * tray's quick-copy uses, so displayed and copied codes stay in sync. */
+  getTimeOffsetMs(): Promise<number> {
+    return invoke("time_offset");
+  }
 }

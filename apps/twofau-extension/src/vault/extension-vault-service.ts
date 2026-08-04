@@ -22,6 +22,7 @@ import type {
 } from "@twofau/ui";
 import { algorithmArg, buildOtpauthUri } from "@twofau/ui";
 import { clearSessionKey, getSessionKey, setSessionKey, touchSessionKey } from "./session-key";
+import { getTimeOffsetMs } from "./time-sync";
 import { VaultRepo, type VaultManifest, type VaultRepoPort } from "./vault-repo";
 
 /** PBKDF2-HMAC-SHA256; the only KDF the blob format defines today. */
@@ -217,6 +218,12 @@ export class ExtensionVaultService implements VaultService {
     const entry = (await this.listStored()).find((e) => e.account.id === id);
     if (!entry) throw new Error(`no account with id ${id}`);
     return buildOtpauthUri(entry.account, entry.secret);
+  }
+
+  /** Network time offset (trusted − local ms) so the popup's codes match the
+   * background's corrected time. 0 until the first successful sync. */
+  getTimeOffsetMs(): Promise<number> {
+    return getTimeOffsetMs();
   }
 
   /** Re-derive under a new passphrase and re-seal with a fresh salt. */

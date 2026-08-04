@@ -46,4 +46,8 @@ export interface VaultService {
   /** The account's `otpauth://` URI (secret included) for rendering its QR so it
    * can be re-added on another device. Rejects if `id` is unknown. */
   secretUri(id: string): Promise<string>;
+  /** Milliseconds to add to the local clock to correct machine-clock drift
+   * (trusted time − local time, from a network time sync). Optional: hosts
+   * without time-sync omit it and the UI falls back to the raw local clock. */
+  getTimeOffsetMs?(): Promise<number>;
 }
