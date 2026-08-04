@@ -1,9 +1,11 @@
 pub mod bridge;
+pub mod time_sync;
 pub mod vault;
 
 use std::sync::Arc;
 
 use bridge::{BridgeController, BridgeStatus};
+use time_sync::TimeSync;
 use tauri::{
     menu::{Menu, MenuItem, PredefinedMenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -72,10 +74,13 @@ fn refresh_tray(handle: &AppHandle) {
     });
 }
 
-/// Compute an account's current code and put it on the clipboard.
+/// Compute an account's current code and put it on the clipboard. Uses the
+/// network-corrected time so a wrong machine clock doesn't copy a stale code.
 fn copy_code(app: &AppHandle, id: &str) {
     let vault = app.state::<Arc<AppVault>>();
-    if let Ok(code) = vault.code(id, now_ms()) {
+    let offset = app.state::<Arc<TimeSync>>().offset_ms();
+    let now = (now_ms() as i64 + offset).max(0) as u64;
+    if let Ok(code) = vault.code(id, now) {
         let _ = app.clipboard().write_text(code);
     }
 }
@@ -296,6 +301,13 @@ fn secret_uri(vault: State<Arc<AppVault>>, id: String) -> Result<String, String>
     vault.secret_uri(&id)
 }
 
+/// The webview adds this to its local clock so displayed + copied codes match
+/// the network-corrected time the tray uses.
+#[tauri::command]
+fn time_offset(time: State<Arc<TimeSync>>) -> i64 {
+    time.offset_ms()
+}
+
 #[tauri::command]
 fn bridge_status(bridge: State<BridgeController>) -> BridgeStatus {
     bridge.status()
@@ -359,6 +371,7 @@ pub fn run() {
                 .map(|dir| dir.join("vault.dat"))
                 .unwrap_or_else(|_| fallback_vault_path());
             let bridge_state_path = vault_path.with_file_name("bridge-state.json");
+            let time_path = vault_path.with_file_name("time-offset");
             let vault = Arc::new(AppVault::new(vault_path));
             app.manage(vault.clone());
 
@@ -369,6 +382,17 @@ pub fn run() {
                 let _ = bridge.enable(true, status.port);
             }
             app.manage(bridge);
+
+            // Network time correction: start from the last persisted offset, then
+            // keep it fresh on a background thread (immediate first sync, then
+            // every REFRESH). Failures are silent — we simply keep the last
+            // known offset (or zero) until a sync succeeds.
+            let time_sync = Arc::new(TimeSync::new(time_path));
+            app.manage(time_sync.clone());
+            std::thread::spawn(move || loop {
+                let _ = time_sync.sync_once();
+                std::thread::sleep(time_sync::REFRESH);
+            });
 
             let menu = build_tray_menu(app, &vault)?;
 
@@ -429,6 +453,7 @@ pub fn run() {
             reorder,
             advance_hotp,
             secret_uri,
+            time_offset,
             bridge_status,
             bridge_enable,
             bridge_pairing_code,

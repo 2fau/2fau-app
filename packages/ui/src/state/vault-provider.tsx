@@ -33,7 +33,31 @@ export function VaultProvider({
   service: VaultService;
   children: ReactNode;
 }) {
-  const now = useNow();
+  const rawNow = useNow();
+  // Correct for a wrong machine clock: the host may supply an offset (trusted −
+  // local ms) from a network time sync. Poll it (it refreshes in the background)
+  // and add it to every timestamp the UI derives codes from, so a drifted clock
+  // never yields a wrong code. Hosts without time-sync leave `now` = local.
+  const [timeOffset, setTimeOffset] = useState(0);
+  useEffect(() => {
+    const get = service.getTimeOffsetMs;
+    if (!get) return;
+    let alive = true;
+    const pull = () =>
+      get.call(service).then(
+        (o) => {
+          if (alive) setTimeOffset(o);
+        },
+        () => {},
+      );
+    void pull();
+    const id = setInterval(pull, 60_000);
+    return () => {
+      alive = false;
+      clearInterval(id);
+    };
+  }, [service]);
+  const now = rawNow + timeOffset;
   const [locked, setLocked] = useState(() => service.isLocked());
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [codes, setCodes] = useState<Record<string, string>>({});

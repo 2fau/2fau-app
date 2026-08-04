@@ -11,6 +11,12 @@ import { startRegionScan } from "./region-scan";
 import { ensureSyncAlarm, SYNC_ALARM } from "./sync-alarm";
 import { syncOnce } from "./sync-engine";
 import { accountMatchesSite, hostOf } from "../vault/site-match";
+import {
+  correctedNow,
+  ensureTimeAlarm,
+  syncTime,
+  TIME_SYNC_ALARM,
+} from "../vault/time-sync";
 import { SCAN_MESSAGE } from "../shared/messages";
 
 // No module-level state beyond these listener registrations: the worker is torn
@@ -19,11 +25,15 @@ import { SCAN_MESSAGE } from "../shared/messages";
 chrome.runtime.onInstalled.addListener(() => {
   void refreshContextMenu();
   void ensureSyncAlarm();
+  ensureTimeAlarm();
+  void syncTime(); // correct the clock straight away
 });
 chrome.runtime.onStartup.addListener(() => {
   void refreshContextMenu();
   void ensureSyncAlarm();
   void syncOnce(); // sync on connect
+  ensureTimeAlarm();
+  void syncTime();
 });
 
 // Lock state and the account list both live in storage; rebuild the menu when
@@ -73,7 +83,7 @@ async function autofillActiveTab(): Promise<void> {
       await notify(`No 2FAU account matches ${host}.`);
       return;
     }
-    const code = await service.code(match, Date.now());
+    const code = await service.code(match, await correctedNow());
     const pasted = await pasteIntoActiveField(tab.id, code);
     if (!pasted) {
       await copyToClipboard(code);
@@ -105,6 +115,10 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   }
   if (alarm.name === SYNC_ALARM) {
     await syncOnce();
+    return;
+  }
+  if (alarm.name === TIME_SYNC_ALARM) {
+    await syncTime();
   }
 });
 
@@ -119,7 +133,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const account = (await service.list()).find((a) => a.id === id);
     if (!account) return;
 
-    const code = await service.code(account, Date.now());
+    const code = await service.code(account, await correctedNow());
 
     // Paste straight into a focused text field when the click landed on one;
     // otherwise copy and say what was copied. Page access comes from activeTab
