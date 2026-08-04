@@ -43,6 +43,7 @@ export function AccountRow({
   const period = account.period || 30;
   const secondsLeft = period - (Math.floor(now / 1000) % period);
   const expiring = timeBased && secondsLeft <= EXPIRY_WARNING_S;
+  const showActions = (hovering || confirmingDelete)
 
   async function copy() {
     if (!raw) return;
@@ -75,6 +76,89 @@ export function AccountRow({
   const label = account.label ?? " ";
   const issuer = account.issuer ?? " ";
 
+  const copyButton = (
+      <button
+          type="button"
+          aria-label="Copy code"
+          title="Copy code"
+          className="text-muted-foreground transition-colors hover:text-foreground"
+          onClick={(e) => {
+            e.stopPropagation();
+            void copy();
+          }}
+      >
+        <Copy className="size-4" />
+      </button>
+  )
+
+  const copiedIcon = (
+      <Check className="size-4 text-success" />
+  )
+
+  const deleteButton = (
+      <Button size="xs" variant="destructive" onClick={del}>
+        Delete
+      </Button>
+  )
+
+  const deleteAskButton = (
+      <Button
+          size="icon-sm"
+          variant="ghost"
+          className="text-destructive"
+          title="Delete"
+          onClick={() => setConfirmingDelete(true)}
+      >
+        <Trash2 />
+      </Button>
+  )
+
+  const cancelButton = (
+      <Button
+          size="xs"
+          variant="secondary"
+          onClick={() => setConfirmingDelete(false)}
+      >
+        Cancel
+      </Button>
+  )
+
+  const rotateButton = (
+      account.otp_type === "Hotp" ? (
+          <Button
+              size="icon-sm"
+              variant="ghost"
+              className="text-muted-foreground"
+              title="Next code"
+              onClick={advance}
+          >
+            <RotateCw />
+          </Button>
+      ) : null
+  )
+
+  const editButton = (
+      <Button
+          size="icon-sm"
+          variant="ghost"
+          className="text-muted-foreground"
+          title="Edit"
+          onClick={onEdit}
+      >
+        <Pencil />
+      </Button>
+  )
+
+  const codeContent = (
+      <span
+          className={cn(
+              "font-mono text-2xl leading-none font-medium tabular-nums",
+              copied && "text-success",
+              expiring && !copied && "animate-blink",
+          )}
+      >{formatCode(raw)}</span>
+  )
+
   return (
     <Item
       size="sm"
@@ -97,89 +181,23 @@ export function AccountRow({
           {issuer}&nbsp;
         </ItemTitle>
         <div className="flex items-center gap-1.5">
-          <span
-            className={cn(
-              "font-mono text-2xl leading-none font-medium tabular-nums",
-              copied && "text-success",
-              expiring && !copied && "animate-blink",
-            )}
-          >
-            {formatCode(raw)}
-          </span>
-          {copied ? (
-            <Check className="size-4 text-success" />
-          ) : (
-            hovering && (
-              <button
-                type="button"
-                aria-label="Copy code"
-                title="Copy code"
-                className="text-muted-foreground transition-colors hover:text-foreground"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  void copy();
-                }}
-              >
-                <Copy className="size-4" />
-              </button>
-            )
-          )}
+          {codeContent}
+          {copied ? copiedIcon : hovering && copyButton}
         </div>
         <ItemDescription className="max-w-full truncate text-[11px]">
           {label}&nbsp;
         </ItemDescription>
       </ItemContent>
 
-      {(hovering || confirmingDelete) && (
+      {showActions && (
         <ItemActions
           className="self-center"
           onClick={(e) => e.stopPropagation()}
         >
           {confirmingDelete ? (
-            <>
-              <Button size="xs" variant="destructive" onClick={del}>
-                Delete
-              </Button>
-              <Button
-                size="xs"
-                variant="secondary"
-                onClick={() => setConfirmingDelete(false)}
-              >
-                Cancel
-              </Button>
-            </>
+            <>{deleteButton}{cancelButton}</>
           ) : (
-            <>
-              {account.otp_type === "Hotp" && (
-                <Button
-                  size="icon-sm"
-                  variant="ghost"
-                  className="text-muted-foreground"
-                  title="Next code"
-                  onClick={advance}
-                >
-                  <RotateCw />
-                </Button>
-              )}
-              <Button
-                size="icon-sm"
-                variant="ghost"
-                className="text-muted-foreground"
-                title="Edit"
-                onClick={onEdit}
-              >
-                <Pencil />
-              </Button>
-              <Button
-                size="icon-sm"
-                variant="ghost"
-                className="text-destructive"
-                title="Delete"
-                onClick={() => setConfirmingDelete(true)}
-              >
-                <Trash2 />
-              </Button>
-            </>
+            <>{rotateButton}{editButton}{deleteAskButton}</>
           )}
         </ItemActions>
       )}
