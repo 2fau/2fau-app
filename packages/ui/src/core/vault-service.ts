@@ -25,6 +25,12 @@ export interface AddManualFields {
 export interface VaultService {
   capabilities(): Capabilities;
   isLocked(): boolean;
+  /** Re-read the *real* lock state from the host and return it. The desktop
+   * vault can be locked out-of-band (its inactivity watchdog fires while the
+   * persistent popup is hidden), leaving a stale unlocked view whose next write
+   * fails; the UI calls this on show/focus to resync. Optional — hosts whose UI
+   * remounts fresh each open (the extension popup) don't need it. */
+  refreshLockState?(): Promise<boolean>;
   /** True on first run (no vault yet) — the UI shows the passphrase-setup screen
    * instead of the unlock screen. */
   needsSetup(): boolean;
