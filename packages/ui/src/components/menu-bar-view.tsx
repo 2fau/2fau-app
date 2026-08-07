@@ -35,6 +35,7 @@ import { useEffect, useRef, useState } from "react";
 import { AccountRow } from "@/components/account-row";
 import { ItemGroup } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
+import { useClipboard } from "@/state/clipboard";
 import { useVault } from "@/state/vault-provider";
 import { LogoMark, Wordmark } from "@/components/ui/logo";
 import { SearchInput } from "@/components/ui/search-input";
@@ -202,6 +203,7 @@ export function MenuBarView({
   onOpenSettings,
   matchAccount,
   focusNonce,
+  requestClose,
 }: {
   onAdd: () => void;
   /** Open the Add screen prefilled from the clipboard (otpauth:// or a raw
@@ -217,9 +219,13 @@ export function MenuBarView({
   /** Bump to move keyboard focus into the search box (desktop window re-show,
    * which reuses the same webview so autofocus alone won't fire). */
   focusNonce?: number;
+  /** Dismiss the popup after a quick-copy (desktop hide / popup close). */
+  requestClose?: () => void;
 }) {
-  const { accounts, now, capabilities, lock, reorder } = useVault();
+  const { accounts, now, capabilities, lock, reorder, codes } = useVault();
+  const { writeText } = useClipboard();
   const [search, setSearch] = useState("");
+  const [flashId, setFlashId] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const [pasteFailed, setPasteFailed] = useState(false);
   // Order mode: a local snapshot dragged into place, persisted only on "Done".
@@ -292,6 +298,36 @@ export function MenuBarView({
   const matched = !q && matchAccount ? filtered.filter(matchAccount) : [];
   const matchedIds = new Set(matched.map((a) => a.id));
   const rest = matched.length ? filtered.filter((a) => !matchedIds.has(a.id)) : filtered;
+
+  // The list exactly as rendered (matched lead, then the rest); positions 1–5
+  // are what the ⌘/Ctrl+N shortcuts and the row badges target.
+  const displayed = [...matched, ...rest];
+  const hotkeyIndexOf = (id: string) => {
+    const i = displayed.findIndex((a) => a.id === id);
+    return i >= 0 && i < MAX_VISIBLE_ROWS ? i + 1 : undefined;
+  };
+
+  // ⌘/Ctrl+1..5 copies the Nth displayed account's code, flashes it, then asks
+  // the host to dismiss. A modifier is required so it never collides with the
+  // auto-focused search box.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (!(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey) return;
+      const m = /^Digit([1-5])$/.exec(e.code);
+      if (!m) return;
+      const target = displayed[Number(m[1]) - 1];
+      if (!target) return;
+      const raw = codes[target.id] ?? "";
+      if (!raw) return;
+      e.preventDefault();
+      void writeText(raw);
+      setFlashId(target.id);
+      window.setTimeout(() => setFlashId(null), 1000);
+      window.setTimeout(() => requestClose?.(), 600);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [displayed, codes, writeText, requestClose]);
 
   const period = 30
   const secondsLeft = period - (Math.floor(now / 1000) % period);
@@ -412,13 +448,25 @@ export function MenuBarView({
                       For this site
                     </p>
                     {matched.map((a) => (
-                      <AccountRow key={a.id} account={a} onEdit={() => onEdit(a)} />
+                      <AccountRow
+                        key={a.id}
+                        account={a}
+                        onEdit={() => onEdit(a)}
+                        flash={a.id === flashId}
+                        hotkeyIndex={hotkeyIndexOf(a.id)}
+                      />
                     ))}
                     <div className="mx-1 my-1 border-t" />
                   </>
                 )}
                 {rest.map((a) => (
-                  <AccountRow key={a.id} account={a} onEdit={() => onEdit(a)} />
+                  <AccountRow
+                    key={a.id}
+                    account={a}
+                    onEdit={() => onEdit(a)}
+                    flash={a.id === flashId}
+                    hotkeyIndex={hotkeyIndexOf(a.id)}
+                  />
                 ))}
               </ItemGroup>
             )}

@@ -33,6 +33,7 @@ export function RootView({
   matchAccount,
   parseMigration,
   focusNonce,
+  requestClose,
 }: {
   onScan?: () => void;
   onQuit?: () => void;
@@ -41,6 +42,7 @@ export function RootView({
   matchAccount?: (a: Account) => boolean;
   parseMigration?: (uri: string) => Promise<ParsedOtp[]>;
   focusNonce?: number;
+  requestClose?: () => void;
 }) {
   const { locked, needsSetup } = useVault();
   const { readText } = useClipboard();
@@ -117,6 +119,7 @@ export function RootView({
             }
             matchAccount={matchAccount}
             focusNonce={focusNonce}
+            requestClose={requestClose}
           />
         );
       })()}
