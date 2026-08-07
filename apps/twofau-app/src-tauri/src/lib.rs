@@ -13,6 +13,7 @@ use tauri::{
 };
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 use tauri_plugin_positioner::{Position, WindowExt};
 use twofau_core::{Account, ParsedOtp};
 use vault::{fallback_vault_path, AppVault};
@@ -356,6 +357,7 @@ pub fn run() {
         .plugin(tauri_plugin_positioner::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
             // Menu-bar agent: no Dock icon on macOS.
             #[cfg(target_os = "macos")]
@@ -425,6 +427,18 @@ pub fn run() {
                     }
                 })
                 .build(app)?;
+
+            // Global summon: CmdOrCtrl+Shift+U shows/hides the popup from
+            // anywhere. Registered in Rust (not via the JS/IPC ACL), so no
+            // capability entry is needed. Interactive — GUI-verified, not covered
+            // by cargo test.
+            #[cfg(desktop)]
+            app.global_shortcut()
+                .on_shortcut("CmdOrCtrl+Shift+U", |app, _shortcut, event| {
+                    if event.state() == ShortcutState::Pressed {
+                        toggle_window(app);
+                    }
+                })?;
 
             Ok(())
         })
