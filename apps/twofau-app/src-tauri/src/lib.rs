@@ -5,7 +5,6 @@ pub mod vault;
 use std::sync::Arc;
 
 use bridge::{BridgeController, BridgeStatus};
-use time_sync::TimeSync;
 use tauri::{
     menu::{Menu, MenuItem, PredefinedMenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -15,6 +14,7 @@ use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 use tauri_plugin_positioner::{Position, WindowExt};
+use time_sync::TimeSync;
 use twofau_core::{Account, ParsedOtp};
 use vault::{fallback_vault_path, AppVault};
 
@@ -233,10 +233,11 @@ async fn add_manual(
     kind: String,
 ) -> Result<Account, String> {
     let v = vault.inner().clone();
-    let account =
-        tauri::async_runtime::spawn_blocking(move || v.add_manual(issuer, label, secret_base32, kind))
-            .await
-            .map_err(|e| e.to_string())??;
+    let account = tauri::async_runtime::spawn_blocking(move || {
+        v.add_manual(issuer, label, secret_base32, kind)
+    })
+    .await
+    .map_err(|e| e.to_string())??;
     refresh_tray(&app);
     Ok(account)
 }

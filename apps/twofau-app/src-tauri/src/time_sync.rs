@@ -195,10 +195,7 @@ mod tests {
 
     #[test]
     fn parses_without_fractional_seconds() {
-        assert_eq!(
-            parse_iso_utc_ms("1970-01-01T00:00:01Z"),
-            Some(1_000)
-        );
+        assert_eq!(parse_iso_utc_ms("1970-01-01T00:00:01Z"), Some(1_000));
     }
 
     #[test]
