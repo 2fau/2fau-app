@@ -3,6 +3,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import type { SettingsBackend } from "@twofau/ui";
 import { BridgeSettings } from "./bridge-settings";
 import { getAutoLockMinutes, setAutoLockMinutes } from "./auto-lock";
+import { getQuickCopy, setQuickCopy } from "./hotkeys";
 
 /** External links surfaced in Settings. Edit these to point at the real repo. */
 const LINKS = {
@@ -30,5 +31,14 @@ export function tauriSettingsBackend(version: string): SettingsBackend {
     },
     sync: { summary: "Desktop bridge", screen: <BridgeSettings /> },
     openLink: (url) => void openUrl(url),
+    hotkeys: {
+      getQuickCopy: async () => getQuickCopy(),
+      setQuickCopy: async (c) => setQuickCopy(c),
+      summon: {
+        kind: "rebindable",
+        get: () => invoke<string>("get_global_shortcut"),
+        set: (accelerator) => invoke("set_global_shortcut", { accelerator }),
+      },
+    },
   };
 }
