@@ -63,12 +63,16 @@ describe("settings", () => {
       storageArea: "sync",
       mode: "independent",
       bridgePort: 4849,
+      quickCopyEnabled: true,
+      quickCopyMods: "mod",
     });
     expect(await writeSettings({ storageArea: "local" })).toEqual({
       autoLockMinutes: DEFAULT_AUTO_LOCK_MINUTES,
       storageArea: "local",
       mode: "independent",
       bridgePort: 4849,
+      quickCopyEnabled: true,
+      quickCopyMods: "mod",
     });
     expect((await readSettings()).storageArea).toBe("local");
   });
@@ -82,6 +86,8 @@ describe("settings", () => {
       storageArea: "sync",
       mode: "independent",
       bridgePort: 4849,
+      quickCopyEnabled: true,
+      quickCopyMods: "mod",
     });
   });
 
