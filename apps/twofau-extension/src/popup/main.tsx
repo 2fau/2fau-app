@@ -70,6 +70,7 @@ async function bootstrap() {
       service={service}
       matchAccount={host ? (a) => accountMatchesSite(a, host) : undefined}
       parseMigration={parseMigration}
+      requestClose={() => window.close()}
       onOpenSettings={() => chrome.runtime.openOptionsPage()}
       onScan={() => {
         // The worker drives the drag-to-select scan: the popup closes the
