@@ -4,9 +4,6 @@ Menu-bar/tray authenticator for macOS + Windows + Linux, plus a planned full-par
 extension. Critical logic (OTP, crypto, storage, merge) lives **once in Rust** and is shared
 natively (Tauri) and via WASM (browser). Local-first; optional device↔device sync later.
 
-This is a **rewrite** of the Swift macOS app at `~/Projects/2fau` — that repo is the
-behavioural reference (UI layout, invariants) and is never modified from here.
-
 ## Stack
 
 - **Rust** workspace: `twofau-core` (pure logic), `twofau-wasm` (wasm-bindgen wrapper),
@@ -18,12 +15,12 @@ behavioural reference (UI layout, invariants) and is never modified from here.
 
 ## Docs
 
-| File | What's in it |
-| --- | --- |
-| `docs/ARCHITECTURE.md` | Module map, data flow, crypto/vault format, hard invariants |
-| `docs/DEVELOPMENT.md` | Every command, plus the traps that already cost hours |
-| `docs/ROADMAP.md` | Sub-projects SP0–SP5, what's done, what's next |
-| `docs/specs/*.md` | Per-sub-project design specs (written before each was built) |
+| File                   | What's in it                                                 |
+| ---------------------- | ------------------------------------------------------------ |
+| `docs/ARCHITECTURE.md` | Module map, data flow, crypto/vault format, hard invariants  |
+| `docs/DEVELOPMENT.md`  | Every command, plus the traps that already cost hours        |
+| `docs/ROADMAP.md`      | Sub-projects SP0–SP5, what's done, what's next               |
+| `docs/specs/*.md`      | Per-sub-project design specs (written before each was built) |
 
 Read `docs/ARCHITECTURE.md` before touching crypto, the vault format, or the
 `VaultService` port. Read `docs/DEVELOPMENT.md` before running any build.
@@ -35,7 +32,7 @@ Read `docs/ARCHITECTURE.md` before touching crypto, the vault format, or the
 - **Secrets never reach `Account`** (the UI model). They live only in `StoredAccount`,
   inside the encrypted vault blob. Across the JS boundary secrets are base64 strings.
 - **Vault blob is self-describing**: `b"2FAU" | version | kdf_id | salt(16) | nonce(12) |
-  ciphertext`, and the 6-byte header is bound as AES-GCM associated data. Never change the
+ciphertext`, and the 6-byte header is bound as AES-GCM associated data. Never change the
   layout without bumping `version`/`kdf_id` and handling the old one.
 - **The UI never imports Tauri APIs.** All I/O goes through the `VaultService` port
   (`packages/ui/src/core/vault-service.ts`) so the same components run over Tauri IPC,
@@ -49,10 +46,10 @@ Read `docs/ARCHITECTURE.md` before touching crypto, the vault format, or the
 
 ## Working style
 
-- Match the surrounding code: comments explain *why*, not *what*; no decorative headers.
+- Match the surrounding code: comments explain _why_, not _what_; no decorative headers.
 - Every behaviour change gets a test (`cargo test` for core, Vitest for UI).
 - Before claiming done, actually run: `cargo fmt --check && cargo clippy --all-targets -D
-  warnings && cargo test && pnpm -r test`. See `docs/DEVELOPMENT.md § Verify`.
+warnings && cargo test && pnpm -r test`. See `docs/DEVELOPMENT.md § Verify`.
 - Conventional commits (`feat:`, `fix:`, `ci:`, `chore:`), scope optional (`fix(app):`).
 - Interactive tray/popup behaviour cannot be verified headlessly — say so instead of
   claiming a GUI fix is confirmed.

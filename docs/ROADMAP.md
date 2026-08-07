@@ -1,16 +1,16 @@
 # Roadmap
 
 The rewrite is split into six sub-projects, built in order. Each shipped one behind a spec
-in `docs/specs/`.
+in `docs/superpowers/specs/`.
 
-| # | Sub-project | Status | Spec |
-| --- | --- | --- | --- |
-| SP0 | Monorepo scaffold + shared Rust core (OTP, base32, otpauth, model, merge) | **done** | `specs/2026-07-01-subproject0-shared-core.md` |
-| SP1 | Crypto + storage (PBKDF2 → AES-GCM vault blob, `VaultStore`) | **done** | `specs/2026-07-01-subproject1-crypto-storage.md` |
-| SP2 | Shared React UI (`@twofau/ui`, `VaultService` port, Storybook) | **done** | `specs/2026-07-02-subproject2-shared-ui.md` |
-| SP3 | Tauri desktop app (tray, popup, keyring, setup/unlock) | **done** | `specs/2026-07-04-subproject3-tauri-desktop.md` |
-| SP4 | Chrome extension (MV3), full parity, `chrome.storage` backend | **done** | `specs/2026-07-22-subproject4-chrome-extension.md` |
-| SP5 | Desktop localhost bridge + sync (independent / client / sync modes) | **done** | `specs/2026-07-23-subproject5-desktop-bridge.md` |
+| #   | Sub-project                                                               | Status   | Spec                                               |
+| --- | ------------------------------------------------------------------------- | -------- | -------------------------------------------------- |
+| SP0 | Monorepo scaffold + shared Rust core (OTP, base32, otpauth, model, merge) | **done** | `specs/2026-07-01-subproject0-shared-core.md`      |
+| SP1 | Crypto + storage (PBKDF2 → AES-GCM vault blob, `VaultStore`)              | **done** | `specs/2026-07-01-subproject1-crypto-storage.md`   |
+| SP2 | Shared React UI (`@twofau/ui`, `VaultService` port, Storybook)            | **done** | `specs/2026-07-02-subproject2-shared-ui.md`        |
+| SP3 | Tauri desktop app (tray, popup, keyring, setup/unlock)                    | **done** | `specs/2026-07-04-subproject3-tauri-desktop.md`    |
+| SP4 | Chrome extension (MV3), full parity, `chrome.storage` backend             | **done** | `specs/2026-07-22-subproject4-chrome-extension.md` |
+| SP5 | Desktop localhost bridge + sync (independent / client / sync modes)       | **done** | `specs/2026-07-23-subproject5-desktop-bridge.md`   |
 
 ## SP4 — Chrome extension (done)
 
