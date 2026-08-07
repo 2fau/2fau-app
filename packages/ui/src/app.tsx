@@ -2,6 +2,7 @@ import { RootView } from "@/components/root-view";
 import type { Account, ParsedOtp } from "@/core/types";
 import type { VaultService } from "@/core/vault-service";
 import type { SettingsBackend } from "@/core/settings";
+import type { QuickCopyConfig } from "@/lib/hotkeys";
 import { ClipboardProvider } from "@/state/clipboard";
 import { VaultProvider } from "@/state/vault-provider";
 
@@ -20,6 +21,7 @@ export function TwoFAUApp({
   writeClipboard,
   focusNonce,
   requestClose,
+  quickCopy,
 }: {
   service: VaultService;
   onScan?: () => void;
@@ -45,6 +47,8 @@ export function TwoFAUApp({
   focusNonce?: number;
   /** Dismiss the popup after a quick-copy (desktop hide / popup close). */
   requestClose?: () => void;
+  /** Initial quick-copy config from the host's settings store. */
+  quickCopy?: QuickCopyConfig;
 }) {
   return (
     <ClipboardProvider readText={readClipboard} writeText={writeClipboard}>
@@ -58,6 +62,7 @@ export function TwoFAUApp({
           parseMigration={parseMigration}
           focusNonce={focusNonce}
           requestClose={requestClose}
+          quickCopy={quickCopy}
         />
       </VaultProvider>
     </ClipboardProvider>

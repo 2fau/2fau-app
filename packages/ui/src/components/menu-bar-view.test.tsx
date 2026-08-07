@@ -146,4 +146,38 @@ describe("MenuBarView", () => {
     await user.keyboard("{Meta>}1{/Meta}");
     await waitFor(() => expect(writeText).toHaveBeenCalledWith("200003"));
   });
+
+  it("copies on a custom modifier combo (Ctrl+Alt+1)", async () => {
+    const user = userEvent.setup();
+    const accts = many(6);
+    const codes = Object.fromEntries(accts.map((a, i) => [a.id, `30000${i}`]));
+    renderWithClipboard(
+      <MenuBarView
+        onAdd={() => {}}
+        onEdit={() => {}}
+        quickCopy={{ enabled: true, mods: { mod: true, shift: false, alt: true } }}
+      />,
+      fakeService(accts, codes),
+    );
+    await screen.findByText("300 000");
+    await user.keyboard("{Control>}{Alt>}1{/Alt}{/Control}");
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith("300000"));
+  });
+
+  it("copies on nothing when quick-copy is disabled", async () => {
+    const user = userEvent.setup();
+    const accts = many(6);
+    const codes = Object.fromEntries(accts.map((a) => [a.id, "999999"]));
+    renderWithClipboard(
+      <MenuBarView
+        onAdd={() => {}}
+        onEdit={() => {}}
+        quickCopy={{ enabled: false, mods: { mod: true, shift: false, alt: false } }}
+      />,
+      fakeService(accts, codes),
+    );
+    await screen.findAllByText("999 999");
+    await user.keyboard("{Meta>}1{/Meta}");
+    expect(writeText).not.toHaveBeenCalled();
+  });
 });

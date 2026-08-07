@@ -14,6 +14,7 @@ import type { ReactNode } from "react";
 import type { AddPrefill } from "@/lib/prefill";
 import type { Account, ParsedOtp } from "@/core/types";
 import type { SettingsBackend } from "@/core/settings";
+import type { QuickCopyConfig } from "@/lib/hotkeys";
 
 type Screen =
   | { name: "list" }
@@ -34,6 +35,7 @@ export function RootView({
   parseMigration,
   focusNonce,
   requestClose,
+  quickCopy,
 }: {
   onScan?: () => void;
   onQuit?: () => void;
@@ -43,6 +45,7 @@ export function RootView({
   parseMigration?: (uri: string) => Promise<ParsedOtp[]>;
   focusNonce?: number;
   requestClose?: () => void;
+  quickCopy?: QuickCopyConfig;
 }) {
   const { locked, needsSetup } = useVault();
   const { readText } = useClipboard();
@@ -120,6 +123,7 @@ export function RootView({
             matchAccount={matchAccount}
             focusNonce={focusNonce}
             requestClose={requestClose}
+            quickCopy={quickCopy}
           />
         );
       })()}
