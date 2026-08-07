@@ -31,7 +31,7 @@ import {
   Settings,
   ShieldCheck,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AccountRow } from "@/components/account-row";
 import { ItemGroup } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
@@ -201,6 +201,7 @@ export function MenuBarView({
   onQuit,
   onOpenSettings,
   matchAccount,
+  focusNonce,
 }: {
   onAdd: () => void;
   /** Open the Add screen prefilled from the clipboard (otpauth:// or a raw
@@ -213,9 +214,13 @@ export function MenuBarView({
   onOpenSettings?: () => void;
   /** Smart filter: accounts matching the current page float to the top. */
   matchAccount?: (a: Account) => boolean;
+  /** Bump to move keyboard focus into the search box (desktop window re-show,
+   * which reuses the same webview so autofocus alone won't fire). */
+  focusNonce?: number;
 }) {
   const { accounts, now, capabilities, lock, reorder } = useVault();
   const [search, setSearch] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
   const [pasteFailed, setPasteFailed] = useState(false);
   // Order mode: a local snapshot dragged into place, persisted only on "Done".
   const [reordering, setReordering] = useState(false);
@@ -229,6 +234,13 @@ export function MenuBarView({
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
+
+  // Drop focus into the search box whenever the host bumps the nonce (a re-shown
+  // desktop window isn't remounted, so the input's autofocus won't fire again).
+  // No-op when the search box isn't rendered (<= 5 accounts) or is missing.
+  useEffect(() => {
+    searchRef.current?.focus();
+  }, [focusNonce]);
 
   async function handleQuickAdd() {
     const opened = (await onQuickAdd?.()) ?? false;
@@ -380,7 +392,12 @@ export function MenuBarView({
           <>
             {accounts.length > MAX_VISIBLE_ROWS && (
               <>
-                <SearchInput value={search} setValue={setSearch} />
+                <SearchInput
+                  value={search}
+                  setValue={setSearch}
+                  inputRef={searchRef}
+                  autoFocus
+                />
                 <div className="border-t" />
               </>
             )}
