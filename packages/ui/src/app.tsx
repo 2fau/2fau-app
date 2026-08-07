@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { RootView } from "@/components/root-view";
 import type { Account, ParsedOtp } from "@/core/types";
 import type { VaultService } from "@/core/vault-service";
 import type { SettingsBackend } from "@/core/settings";
-import type { QuickCopyConfig } from "@/lib/hotkeys";
+import { DEFAULT_QUICK_COPY, type QuickCopyConfig } from "@/lib/hotkeys";
 import { ClipboardProvider } from "@/state/clipboard";
 import { VaultProvider } from "@/state/vault-provider";
 
@@ -21,7 +22,7 @@ export function TwoFAUApp({
   writeClipboard,
   focusNonce,
   requestClose,
-  quickCopy,
+  quickCopy: quickCopyProp,
 }: {
   service: VaultService;
   onScan?: () => void;
@@ -50,6 +51,10 @@ export function TwoFAUApp({
   /** Initial quick-copy config from the host's settings store. */
   quickCopy?: QuickCopyConfig;
 }) {
+  // Owned so an in-panel Settings edit (desktop) applies to the open list live.
+  const [quickCopy, setQuickCopy] = useState<QuickCopyConfig>(
+    quickCopyProp ?? DEFAULT_QUICK_COPY,
+  );
   return (
     <ClipboardProvider readText={readClipboard} writeText={writeClipboard}>
       <VaultProvider service={service}>
@@ -63,6 +68,7 @@ export function TwoFAUApp({
           focusNonce={focusNonce}
           requestClose={requestClose}
           quickCopy={quickCopy}
+          onQuickCopyChange={setQuickCopy}
         />
       </VaultProvider>
     </ClipboardProvider>

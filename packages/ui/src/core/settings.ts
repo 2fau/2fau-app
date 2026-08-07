@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { QuickCopyConfig } from "@/lib/hotkeys";
 
 /** External links surfaced in the second settings section. */
 export interface SettingsLinks {
@@ -38,6 +39,15 @@ export interface SettingsBackend {
   sync: { summary?: string; screen: ReactNode };
   /** Open an external URL (opener plugin on desktop, `window.open` in the ext). */
   openLink: (url: string) => void;
+  /** Configurable hotkeys. `summon` differs by platform: desktop rebinds in
+   * place; the extension can only show the binding and open the browser page. */
+  hotkeys: {
+    getQuickCopy: () => Promise<QuickCopyConfig>;
+    setQuickCopy: (c: QuickCopyConfig) => Promise<void>;
+    summon:
+      | { kind: "rebindable"; get: () => Promise<string>; set: (accelerator: string) => Promise<void> }
+      | { kind: "external"; get: () => Promise<string | null>; open: () => void };
+  };
 }
 
 /** Auto-lock choices offered in the picker, in minutes. */

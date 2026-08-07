@@ -36,6 +36,7 @@ export function RootView({
   focusNonce,
   requestClose,
   quickCopy,
+  onQuickCopyChange,
 }: {
   onScan?: () => void;
   onQuit?: () => void;
@@ -46,6 +47,7 @@ export function RootView({
   focusNonce?: number;
   requestClose?: () => void;
   quickCopy?: QuickCopyConfig;
+  onQuickCopyChange?: (c: QuickCopyConfig) => void;
 }) {
   const { locked, needsSetup } = useVault();
   const { readText } = useClipboard();
@@ -104,7 +106,13 @@ export function RootView({
         }
 
         if (screen.name === "settings" && settingsBackend) {
-          return <SettingsView backend={settingsBackend} onClose={onDone} />;
+          return (
+            <SettingsView
+              backend={settingsBackend}
+              onClose={onDone}
+              onQuickCopyChange={onQuickCopyChange}
+            />
+          );
         }
 
         return (
