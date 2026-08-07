@@ -4,7 +4,7 @@ import { readText, writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import { TwoFAUApp } from "@twofau/ui";
 import type { ParsedOtp } from "@twofau/ui";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { initAutoLock } from "./auto-lock";
 import { tauriSettingsBackend } from "./settings-backend";
@@ -42,6 +42,19 @@ function Root({
   // configured idle time.
   useEffect(() => initAutoLock(), []);
 
+  // Bump a nonce each time the window gains focus (summon hotkey or tray click)
+  // so the panel drops keyboard focus into the search box. The window is reshown
+  // rather than remounted, so the input's autofocus alone won't fire again.
+  const [focusNonce, setFocusNonce] = useState(0);
+  useEffect(() => {
+    const unlisten = getCurrentWindow().onFocusChanged(({ payload: focused }) => {
+      if (focused) setFocusNonce((n) => n + 1);
+    });
+    return () => {
+      void unlisten.then((un) => un());
+    };
+  }, []);
+
   return (
     <div
       ref={containerRef}
@@ -54,6 +67,8 @@ function Root({
         parseMigration={(uri) => invoke<ParsedOtp[]>("parse_migration", { uri })}
         readClipboard={async () => (await readText()) ?? ""}
         writeClipboard={(text) => writeText(text)}
+        requestClose={() => void getCurrentWindow().hide()}
+        focusNonce={focusNonce}
       />
     </div>
   );

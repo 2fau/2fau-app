@@ -61,4 +61,23 @@ describe("AccountRow", () => {
     // primary is now the issuer; it should appear exactly once (no dimmed copy)
     expect(screen.queryAllByText("Google")).toHaveLength(1);
   });
+
+  it("shows the copied (success) state when flash is set", async () => {
+    const a = account();
+    renderWithVault(
+      <AccountRow account={a} onEdit={() => {}} flash />,
+      fakeService([a], { a: "492810" }),
+    );
+    expect(await screen.findByText("492 810")).toHaveClass("text-success");
+  });
+
+  it("renders a keyboard hint for the given hotkeyIndex", async () => {
+    const a = account();
+    renderWithVault(
+      <AccountRow account={a} onEdit={() => {}} hotkeyIndex={1} />,
+      fakeService([a], { a: "492810" }),
+    );
+    await screen.findByText("492 810");
+    expect(screen.getByLabelText("Shortcut 1")).toBeInTheDocument();
+  });
 });

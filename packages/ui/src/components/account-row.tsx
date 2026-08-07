@@ -24,13 +24,20 @@ const EXPIRY_WARNING_S = 5;
 export function AccountRow({
   account,
   onEdit,
+  flash,
+  hotkeyIndex,
 }: {
   account: Account;
   onEdit: () => void;
+  /** Force the green "copied" state (e.g. after a ⌘/Ctrl+N quick-copy). */
+  flash?: boolean;
+  /** 1–5: renders a small keyboard-shortcut hint on the row. */
+  hotkeyIndex?: number;
 }) {
   const { codes, remove, advanceHotp, now } = useVault();
   const { writeText } = useClipboard();
   const [copied, setCopied] = useState(false);
+  const copiedShown = copied || !!flash;
   const [hovering, setHovering] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -153,10 +160,24 @@ export function AccountRow({
       <span
           className={cn(
               "font-mono text-2xl leading-none font-medium tabular-nums",
-              copied && "text-success",
-              expiring && !copied && "animate-blink",
+              copiedShown && "text-success",
+              expiring && !copiedShown && "animate-blink",
           )}
       >{formatCode(raw)}</span>
+  )
+
+  const hotkeyLabel =
+      hotkeyIndex != null
+          ? `${navigator.platform.toLowerCase().includes("mac") ? "⌘" : "Ctrl "}${hotkeyIndex}`
+          : null;
+
+  const hotkeyBadge = hotkeyIndex != null && (
+      <kbd
+          aria-label={`Shortcut ${hotkeyIndex}`}
+          className="ml-auto rounded border px-1 text-[10px] font-medium text-muted-foreground"
+      >
+        {hotkeyLabel}
+      </kbd>
   )
 
   return (
@@ -182,7 +203,7 @@ export function AccountRow({
         </ItemTitle>
         <div className="flex items-center gap-1.5">
           {codeContent}
-          {copied ? copiedIcon : hovering && copyButton}
+          {copiedShown ? copiedIcon : hovering ? copyButton : hotkeyBadge}
         </div>
         <ItemDescription className="max-w-full truncate text-[11px]">
           {label}&nbsp;

@@ -32,6 +32,8 @@ export function RootView({
   onOpenSettings,
   matchAccount,
   parseMigration,
+  focusNonce,
+  requestClose,
 }: {
   onScan?: () => void;
   onQuit?: () => void;
@@ -39,6 +41,8 @@ export function RootView({
   onOpenSettings?: () => void;
   matchAccount?: (a: Account) => boolean;
   parseMigration?: (uri: string) => Promise<ParsedOtp[]>;
+  focusNonce?: number;
+  requestClose?: () => void;
 }) {
   const { locked, needsSetup } = useVault();
   const { readText } = useClipboard();
@@ -114,6 +118,8 @@ export function RootView({
               (settingsBackend ? () => setScreen({ name: "settings" }) : undefined)
             }
             matchAccount={matchAccount}
+            focusNonce={focusNonce}
+            requestClose={requestClose}
           />
         );
       })()}

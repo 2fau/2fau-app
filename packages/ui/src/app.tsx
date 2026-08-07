@@ -18,6 +18,8 @@ export function TwoFAUApp({
   parseMigration,
   readClipboard,
   writeClipboard,
+  focusNonce,
+  requestClose,
 }: {
   service: VaultService;
   onScan?: () => void;
@@ -39,6 +41,10 @@ export function TwoFAUApp({
    * unreliable and ACL-gated); both default to `navigator.clipboard`. */
   readClipboard?: () => Promise<string>;
   writeClipboard?: (text: string) => Promise<void>;
+  /** Bump to re-focus the search box (desktop window re-show). */
+  focusNonce?: number;
+  /** Dismiss the popup after a quick-copy (desktop hide / popup close). */
+  requestClose?: () => void;
 }) {
   return (
     <ClipboardProvider readText={readClipboard} writeText={writeClipboard}>
@@ -50,6 +56,8 @@ export function TwoFAUApp({
           onOpenSettings={onOpenSettings}
           matchAccount={matchAccount}
           parseMigration={parseMigration}
+          focusNonce={focusNonce}
+          requestClose={requestClose}
         />
       </VaultProvider>
     </ClipboardProvider>
