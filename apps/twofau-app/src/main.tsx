@@ -7,6 +7,7 @@ import type { ParsedOtp } from "@twofau/ui";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { initAutoLock } from "./auto-lock";
+import { getQuickCopy } from "./hotkeys";
 import { tauriSettingsBackend } from "./settings-backend";
 import { TauriVaultService } from "./tauri-vault-service";
 import "./index.css";
@@ -23,6 +24,7 @@ function Root({
   const containerRef = useRef<HTMLDivElement>(null);
   const service = useRef(new TauriVaultService(startUnlocked, needsSetup)).current;
   const settingsBackend = useMemo(() => tauriSettingsBackend(version), [version]);
+  const quickCopy = useMemo(() => getQuickCopy(), []);
 
   // Keep the OS window's height matched to the panel content (like the Swift
   // resizePanelToFit) so the popup never has dead space or clips.
@@ -69,6 +71,7 @@ function Root({
         writeClipboard={(text) => writeText(text)}
         requestClose={() => void getCurrentWindow().hide()}
         focusNonce={focusNonce}
+        quickCopy={quickCopy}
       />
     </div>
   );

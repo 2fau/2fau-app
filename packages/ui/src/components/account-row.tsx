@@ -26,6 +26,7 @@ export function AccountRow({
   onEdit,
   flash,
   hotkeyIndex,
+  modLabel,
 }: {
   account: Account;
   onEdit: () => void;
@@ -33,6 +34,8 @@ export function AccountRow({
   flash?: boolean;
   /** 1–5: renders a small keyboard-shortcut hint on the row. */
   hotkeyIndex?: number;
+  /** Formatted modifier shown before the digit in the hint (e.g. "⌘"). */
+  modLabel?: string;
 }) {
   const { codes, remove, advanceHotp, now } = useVault();
   const { writeText } = useClipboard();
@@ -168,7 +171,7 @@ export function AccountRow({
 
   const hotkeyLabel =
       hotkeyIndex != null
-          ? `${navigator.platform.toLowerCase().includes("mac") ? "⌘" : "Ctrl "}${hotkeyIndex}`
+          ? `${modLabel ?? (navigator.platform.toLowerCase().includes("mac") ? "⌘" : "Ctrl ")}${hotkeyIndex}`
           : null;
 
   const hotkeyBadge = hotkeyIndex != null && (

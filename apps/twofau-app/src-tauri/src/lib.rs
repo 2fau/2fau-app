@@ -22,6 +22,21 @@ use vault::{fallback_vault_path, AppVault};
 const TRAY_ID: &str = "main";
 /// How many recent accounts to surface in the tray's quick-copy section.
 const TRAY_RECENT: usize = 5;
+/// Default global summon accelerator, matching the extension's suggested key.
+const DEFAULT_SHORTCUT: &str = "CmdOrCtrl+Shift+U";
+
+/// Filesystem location of the persisted summon accelerator (beside vault.dat).
+struct ShortcutPath(std::path::PathBuf);
+
+/// Read the persisted summon accelerator, falling back to the default when the
+/// file is missing or empty.
+fn read_shortcut(path: &std::path::Path) -> String {
+    std::fs::read_to_string(path)
+        .ok()
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .unwrap_or_else(|| DEFAULT_SHORTCUT.to_string())
+}
 
 fn now_ms() -> u64 {
     std::time::SystemTime::now()
@@ -335,6 +350,41 @@ fn quit(app: AppHandle) {
     app.exit(0);
 }
 
+#[tauri::command]
+fn get_global_shortcut(path: State<ShortcutPath>) -> String {
+    read_shortcut(&path.0)
+}
+
+/// Re-register the summon shortcut and persist it. On an invalid accelerator or
+/// an OS registration failure, restore the previous binding and return the error
+/// so the UI can show it and keep the old value.
+#[tauri::command]
+fn set_global_shortcut(
+    app: AppHandle,
+    path: State<ShortcutPath>,
+    accelerator: String,
+) -> Result<(), String> {
+    let gs = app.global_shortcut();
+    let previous = read_shortcut(&path.0);
+    gs.unregister_all().map_err(|e| e.to_string())?;
+
+    let register = |accel: &str| {
+        app.global_shortcut()
+            .on_shortcut(accel, |app, _shortcut, event| {
+                if event.state() == ShortcutState::Pressed {
+                    toggle_window(app);
+                }
+            })
+    };
+
+    if let Err(e) = register(accelerator.as_str()) {
+        let _ = register(previous.as_str()); // best-effort rollback
+        return Err(e.to_string());
+    }
+    std::fs::write(&path.0, &accelerator).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 /// Show the popup anchored at the tray, or hide it if already visible.
 fn toggle_window(app: &AppHandle) {
     let Some(window) = app.get_webview_window("main") else {
@@ -375,6 +425,8 @@ pub fn run() {
                 .unwrap_or_else(|_| fallback_vault_path());
             let bridge_state_path = vault_path.with_file_name("bridge-state.json");
             let time_path = vault_path.with_file_name("time-offset");
+            let shortcut_path = vault_path.with_file_name("shortcut");
+            app.manage(ShortcutPath(shortcut_path.clone()));
             let vault = Arc::new(AppVault::new(vault_path));
             app.manage(vault.clone());
 
@@ -429,17 +481,21 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            // Global summon: CmdOrCtrl+Shift+U shows/hides the popup from
-            // anywhere. Registered in Rust (not via the JS/IPC ACL), so no
-            // capability entry is needed. Interactive — GUI-verified, not covered
-            // by cargo test.
+            // Global summon: shows/hides the popup from anywhere. The accelerator
+            // is user-configurable (persisted beside the vault); this registers
+            // the saved one, or the default on first run. Registered in Rust (not
+            // via the JS/IPC ACL), so no capability entry is needed. Interactive —
+            // GUI-verified, not covered by cargo test.
             #[cfg(desktop)]
-            app.global_shortcut()
-                .on_shortcut("CmdOrCtrl+Shift+U", |app, _shortcut, event| {
-                    if event.state() == ShortcutState::Pressed {
-                        toggle_window(app);
-                    }
-                })?;
+            {
+                let accel = read_shortcut(&shortcut_path);
+                app.global_shortcut()
+                    .on_shortcut(accel.as_str(), |app, _shortcut, event| {
+                        if event.state() == ShortcutState::Pressed {
+                            toggle_window(app);
+                        }
+                    })?;
+            }
 
             Ok(())
         })
@@ -474,6 +530,8 @@ pub fn run() {
             bridge_pairing_code,
             bridge_revoke,
             quit,
+            get_global_shortcut,
+            set_global_shortcut,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

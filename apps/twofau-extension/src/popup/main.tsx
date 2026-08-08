@@ -1,5 +1,5 @@
 import type { VaultService } from "@twofau/ui";
-import { StatusScreen, TwoFAUApp } from "@twofau/ui";
+import { modsFromToken, StatusScreen, TwoFAUApp } from "@twofau/ui";
 import { parseMigration } from "@twofau/core-wasm";
 import { MonitorOff } from "lucide-react";
 import ReactDOM from "react-dom/client";
@@ -65,9 +65,16 @@ async function bootstrap() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true }).catch(() => []);
   const host = hostOf(tab?.url);
 
+  const settings = await readSettings();
+  const quickCopy = {
+    enabled: settings.quickCopyEnabled,
+    mods: modsFromToken(settings.quickCopyMods),
+  };
+
   root.render(
     <TwoFAUApp
       service={service}
+      quickCopy={quickCopy}
       matchAccount={host ? (a) => accountMatchesSite(a, host) : undefined}
       parseMigration={parseMigration}
       requestClose={() => window.close()}

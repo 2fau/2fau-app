@@ -14,6 +14,10 @@ export interface Settings {
   mode: BridgeMode;
   /** Desktop bridge port (host-permission pattern is port-agnostic). */
   bridgePort: number;
+  /** Quick-copy 1–5 enable flag. */
+  quickCopyEnabled: boolean;
+  /** Quick-copy modifier token, e.g. "mod" or "mod+shift". */
+  quickCopyMods: string;
 }
 
 const DEFAULTS: Settings = {
@@ -21,6 +25,8 @@ const DEFAULTS: Settings = {
   storageArea: "sync",
   mode: "independent",
   bridgePort: DEFAULT_BRIDGE_PORT,
+  quickCopyEnabled: true,
+  quickCopyMods: "mod",
 };
 
 const MODES: BridgeMode[] = ["independent", "client", "sync"];
@@ -49,6 +55,12 @@ export async function readSettings(): Promise<Settings> {
       typeof port === "number" && Number.isInteger(port) && port > 0 && port < 65536
         ? port
         : DEFAULTS.bridgePort,
+    quickCopyEnabled:
+      typeof stored.quickCopyEnabled === "boolean"
+        ? stored.quickCopyEnabled
+        : DEFAULTS.quickCopyEnabled,
+    quickCopyMods:
+      typeof stored.quickCopyMods === "string" ? stored.quickCopyMods : DEFAULTS.quickCopyMods,
   };
 }
 

@@ -41,6 +41,18 @@ export type {
 // Host apps need these to render account names and call the WASM OTP functions
 // exactly the way the shared components do.
 export { algorithmArg, formatCode, primaryName, secondaryName } from "@/lib/format";
+export {
+  type Chord,
+  type Mods,
+  type QuickCopyConfig,
+  DEFAULT_SUMMON,
+  DEFAULT_QUICK_COPY,
+  isMac,
+  formatChord,
+  toAccelerator,
+  modsToToken,
+  modsFromToken,
+} from "@/lib/hotkeys";
 export { base32Encode, base32FromBase64, buildOtpauthUri } from "@/lib/otpauth";
 export { type AddPrefill, prefillFromClipboardText } from "@/lib/prefill";
 export { decodeQrDataUrl, decodeQrImage, decodeQrRegion, type PixelRect } from "@/lib/qr";

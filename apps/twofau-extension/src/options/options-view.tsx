@@ -1,4 +1,11 @@
-import { SettingsGroup, SettingsView, type SettingsBackend } from "@twofau/ui";
+import {
+  modsFromToken,
+  modsToToken,
+  SettingsGroup,
+  SettingsView,
+  type QuickCopyConfig,
+  type SettingsBackend,
+} from "@twofau/ui";
 import { useEffect, useMemo, useState } from "react";
 import {
   BridgeUnreachableError,
@@ -28,6 +35,14 @@ const SYNC_SUMMARY: Record<BridgeMode, string> = {
 async function vaultService() {
   const { ExtensionVaultService } = await import("../vault/extension-vault-service");
   return ExtensionVaultService.create();
+}
+
+/** The browser-owned summon shortcut (rebindable only at
+ * chrome://extensions/shortcuts), or null when the user has cleared it. */
+async function readSummonShortcut(): Promise<string | null> {
+  const cmds = await chrome.commands.getAll();
+  const cmd = cmds.find((c) => c.name === "_execute_action");
+  return cmd?.shortcut ? cmd.shortcut : null;
 }
 
 export function OptionsView() {
@@ -64,6 +79,20 @@ export function OptionsView() {
         screen: <SyncScreen onModeChange={setMode} />,
       },
       openLink: (url) => window.open(url, "_blank", "noopener,noreferrer"),
+      hotkeys: {
+        getQuickCopy: async (): Promise<QuickCopyConfig> => {
+          const s = await readSettings();
+          return { enabled: s.quickCopyEnabled, mods: modsFromToken(s.quickCopyMods) };
+        },
+        setQuickCopy: async (c) => {
+          await writeSettings({ quickCopyEnabled: c.enabled, quickCopyMods: modsToToken(c.mods) });
+        },
+        summon: {
+          kind: "external",
+          get: readSummonShortcut,
+          open: () => void chrome.tabs.create({ url: "chrome://extensions/shortcuts" }),
+        },
+      },
     }),
     [mode],
   );

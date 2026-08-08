@@ -4,6 +4,7 @@ import {
   Code2,
   Download,
   Info,
+  Keyboard,
   KeyRound,
   Languages,
   MessageSquare,
@@ -11,13 +12,22 @@ import {
   Upload,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { HotkeyRecorder } from "@/components/hotkey-recorder";
 import { LogoMark } from "@/components/ui/logo";
 import { SettingsGroup, SettingsPage, SettingsRow } from "@/components/ui/settings-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Toggle } from "@/components/ui/toggle";
 import { AUTO_LOCK_OPTIONS, type SettingsBackend } from "@/core/settings";
+import {
+  DEFAULT_SUMMON,
+  formatChord,
+  toAccelerator,
+  type Chord,
+  type QuickCopyConfig,
+} from "@/lib/hotkeys";
 
-type Screen = "main" | "password" | "import" | "autolock" | "sync" | "about";
+type Screen = "main" | "password" | "import" | "autolock" | "sync" | "about" | "hotkeys";
 
 function lockLabel(minutes: number): string {
   return minutes === 1 ? "1 minute" : `${minutes} minutes`;
@@ -29,12 +39,16 @@ function lockLabel(minutes: number): string {
 export function SettingsView({
   backend,
   onClose,
+  onQuickCopyChange,
 }: {
   backend: SettingsBackend;
   /** Back out of settings entirely (to the account list). Omitted on a
    * standalone page (e.g. the extension options tab), which then shows no root
    * back button. */
   onClose?: () => void;
+  /** Called after a successful quick-copy write so an in-panel host (desktop)
+   * can apply it to the open list immediately. */
+  onQuickCopyChange?: (c: QuickCopyConfig) => void;
 }) {
   const [screen, setScreen] = useState<Screen>("main");
   const [autoLock, setAutoLock] = useState<number | null>(null);
@@ -71,6 +85,15 @@ export function SettingsView({
   if (screen === "about") {
     return <AboutScreen backend={backend} onBack={() => setScreen("main")} />;
   }
+  if (screen === "hotkeys") {
+    return (
+      <HotkeysScreen
+        backend={backend}
+        onQuickCopyChange={onQuickCopyChange}
+        onBack={() => setScreen("main")}
+      />
+    );
+  }
 
   const footer = (
     <>
@@ -106,6 +129,13 @@ export function SettingsView({
           value={autoLock == null ? "…" : lockLabel(autoLock)}
           chevron
           onClick={() => setScreen("autolock")}
+        />
+        <SettingsRow
+          icon={<Keyboard />}
+          iconBg="#5e5ce6"
+          label="Hotkeys"
+          chevron
+          onClick={() => setScreen("hotkeys")}
         />
       </SettingsGroup>
 
@@ -335,6 +365,127 @@ function AutoLockScreen({
       </SettingsGroup>
     </SettingsPage>
   );
+}
+
+function HotkeysScreen({
+  backend,
+  onQuickCopyChange,
+  onBack,
+}: {
+  backend: SettingsBackend;
+  onQuickCopyChange?: (c: QuickCopyConfig) => void;
+  onBack: () => void;
+}) {
+  const [quickCopy, setQuickCopy] = useState<QuickCopyConfig | null>(null);
+  const [summon, setSummon] = useState<string | null>(null);
+  const [summonError, setSummonError] = useState<string | null>(null);
+
+  useEffect(() => {
+    void backend.hotkeys.getQuickCopy().then(setQuickCopy);
+    void backend.hotkeys.summon.get().then(setSummon);
+  }, [backend]);
+
+  async function writeQuickCopy(next: QuickCopyConfig) {
+    setQuickCopy(next);
+    await backend.hotkeys.setQuickCopy(next);
+    onQuickCopyChange?.(next);
+  }
+
+  async function writeSummon(chord: Chord) {
+    if (backend.hotkeys.summon.kind !== "rebindable") return;
+    const accel = toAccelerator(chord);
+    setSummonError(null);
+    try {
+      await backend.hotkeys.summon.set(accel);
+      setSummon(accel);
+    } catch (e) {
+      setSummonError(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  const summonCap = backend.hotkeys.summon;
+
+  return (
+    <SettingsPage title="Hotkeys" onBack={onBack}>
+      <SettingsGroup header="Show 2FAU" footer="The shortcut that opens the 2FAU popup from anywhere.">
+        {summonCap.kind === "rebindable" ? (
+          <div className="p-3">
+            <HotkeyRecorder
+              value={parseAccelerator(summon) ?? DEFAULT_SUMMON}
+              onChange={(c) => void writeSummon(c)}
+              captureKey
+              error={summonError}
+            />
+          </div>
+        ) : (
+          <>
+            <SettingsRow label="Current" value={summon ?? "Not set"} />
+            <SettingsRow label="Change in browser…" chevron onClick={() => summonCap.open()} />
+          </>
+        )}
+      </SettingsGroup>
+
+      <SettingsGroup
+        header="Quick-copy codes"
+        footer="Copy an account's code with this modifier plus its number (1–5)."
+      >
+        <SettingsRow
+          label="Quick-copy 1–5"
+          trailing={
+            <Toggle
+              aria-label="Quick-copy 1–5"
+              pressed={quickCopy?.enabled ?? false}
+              onPressedChange={(on) =>
+                void writeQuickCopy({
+                  enabled: on,
+                  mods: quickCopy?.mods ?? { mod: true, shift: false, alt: false },
+                })
+              }
+            >
+              {quickCopy?.enabled ? "On" : "Off"}
+            </Toggle>
+          }
+        />
+        {quickCopy?.enabled && (
+          <div className="p-3">
+            <HotkeyRecorder
+              value={{ ...quickCopy.mods, key: "" }}
+              onChange={(c) =>
+                void writeQuickCopy({
+                  enabled: true,
+                  mods: { mod: c.mod, shift: c.shift, alt: c.alt },
+                })
+              }
+              captureKey={false}
+            />
+            <p className="mt-1 text-center text-[11px] text-muted-foreground">
+              {formatChord(quickCopy.mods)} + 1–5
+            </p>
+          </div>
+        )}
+      </SettingsGroup>
+    </SettingsPage>
+  );
+}
+
+/** Parse a Tauri accelerator ("CmdOrCtrl+Shift+U") back into a Chord for the
+ * recorder's initial display. Unknown tokens are ignored. */
+function parseAccelerator(accel: string | null): Chord | null {
+  if (!accel) return null;
+  const c: Chord = { mod: false, shift: false, alt: false, key: "" };
+  for (const p of accel.split("+")) {
+    const t = p.toLowerCase();
+    if (t === "cmdorctrl" || t === "command" || t === "control" || t === "ctrl" || t === "super" || t === "meta") {
+      c.mod = true;
+    } else if (t === "shift") {
+      c.shift = true;
+    } else if (t === "alt" || t === "option") {
+      c.alt = true;
+    } else {
+      c.key = /^\d$/.test(p) ? `Digit${p}` : p.length === 1 ? `Key${p.toUpperCase()}` : p;
+    }
+  }
+  return c;
 }
 
 function AboutScreen({ backend, onBack }: { backend: SettingsBackend; onBack: () => void }) {

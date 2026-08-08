@@ -14,6 +14,11 @@ const fakeBackend: SettingsBackend = {
   autoLock: { get: async () => 5, set: async () => {} },
   sync: { summary: "Off", screen: <p>sync body</p> },
   openLink: () => {},
+  hotkeys: {
+    getQuickCopy: async () => ({ enabled: true, mods: { mod: true, shift: false, alt: false } }),
+    setQuickCopy: async () => {},
+    summon: { kind: "rebindable", get: async () => "CmdOrCtrl+Shift+U", set: async () => {} },
+  },
 };
 
 function renderRoot(settingsBackend?: SettingsBackend) {

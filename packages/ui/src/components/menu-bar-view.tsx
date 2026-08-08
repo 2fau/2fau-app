@@ -41,6 +41,12 @@ import { LogoMark, Wordmark } from "@/components/ui/logo";
 import { SearchInput } from "@/components/ui/search-input";
 import { accountColorVar } from "@/lib/colors";
 import { primaryName, secondaryName } from "@/lib/format";
+import {
+  DEFAULT_QUICK_COPY,
+  formatChord,
+  matchesQuickCopy,
+  type QuickCopyConfig,
+} from "@/lib/hotkeys";
 import { cn } from "@/lib/utils";
 
 import type { Account } from "@/core/types";
@@ -204,6 +210,7 @@ export function MenuBarView({
   matchAccount,
   focusNonce,
   requestClose,
+  quickCopy = DEFAULT_QUICK_COPY,
 }: {
   onAdd: () => void;
   /** Open the Add screen prefilled from the clipboard (otpauth:// or a raw
@@ -221,6 +228,8 @@ export function MenuBarView({
   focusNonce?: number;
   /** Dismiss the popup after a quick-copy (desktop hide / popup close). */
   requestClose?: () => void;
+  /** Which modifier + enable state drives the quick-copy 1..5 shortcuts. */
+  quickCopy?: QuickCopyConfig;
 }) {
   const { accounts, now, capabilities, lock, reorder, codes } = useVault();
   const { writeText } = useClipboard();
@@ -303,19 +312,20 @@ export function MenuBarView({
   // are what the ⌘/Ctrl+N shortcuts and the row badges target.
   const displayed = [...matched, ...rest];
   const hotkeyIndexOf = (id: string) => {
+    if (!quickCopy.enabled) return undefined;
     const i = displayed.findIndex((a) => a.id === id);
     return i >= 0 && i < MAX_VISIBLE_ROWS ? i + 1 : undefined;
   };
+  const modLabel = formatChord(quickCopy.mods);
 
-  // ⌘/Ctrl+1..5 copies the Nth displayed account's code, flashes it, then asks
-  // the host to dismiss. A modifier is required so it never collides with the
-  // auto-focused search box.
+  // The configured modifier + a digit (1..5) copies the Nth displayed account's
+  // code, flashes it, then asks the host to dismiss. A modifier is required so
+  // it never collides with the auto-focused search box.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (!(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey) return;
-      const m = /^Digit([1-5])$/.exec(e.code);
-      if (!m) return;
-      const target = displayed[Number(m[1]) - 1];
+      const n = matchesQuickCopy(e, quickCopy);
+      if (n == null) return;
+      const target = displayed[n - 1];
       if (!target) return;
       const raw = codes[target.id] ?? "";
       if (!raw) return;
@@ -327,7 +337,7 @@ export function MenuBarView({
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [displayed, codes, writeText, requestClose]);
+  }, [displayed, codes, writeText, requestClose, quickCopy]);
 
   const period = 30
   const secondsLeft = period - (Math.floor(now / 1000) % period);
@@ -454,6 +464,7 @@ export function MenuBarView({
                         onEdit={() => onEdit(a)}
                         flash={a.id === flashId}
                         hotkeyIndex={hotkeyIndexOf(a.id)}
+                        modLabel={modLabel}
                       />
                     ))}
                     <div className="mx-1 my-1 border-t" />
@@ -466,6 +477,7 @@ export function MenuBarView({
                     onEdit={() => onEdit(a)}
                     flash={a.id === flashId}
                     hotkeyIndex={hotkeyIndexOf(a.id)}
+                    modLabel={modLabel}
                   />
                 ))}
               </ItemGroup>
