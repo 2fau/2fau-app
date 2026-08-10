@@ -5,10 +5,13 @@
   "type": "module",
   "packageManager": "pnpm@9.12.0",
   "scripts": {
+    "build": "pnpm run build:site",
+    "build:site": "pnpm --filter @twofau/site dev",
     "build:core-wasm": "pnpm --filter @twofau/core-wasm build:wasm",
+    "build:app": "pnpm --filter @twofau/app build",
+    "site": "pnpm --filter @twofau/site dev",
     "test": "pnpm -r test",
     "dev": "pnpm --filter @twofau/app dev",
-    "build:app": "pnpm --filter @twofau/app build",
     "preview": "pnpm --filter @twofau/app preview",
     "tauri": "pnpm --filter @twofau/app tauri",
     "storybook": "pnpm --filter @twofau/ui storybook"
