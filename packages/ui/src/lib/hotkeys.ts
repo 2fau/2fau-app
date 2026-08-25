@@ -1,3 +1,7 @@
+import type {SettingsBackend} from "@/core/settings.ts";
+import {LogoMark} from "@/components/ui/logo.tsx";
+import {SettingsRow} from "@/components/ui/settings-list.tsx";
+
 export interface Mods {
   mod: boolean; // ⌘ on macOS, Ctrl elsewhere
   shift: boolean;
@@ -46,6 +50,26 @@ function keyLabel(code: string): string {
   if (code.startsWith("Key")) return code.slice(3);
   if (code.startsWith("Digit")) return code.slice(5);
   return code;
+}
+
+/** Parse a Tauri accelerator ("CmdOrCtrl+Shift+U") back into a Chord for the
+ * recorder's initial display. Unknown tokens are ignored. */
+export function parseAccelerator(accel: string | null): Chord | null {
+  if (!accel) return null;
+  const c: Chord = { mod: false, shift: false, alt: false, key: "" };
+  for (const p of accel.split("+")) {
+    const t = p.toLowerCase();
+    if (t === "cmdorctrl" || t === "command" || t === "control" || t === "ctrl" || t === "super" || t === "meta") {
+      c.mod = true;
+    } else if (t === "shift") {
+      c.shift = true;
+    } else if (t === "alt" || t === "option") {
+      c.alt = true;
+    } else {
+      c.key = /^\d$/.test(p) ? `Digit${p}` : p.length === 1 ? `Key${p.toUpperCase()}` : p;
+    }
+  }
+  return c;
 }
 
 export function formatChord(c: Chord | Mods): string {

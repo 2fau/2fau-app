@@ -35,6 +35,12 @@ export interface SettingsBackend {
     get: () => Promise<number>;
     set: (minutes: number) => Promise<void>;
   };
+  /** Launch-on-login toggle. Desktop-only; omitted where the platform can't
+   * self-register at startup (e.g. the browser extension). */
+  autostart?: {
+    get: () => Promise<boolean>;
+    set: (enabled: boolean) => Promise<void>;
+  };
   /** Platform-specific Sync sub-screen, plus a short summary for its row. */
   sync: { summary?: string; screen: ReactNode };
   /** Open an external URL (opener plugin on desktop, `window.open` in the ext). */

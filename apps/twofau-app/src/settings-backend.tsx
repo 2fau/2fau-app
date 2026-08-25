@@ -29,6 +29,10 @@ export function tauriSettingsBackend(version: string): SettingsBackend {
       get: async () => getAutoLockMinutes(),
       set: async (minutes) => setAutoLockMinutes(minutes),
     },
+    autostart: {
+      get: () => invoke<boolean>("get_autostart"),
+      set: (enabled) => invoke("set_autostart", { enabled }),
+    },
     sync: { summary: "Desktop bridge", screen: <BridgeSettings /> },
     openLink: (url) => void openUrl(url),
     hotkeys: {

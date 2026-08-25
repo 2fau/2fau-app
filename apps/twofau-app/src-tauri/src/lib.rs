@@ -10,6 +10,7 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     AppHandle, Manager, State, WindowEvent,
 };
+use tauri_plugin_autostart::ManagerExt;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
@@ -385,6 +386,26 @@ fn set_global_shortcut(
     Ok(())
 }
 
+/// Whether the app is registered to launch on login. Backed by the OS
+/// (LaunchAgent on macOS, registry Run key on Windows, autostart .desktop on
+/// Linux) via the autostart plugin — the source of truth is the OS, not a file.
+#[tauri::command]
+fn get_autostart(app: AppHandle) -> Result<bool, String> {
+    app.autolaunch().is_enabled().map_err(|e| e.to_string())
+}
+
+/// Register or unregister launch-on-login. Idempotent: the plugin no-ops when
+/// the requested state already holds.
+#[tauri::command]
+fn set_autostart(app: AppHandle, enabled: bool) -> Result<(), String> {
+    let manager = app.autolaunch();
+    if enabled {
+        manager.enable().map_err(|e| e.to_string())
+    } else {
+        manager.disable().map_err(|e| e.to_string())
+    }
+}
+
 /// Show the popup anchored at the tray, or hide it if already visible.
 fn toggle_window(app: &AppHandle) {
     let Some(window) = app.get_webview_window("main") else {
@@ -409,6 +430,7 @@ pub fn run() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_autostart::Builder::new().build())
         .setup(|app| {
             // Menu-bar agent: no Dock icon on macOS.
             #[cfg(target_os = "macos")]
@@ -532,6 +554,8 @@ pub fn run() {
             quit,
             get_global_shortcut,
             set_global_shortcut,
+            get_autostart,
+            set_autostart,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

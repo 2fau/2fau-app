@@ -21,6 +21,7 @@ tauri-plugin-positioner = { version = "2", features = ["tray-icon"] }
 tauri-plugin-clipboard-manager = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-global-shortcut = "2"
+tauri-plugin-autostart = "2"
 twofau-core = { path = "../../../crates/twofau-core" }
 keyring = "3"
 uuid = { version = "1", features = ["v4"] }

@@ -8,6 +8,7 @@ import {
   KeyRound,
   Languages,
   MessageSquare,
+  Power,
   RefreshCw,
   Upload,
 } from "lucide-react";
@@ -24,7 +25,7 @@ import {
   formatChord,
   toAccelerator,
   type Chord,
-  type QuickCopyConfig,
+  type QuickCopyConfig, parseAccelerator,
 } from "@/lib/hotkeys";
 
 type Screen = "main" | "password" | "import" | "autolock" | "sync" | "about" | "hotkeys";
@@ -52,9 +53,14 @@ export function SettingsView({
 }) {
   const [screen, setScreen] = useState<Screen>("main");
   const [autoLock, setAutoLock] = useState<number | null>(null);
+  const [autostart, setAutostart] = useState<boolean | null>(null);
+  const [summon, setSummon] = useState<string | null>(null);
 
   useEffect(() => {
     void backend.autoLock.get().then(setAutoLock);
+    void backend.autostart?.get().then(setAutostart);
+    void backend.hotkeys.summon.get().then(setSummon);
+
   }, [backend]);
 
   if (screen === "password") {
@@ -134,9 +140,30 @@ export function SettingsView({
           icon={<Keyboard />}
           iconBg="#5e5ce6"
           label="Hotkeys"
+          value={formatChord(parseAccelerator(summon) ?? DEFAULT_SUMMON)}
           chevron
           onClick={() => setScreen("hotkeys")}
         />
+        {backend.autostart && (
+          <SettingsRow
+            icon={<Power />}
+            iconBg="#34c759"
+            label="Open at Login"
+            trailing={
+              <Toggle
+                aria-label="Open at Login"
+                pressed={autostart ?? false}
+                disabled={autostart == null}
+                onPressedChange={(on) => {
+                  setAutostart(on);
+                  void backend.autostart?.set(on).catch(() => backend.autostart?.get().then(setAutostart));
+                }}
+              >
+                {autostart ? "On" : "Off"}
+              </Toggle>
+            }
+          />
+        )}
       </SettingsGroup>
 
       <SettingsGroup header="Sync">
@@ -466,26 +493,6 @@ function HotkeysScreen({
       </SettingsGroup>
     </SettingsPage>
   );
-}
-
-/** Parse a Tauri accelerator ("CmdOrCtrl+Shift+U") back into a Chord for the
- * recorder's initial display. Unknown tokens are ignored. */
-function parseAccelerator(accel: string | null): Chord | null {
-  if (!accel) return null;
-  const c: Chord = { mod: false, shift: false, alt: false, key: "" };
-  for (const p of accel.split("+")) {
-    const t = p.toLowerCase();
-    if (t === "cmdorctrl" || t === "command" || t === "control" || t === "ctrl" || t === "super" || t === "meta") {
-      c.mod = true;
-    } else if (t === "shift") {
-      c.shift = true;
-    } else if (t === "alt" || t === "option") {
-      c.alt = true;
-    } else {
-      c.key = /^\d$/.test(p) ? `Digit${p}` : p.length === 1 ? `Key${p.toUpperCase()}` : p;
-    }
-  }
-  return c;
 }
 
 function AboutScreen({ backend, onBack }: { backend: SettingsBackend; onBack: () => void }) {
