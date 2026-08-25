@@ -1,7 +1,3 @@
-import type {SettingsBackend} from "@/core/settings.ts";
-import {LogoMark} from "@/components/ui/logo.tsx";
-import {SettingsRow} from "@/components/ui/settings-list.tsx";
-
 export interface Mods {
   mod: boolean; // ⌘ on macOS, Ctrl elsewhere
   shift: boolean;
