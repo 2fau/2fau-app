@@ -15,5 +15,8 @@
     "preview": "pnpm --filter @twofau/app preview",
     "tauri": "pnpm --filter @twofau/app tauri",
     "storybook": "pnpm --filter @twofau/ui storybook"
+  },
+  "dependencies": {
+    "wrangler": "4.125.0"
   }
 }
