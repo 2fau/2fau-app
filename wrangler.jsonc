@@ -2,7 +2,7 @@
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"compatibility_date": "2026-08-25",
 	"compatibility_flags": ["global_fetch_strictly_public"],
-	"name": "@twofau/site",
+	"name": "2fau",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"assets": {
 		"directory": "./apps/twofau-site/dist",
