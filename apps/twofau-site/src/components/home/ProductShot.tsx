@@ -1,0 +1,543 @@
+export function ProductShot() {
+  return (
+    <div
+      data-pencil-name="Product Shot"
+      className="box-border w-full h-fit shrink-0 flex flex-col gap-0 p-[96px_40px_104px_40px] justify-center items-center bg-[#0B0B0D]"
+    >
+      <div
+        data-pencil-name="Product Inner"
+        className="box-border w-[1200px] h-fit shrink-0 flex flex-row gap-[96px] justify-start items-center"
+      >
+        <div
+          data-pencil-name="App Popup"
+          className="box-border w-[440px] shrink-0 h-fit [box-shadow:0px_34px_90px_0px_#000000BF,_0px_0px_1px_0px_#FFFFFF17] flex flex-col gap-0 justify-start items-start bg-[#1E1E1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[14px] overflow-hidden"
+        >
+          <div
+            data-pencil-name="Header"
+            className="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] p-[15px_19px] justify-between items-center"
+          >
+            <div
+              data-pencil-name="Header Left"
+              className="box-border w-fit shrink-0 h-fit flex flex-row gap-[11px] justify-start items-center"
+            >
+              <div
+                data-pencil-name="Logo Mark"
+                className="box-border w-[34px] shrink-0 h-[34px] relative"
+              >
+                <div
+                  data-pencil-name="Ring Track"
+                  className="box-border w-[29.2px] h-[29.2px] absolute left-[2.39px] top-[2.39px] bg-[#0A84FF3D] [clip-path:path('M14.6_0_C22.663_0_29.2_6.537_29.2_14.6_C29.2_22.663_22.663_29.2_14.6_29.2_C6.537_29.2_0_22.663_0_14.6_C0_6.537_6.537_0_14.6_0_Z_M14.6_2.657_C8.004_2.657_2.657_8.004_2.657_14.6_C2.657_21.196_8.004_26.543_14.6_26.543_C21.196_26.543_26.543_21.196_26.543_14.6_C26.543_8.004_21.196_2.657_14.6_2.657_Z')] [z-index:0]"
+                ></div>
+                <div
+                  data-pencil-name="Ring Progress"
+                  className="box-border w-[29.2px] h-[29.2px] absolute left-[2.39px] top-[2.39px] bg-[#0A84FF] [clip-path:path('M14.6_0_C22.663_0_29.2_6.537_29.2_14.6_C29.2_22.663_22.663_29.2_14.6_29.2_C6.537_29.2_0_22.663_0_14.6_L2.657_14.6_C2.657_21.196_8.004_26.543_14.6_26.543_C21.196_26.543_26.543_21.196_26.543_14.6_C26.543_8.004_21.196_2.657_14.6_2.657_L14.6_0_Z')] [z-index:1]"
+                ></div>
+                <svg
+                  data-pencil-name="U Glyph"
+                  viewBox="0 0 64 64"
+                  preserveAspectRatio="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="box-border w-[34px] h-[34px] absolute left-0 top-0 overflow-visible [z-index:2]"
+                >
+                  <path
+                    d="M22 22.5v9a10 10 0 0 0 20 0v-9m0 0v19"
+                    fill="none"
+                    stroke="#FFFFFF"
+                    strokeWidth="3.45"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    vectorEffect="non-scaling-stroke"
+                  ></path>
+                </svg>
+              </div>
+              <div
+                data-pencil-name="Wordmark"
+                className="box-border w-fit shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
+              >
+                <div
+                  data-pencil-name="2FA"
+                  className="text-[22px]/[normal] box-border text-[#FFFFFF] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.7px] text-left [white-space:nowrap]"
+                >
+                  2FA
+                </div>
+                <div
+                  data-pencil-name="u"
+                  className="text-[22px]/[normal] box-border text-[#0A84FF] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.7px] text-left [white-space:nowrap]"
+                >
+                  u
+                </div>
+              </div>
+            </div>
+            <div
+              data-pencil-name="Header Actions"
+              className="box-border w-fit shrink-0 h-fit flex flex-row gap-[22px] justify-start items-center"
+            >
+              <svg
+                data-pencil-name="Action file-input"
+                data-icon-name="file-input"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                className="box-border w-[17px] shrink-0 h-[17px]"
+              >
+                <path
+                  d="M3.33252 0.60156q-0.58789 0.04102-1.02197 0.44776-0.43408 0.40674-0.53321 0.99463-0.02734 0.16748-0.02734 2.31054 0 2.14307 0.02734 2.2251 0.07178 0.25293 0.31446 0.36572 0.24609 0.10938 0.48535 0 0.08203-0.04443 0.15722-0.11279 0.07861-0.07178 0.1128-0.14697 0.0376-0.07861 0.05127-0.18799 0.01367-0.15723 0.02734-0.63233l0-3.3872q0-0.28027 0.03418-0.36231 0.0376-0.08545 0.11963-0.17431 0.08545-0.09229 0.16748-0.13672l0.09912-0.04102 4.22803-0.01367 0.01367 2.54639 0.04102 0.14013q0.08545 0.22559 0.24609 0.40674 0.16064 0.18115 0.35547 0.28028 0.14014 0.07178 0.22558 0.08544 0.12646 0.02734 0.40674 0.04102l2.21143 0 0 6.11816q0 0.43408-0.0376 0.51954-0.03418 0.08203-0.11963 0.17431-0.08203 0.08887-0.16406 0.1333l-0.09912 0.04102-7.30762 0-0.09912-0.04102q-0.08203-0.04443-0.16748-0.1333-0.08203-0.09228-0.12647-0.19141-0.01367-0.06836-0.0205-0.13671-0.00684-0.07178-0.00684-0.31104 0-0.36231-0.03418-0.4956-0.03418-0.1333-0.14014-0.2461-0.10596-0.11279-0.24609-0.15381-0.14014-0.04102-0.28711-0.01367-0.14697 0.02734-0.27344 0.14014-0.12646 0.11279-0.16748 0.2666-0.02734 0.08203-0.02734 0.48193 0 0.3999 0.02734 0.55371 0.09912 0.5332 0.46827 0.92627 0.37256 0.38965 0.90576 0.50245 0.10938 0.01367 0.66992 0.02734l3.17871 0 3.17871 0q0.56055-0.01367 0.66992-0.02734 0.5332-0.11279 0.90235-0.50245 0.37256-0.39307 0.47168-0.92627 0.02734-0.16748 0.02734-3.80078 0-3.6333-0.02734-3.80078-0.08545-0.51953-0.39307-0.90918-0.12646-0.14014-1.26123-1.2749-1.13135-1.13477-1.24414-1.20312-0.43408-0.30762-0.95361-0.36573-0.14014-0.02734-2.49854-0.02734-2.3584 0-2.53955 0.02734z m6.4668 2.43701l1.03564 1.03565-2.08496 0 0-1.03565q0-1.03564 0-1.04931l1.04932 1.04931z m-4.70313 3.40088q-0.25293 0.08545-0.37939 0.30762-0.04102 0.08545-0.04102 0.23926 0 0.15381 0.02734 0.22558 0.02734 0.06836 0.12647 0.18116 0.08545 0.0957 0.35205 0.3623l0.40332 0.42041-4.57666 0-0.08545 0.04102q-0.22217 0.11279-0.30078 0.33838-0.0752 0.22217 0.00684 0.43408 0.05811 0.0957 0.14013 0.18115 0.08545 0.08203 0.16748 0.11963 0.08545 0.03418 0.39307 0.03418l4.25537 0-0.40332 0.42041q-0.2666 0.2666-0.35205 0.3623-0.09912 0.11279-0.12647 0.18457-0.02734 0.06836-0.02734 0.2085 0 0.14014 0.03418 0.22559 0.0376 0.08203 0.1333 0.18115 0.09912 0.0957 0.18115 0.1333 0.08545 0.03418 0.23926 0.03418 0.15381 0 0.23584-0.04102 0.08545-0.04443 1.02881-0.98779 0.94678-0.94678 1.00488-1.02881 0.02734-0.05811 0.03418-0.10596 0.00684-0.04785 0.00684-0.16064 0-0.11279-0.00684-0.16064-0.00684-0.04785-0.03418-0.10596-0.04443-0.08203-0.98095-1.0083l-0.07178-0.06836q-0.52979-0.5332-0.6836-0.68701-0.21191-0.19482-0.30761-0.25293-0.07178-0.02734-0.19824-0.04102l-0.01368 0q-0.14014 0-0.18115 0.01367z"
+                  fill="#F5F5F7"
+                ></path>
+              </svg>
+              <svg
+                data-pencil-name="Action arrow-up-down"
+                data-icon-name="arrow-up-down"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                className="box-border w-[17px] shrink-0 h-[17px]"
+              >
+                <path
+                  d="M3.8623 1.79102q-0.05469 0.01367-0.27343 0.21875-0.21533 0.20166-1.0835 1.06982-0.89551 0.89551-1.08691 1.10059-0.18799 0.20166-0.21533 0.27343-0.06836 0.2085 0.01367 0.42725 0.08545 0.21533 0.28027 0.31445 0.09912 0.04102 0.23926 0.04102l0.02734 0q0.12646 0 0.19483-0.02735 0.07178-0.02734 0.23925-0.18457 0.11279-0.0957 0.50586-0.50244l0.79639-0.78271 0 7.14014q0.01367 0.69726 0.02734 0.8955 0.01367 0.14014 0.05811 0.19483l0.02734 0.02734q0.15381 0.22559 0.417 0.24609 0.2666 0.02051 0.46484-0.17431 0.12646-0.12646 0.15381-0.29395 0.02734-0.11279 0.02734-4.06054l0-3.96143 0.68701 0.70068q0.46143 0.44775 0.60157 0.58106 0.14014 0.12988 0.20849 0.16064 0.23926 0.10938 0.46143 0.01367 0.22559-0.09912 0.32129-0.32128 0.09912-0.22559-0.01026-0.46485-0.03076-0.06836-0.23926-0.29053-0.2085-0.22559-1.04931-1.05273-1.23389-1.23047-1.32617-1.27148-0.08887-0.04443-0.22901-0.05127-0.14014-0.00684-0.23926 0.03418z m5.90967-0.02735q-0.14014 0.04102-0.2666 0.16065-0.12646 0.11963-0.15381 0.30078-0.02734 0.08545-0.02734 4.04687l0 3.9751-0.68701-0.70068q-0.43408-0.43408-0.58789-0.5708-0.15381-0.14014-0.2085-0.15723-0.19824-0.0957-0.3999-0.0376-0.20166 0.05469-0.32813 0.21533-0.12646 0.16064-0.11279 0.36914l0 0.02735q0.01367 0.11279 0.05469 0.18457 0.07178 0.10938 0.3247 0.37597l0.96387 0.96729q1.23389 1.23047 1.32276 1.2749 0.09229 0.04102 0.24609 0.04102l0.04102 0q0.11279 0.01367 0.19824-0.02735 0.0957-0.07178 0.34863-0.30761 0.18115-0.1709 0.81348-0.81348l0.19482-0.19482q0.88184-0.88184 1.06983-1.07666 0.19141-0.19824 0.21875-0.27002 0.06836-0.2085-0.01026-0.417-0.0752-0.21191-0.28369-0.3247-0.09912-0.04102-0.23926-0.04102l-0.02734 0q-0.12646 0-0.19824 0.02735-0.06836 0.02734-0.23584 0.18457-0.11279 0.0957-0.50586 0.50244l-0.79639 0.78271 0-7.14013q-0.01367-0.69727-0.02734-0.89551-0.01367-0.14014-0.05811-0.19483l-0.01367-0.02734q-0.0957-0.14014-0.28028-0.2085-0.18115-0.07178-0.34863-0.03076z"
+                  fill="#F5F5F7"
+                ></path>
+              </svg>
+              <svg
+                data-pencil-name="Action plus"
+                data-icon-name="plus"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                className="box-border w-[17px] shrink-0 h-[17px]"
+              >
+                <path
+                  d="M6.90088 2.35156q-0.0957 0.01367-0.17432 0.05127-0.0752 0.03418-0.15381 0.12647-0.0752 0.08887-0.11279 0.16748-0.03418 0.0752-0.03418 0.32812l0 3.40088-3.66748 0-0.08545 0.04102q-0.22217 0.11279-0.30078 0.33838-0.0752 0.22217 0.00684 0.43408 0.05811 0.0957 0.14013 0.18115 0.08545 0.08203 0.16748 0.11963 0.08545 0.03418 0.33838 0.03418l3.40088 0 0 3.40088q0 0.25293 0.03418 0.33838 0.0376 0.08203 0.11963 0.16748 0.08545 0.08203 0.18799 0.1333 0.10596 0.04785 0.23242 0.04785 0.12646 0 0.229-0.04785 0.10596-0.05127 0.18799-0.1333 0.08545-0.08545 0.11963-0.16748 0.0376-0.08545 0.0376-0.33838l0-3.40088 3.40088 0q0.25293 0 0.33496-0.03418 0.08545-0.0376 0.16748-0.11963 0.08545-0.08545 0.1333-0.18799 0.05127-0.10596 0.05127-0.23242 0-0.12646-0.04102-0.23926-0.09912-0.19482-0.29394-0.29394l-0.08545-0.04102-3.66748 0 0-3.38721q0-0.2666-0.02734-0.32128-0.07178-0.19824-0.25293-0.30079-0.18115-0.10596-0.39307-0.06494z"
+                  fill="#F5F5F7"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <div
+            data-pencil-name="Header Divider"
+            className="box-border w-full h-[1px] shrink-0 bg-[#38383A]"
+          ></div>
+          <div
+            data-pencil-name="Search Wrap"
+            className="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[13px_16px] justify-start items-start"
+          >
+            <div
+              data-pencil-name="Search Field"
+              className="box-border [flex:1_1_0] h-fit flex flex-row gap-[10px] p-[11px_14px] justify-start items-center bg-[#2C2C2E] rounded-[9px]"
+            >
+              <svg
+                data-pencil-name="Search Icon"
+                data-icon-name="search"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                className="box-border w-[16px] shrink-0 h-[16px]"
+              >
+                <path
+                  d="M6.00537 1.17578q-0.04102 0.01367-0.23584 0.02734-0.57422 0.07178-1.16211 0.29053-0.58789 0.21533-1.09375 0.5503-0.39307 0.2666-0.74853 0.61181-0.35547 0.3418-0.62207 0.7041-0.646 0.92285-0.86817 2.03028-0.05811 0.28027-0.07861 0.46142-0.02051 0.18115-0.02051 0.57422 0 0.43408 0.02734 0.68018 0.02734 0.24268 0.12647 0.59472 0.19482 0.75537 0.60156 1.43555 0.40674 0.67676 0.96729 1.18262 0.40674 0.3623 0.81689 0.60156 0.41357 0.23926 0.91944 0.43408 1.06299 0.39307 2.21826 0.29395 1.15527-0.09912 2.1499-0.65967 0.12646-0.06836 0.33496-0.2085 0.2085-0.14014 0.29395-0.21191l0.05468-0.05469 1.10743 1.10742q1.12109 1.104 1.20312 1.15528 0.08545 0.04785 0.23926 0.04785 0.15381 0 0.23584-0.03418 0.08545-0.0376 0.18115-0.1333 0.09912-0.09912 0.1333-0.18115 0.0376-0.08545 0.0376-0.23926 0-0.15381-0.05127-0.23584-0.04785-0.08545-1.15186-1.20654l-1.10742-1.10743 0.05469-0.06836q0.05811-0.05469 0.19824-0.25293 0.82373-1.23047 0.89209-2.70703 0.07178-1.47656-0.63916-2.76513-0.5332-0.96729-1.42187-1.64405-0.88867-0.68018-1.95508-0.9331-0.29395-0.06836-0.54004-0.09571-0.24268-0.03076-0.60498-0.04443-0.43408 0-0.49219 0z m0.7417 1.17578q0.37939 0.01367 0.79297 0.14014 0.41357 0.12646 0.78955 0.32129 0.7417 0.39307 1.28857 1.08008 0.54687 0.68359 0.75538 1.49707 0.07178 0.28027 0.09228 0.49902 0.02051 0.21533 0.02051 0.50928 0 0.70068-0.19483 1.30224-0.39307 1.16211-1.33984 1.91065-0.94336 0.74853-2.16016 0.875-0.19824 0.01367-0.49218 0.00683-0.29395-0.00684-0.48877-0.03418-0.5332-0.08545-1.03907-0.30761-0.50244-0.22559-0.93652-0.56055-0.14014-0.12646-0.35205-0.3418-0.2085-0.21875-0.33154-0.37256-0.57422-0.76904-0.7417-1.69531-0.08545-0.43408-0.06494-0.90918 0.02051-0.4751 0.11963-0.89551 0.29395-1.14844 1.18945-1.95849 0.89551-0.81348 2.05762-1.02539 0.18115-0.02734 0.42041-0.04102 0.23926-0.01367 0.34863-0.01367l0.2666 0.01367z"
+                  fill="#98989D"
+                ></path>
+              </svg>
+              <div
+                data-pencil-name="Placeholder"
+                className="text-[15px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+              >
+                Search
+              </div>
+            </div>
+          </div>
+          <div
+            data-pencil-name="List Divider"
+            className="box-border w-full h-[1px] shrink-0 bg-[#38383A]"
+          ></div>
+          <div
+            data-pencil-name="Account List"
+            className="box-border w-full h-fit shrink-0 flex flex-col gap-[11px] p-[13px_16px] justify-start items-start"
+          >
+            <div
+              data-pencil-name="Card Google"
+              className="box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#1C1C1E] [outline:1px_solid_#0A84FF52] [outline-offset:-0.5px] rounded-[11px] overflow-hidden"
+            >
+              <div
+                data-pencil-name="Content"
+                className="box-border w-full h-fit shrink-0 flex flex-col gap-[2px] p-[15px_18px_13px_18px] justify-start items-start"
+              >
+                <div
+                  data-pencil-name="Issuer"
+                  className="text-[15px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
+                >
+                  Google
+                </div>
+                <div
+                  data-pencil-name="Code"
+                  className="text-[33px]/[36px] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-medium tracking-[0.5px] text-left [white-space:nowrap]"
+                >
+                  451 520
+                </div>
+                <div
+                  data-pencil-name="Account"
+                  className="text-[15px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                >
+                  alice@gmail.com
+                </div>
+              </div>
+              <div
+                data-pencil-name="Progress Track"
+                className="box-border w-full h-[4px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#F5F5F71A]"
+              >
+                <div
+                  data-pencil-name="Progress Fill"
+                  className="box-border w-[253px] shrink-0 h-[4px] bg-[#0A84FF]"
+                ></div>
+              </div>
+            </div>
+            <div
+              data-pencil-name="Card GitHub"
+              className="box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#1C1C1E] [outline:1px_solid_#30D15852] [outline-offset:-0.5px] rounded-[11px] overflow-hidden"
+            >
+              <div
+                data-pencil-name="Content"
+                className="box-border w-full h-fit shrink-0 flex flex-col gap-[2px] p-[15px_18px_13px_18px] justify-start items-start"
+              >
+                <div
+                  data-pencil-name="Issuer"
+                  className="text-[15px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
+                >
+                  GitHub
+                </div>
+                <div
+                  data-pencil-name="Code"
+                  className="text-[33px]/[36px] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-medium tracking-[0.5px] text-left [white-space:nowrap]"
+                >
+                  998 523
+                </div>
+                <div
+                  data-pencil-name="Account"
+                  className="text-[15px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                >
+                  alice
+                </div>
+              </div>
+              <div
+                data-pencil-name="Progress Track"
+                className="box-border w-full h-[4px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#F5F5F71A]"
+              >
+                <div
+                  data-pencil-name="Progress Fill"
+                  className="box-border w-[167px] shrink-0 h-[4px] bg-[#30D158]"
+                ></div>
+              </div>
+            </div>
+            <div
+              data-pencil-name="Card AWS"
+              className="box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#1C1C1E] [outline:1px_solid_#FF9F0A52] [outline-offset:-0.5px] rounded-[11px] overflow-hidden"
+            >
+              <div
+                data-pencil-name="Content"
+                className="box-border w-full h-fit shrink-0 flex flex-col gap-[2px] p-[15px_18px_13px_18px] justify-start items-start"
+              >
+                <div
+                  data-pencil-name="Issuer"
+                  className="text-[15px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
+                >
+                  AWS
+                </div>
+                <div
+                  data-pencil-name="Code"
+                  className="text-[33px]/[36px] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-medium tracking-[0.5px] text-left [white-space:nowrap]"
+                >
+                  755 224
+                </div>
+                <div
+                  data-pencil-name="Account"
+                  className="text-[15px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                >
+                  root
+                </div>
+              </div>
+              <div
+                data-pencil-name="Progress Track"
+                className="box-border w-full h-[4px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#F5F5F71A]"
+              >
+                <div
+                  data-pencil-name="Progress Fill"
+                  className="box-border w-[73px] shrink-0 h-[4px] bg-[#FF9F0A]"
+                ></div>
+              </div>
+            </div>
+          </div>
+          <div
+            data-pencil-name="Footer Divider"
+            className="box-border w-full h-[1px] shrink-0 bg-[#38383A]"
+          ></div>
+          <div
+            data-pencil-name="Popup Footer"
+            className="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center"
+          >
+            <div
+              data-pencil-name="Footer Left"
+              className="box-border w-fit shrink-0 h-fit flex flex-row gap-[10px] justify-start items-center"
+            >
+              <svg
+                data-pencil-name="Lock"
+                data-icon-name="lock"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                className="box-border w-[15px] shrink-0 h-[15px]"
+              >
+                <path
+                  d="M6.77441 0.60156q-0.72803 0.02734-1.38769 0.3794-0.65625 0.34863-1.12451 0.92285-0.46826 0.57422-0.64942 1.28857l0 0.01367q-0.07178 0.29395-0.08545 0.48536-0.01367 0.18799-0.02734 1.02539l0 1.10742-0.2666 0q-0.40674 0-0.63916 0.04443-0.229 0.04102-0.45117 0.15039-0.32471 0.16748-0.56397 0.44776-0.23584 0.28027-0.34863 0.64599l-0.05469 0.15381 0 4.7168 0.05469 0.15381q0.15723 0.51953 0.56055 0.86132 0.40674 0.3418 0.93994 0.39991 0.14014 0.02734 4.26904 0.02734 4.12891 0 4.26904-0.02734 0.30762-0.02734 0.58789-0.16748 0.32471-0.15381 0.56055-0.44092 0.23926-0.28711 0.35205-0.65283l0.05469-0.15381 0-4.7168-0.05469-0.15381q-0.11279-0.36572-0.35205-0.64599-0.23584-0.28027-0.56055-0.44776-0.22217-0.10938-0.45459-0.15039-0.229-0.04443-0.63574-0.04443l-0.2666 0 0-1.13477q-0.01367-0.81006-0.02734-0.99804-0.01367-0.19141-0.08545-0.47168l0-0.02735q-0.18115-0.71436-0.66651-1.30224-0.48193-0.58789-1.15185-0.93653-0.82715-0.40674-1.79444-0.35205z m0.70069 1.20313q0.75537 0.15381 1.2749 0.7417 0.3623 0.40674 0.50244 0.92627 0.05811 0.19482 0.06494 0.41357 0.00684 0.21533 0.00684 0.9707l0 0.96729-4.64844 0 0-1.06299q0-0.82715 0.01367-1.0083 0.01367-0.18457 0.09912-0.40674 0.22217-0.64258 0.74854-1.06982 0.52637-0.42725 1.19629-0.5127 0.14014-0.01367 0.3623 0 0.22559 0.01367 0.3794 0.04102z m3.85205 5.25q0.08203 0.04443 0.15723 0.12304 0.07861 0.0752 0.11279 0.15381 0.0376 0.0752 0.0581 0.19483 0.02051 0.11621 0.00684 2.19092l0 1.6372q0 0.3623-0.02734 0.48877-0.01367 0.08545-0.07178 0.14014l-0.01367 0.02734q-0.11279 0.12646-0.26661 0.19824l-0.0957 0.04102-8.37402 0-0.0957-0.04102q-0.15381-0.0581-0.26661-0.19824l-0.01367-0.02734q-0.05811-0.06836-0.07178-0.14014-0.02734-0.12646-0.02734-0.48877l0-1.65088q-0.01367-2.08838 0.01367-2.20117 0.01367-0.18115 0.1333-0.31445 0.11963-0.1333 0.28711-0.17432 0.06836-0.01367 4.25537-0.01367l4.20069 0.01367 0.09912 0.04102z"
+                  fill="#98989D"
+                ></path>
+              </svg>
+              <div
+                data-pencil-name="Count"
+                className="text-[15px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+              >
+                3 accounts
+              </div>
+            </div>
+            <div
+              data-pencil-name="Quit"
+              className="text-[15px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+            >
+              Quit
+            </div>
+          </div>
+        </div>
+        <div
+          data-pencil-name="Product Copy"
+          className="box-border [flex:1_1_0] h-fit flex flex-col gap-[22px] justify-start items-start"
+        >
+          <div
+            data-pencil-name="Eyebrow"
+            className="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
+          >
+            DESKTOP APP
+          </div>
+          <div
+            data-pencil-name="Title"
+            className="text-[38px]/[42px] box-border w-[560px] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.1px] text-left"
+          >
+            Lives in the menu bar, never in your way.
+          </div>
+          <div
+            data-pencil-name="Body"
+            className="text-[15.5px]/[26px] box-border w-[560px] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
+          >
+            A window that opens on a hotkey and closes the moment it has done its job. No dock
+            icon, no window management, no hunting for a phone.
+          </div>
+          <div
+            data-pencil-name="Steps"
+            className="box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start"
+          >
+            <div
+              data-pencil-name="Step 1"
+              className="box-border w-full h-fit shrink-0 flex flex-row gap-[14px] p-[14px_0px] justify-start items-center"
+            >
+              <div
+                data-pencil-name="Keys"
+                className="box-border w-[104px] shrink-0 h-fit flex flex-row gap-[5px] justify-start items-center"
+              >
+                <div
+                  data-pencil-name="Key ⌘"
+                  className="box-border w-[26px] shrink-0 h-[26px] flex flex-row gap-0 p-[5px_0px] justify-center items-center bg-[#232326] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[7px]"
+                >
+                  <div
+                    data-pencil-name="Key Label"
+                    className="text-[12.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
+                  >
+                    ⌘
+                  </div>
+                </div>
+                <div
+                  data-pencil-name="Key ⇧"
+                  className="box-border w-[26px] shrink-0 h-[26px] flex flex-row gap-0 p-[5px_0px] justify-center items-center bg-[#232326] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[7px]"
+                >
+                  <div
+                    data-pencil-name="Key Label"
+                    className="text-[12.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
+                  >
+                    ⇧
+                  </div>
+                </div>
+                <div
+                  data-pencil-name="Key 2"
+                  className="box-border w-[26px] shrink-0 h-[26px] flex flex-row gap-0 p-[5px_0px] justify-center items-center bg-[#232326] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[7px]"
+                >
+                  <div
+                    data-pencil-name="Key Label"
+                    className="text-[12.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
+                  >
+                    2
+                  </div>
+                </div>
+              </div>
+              <div
+                data-pencil-name="Label"
+                className="text-[15px]/[normal] box-border text-[#C5C5CA] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+              >
+                Summon it from any app
+              </div>
+            </div>
+            <div
+              data-pencil-name="Rule"
+              className="box-border w-full h-[1px] shrink-0 bg-[#262628]"
+            ></div>
+            <div
+              data-pencil-name="Step 2"
+              className="box-border w-full h-fit shrink-0 flex flex-row gap-[14px] p-[14px_0px] justify-start items-center"
+            >
+              <div
+                data-pencil-name="Keys"
+                className="box-border w-[104px] shrink-0 h-fit flex flex-row gap-[5px] justify-start items-center"
+              >
+                <div
+                  data-pencil-name="Key type"
+                  className="box-border w-fit shrink-0 h-[26px] flex flex-row gap-0 p-[5px_9px] justify-center items-center bg-[#232326] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[7px]"
+                >
+                  <div
+                    data-pencil-name="Key Label"
+                    className="text-[12.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
+                  >
+                    type
+                  </div>
+                </div>
+              </div>
+              <div
+                data-pencil-name="Label"
+                className="text-[15px]/[normal] box-border text-[#C5C5CA] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+              >
+                Filter down to the account
+              </div>
+            </div>
+            <div
+              data-pencil-name="Rule"
+              className="box-border w-full h-[1px] shrink-0 bg-[#262628]"
+            ></div>
+            <div
+              data-pencil-name="Step 3"
+              className="box-border w-full h-fit shrink-0 flex flex-row gap-[14px] p-[14px_0px] justify-start items-center"
+            >
+              <div
+                data-pencil-name="Keys"
+                className="box-border w-[104px] shrink-0 h-fit flex flex-row gap-[5px] justify-start items-center"
+              >
+                <div
+                  data-pencil-name="Key ↵"
+                  className="box-border w-[26px] shrink-0 h-[26px] flex flex-row gap-0 p-[5px_0px] justify-center items-center bg-[#232326] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[7px]"
+                >
+                  <div
+                    data-pencil-name="Key Label"
+                    className="text-[12.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
+                  >
+                    ↵
+                  </div>
+                </div>
+              </div>
+              <div
+                data-pencil-name="Label"
+                className="text-[15px]/[normal] box-border text-[#C5C5CA] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+              >
+                Code copied, window gone
+              </div>
+            </div>
+          </div>
+          <div
+            data-pencil-name="Platforms"
+            className="box-border w-fit h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center"
+          >
+            <div
+              data-pencil-name="Platform macOS 12+"
+              className="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] p-[6px_11px] justify-start items-center bg-[#FFFFFF08] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[999px]"
+            >
+              <svg
+                data-pencil-name="Icon"
+                data-icon-name="monitor"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                className="box-border w-[13px] shrink-0 h-[13px]"
+              >
+                <path
+                  d="M1.97559 1.20313q-0.47852 0.09912-0.83741 0.44433-0.35547 0.3418-0.4956 0.80322-0.02734 0.14014-0.04102 0.32129-0.01367 0.23926-0.02734 0.92285l0.01367 4.63477q0 0.54688 0.02734 0.72803 0.01367 0.12646 0.05811 0.25293l0.01367 0.04101q0.14014 0.37939 0.42725 0.65284 0.28711 0.27002 0.66308 0.39648l0.01368 0.01367q0.14014 0.04443 0.2666 0.05811 0.15381 0.01367 0.6289 0.02734l3.73926 0 0 1.17578-1.91748 0-0.08545 0.04102q-0.22217 0.11279-0.30078 0.33838-0.0752 0.22217 0.00684 0.43408 0.05811 0.0957 0.14013 0.18115 0.08545 0.08203 0.16748 0.11963 0.08545 0.03418 0.40674 0.03418l2.15674 0 2.15674 0q0.32129 0 0.40332-0.03418 0.08545-0.0376 0.16748-0.11963 0.08545-0.08545 0.1333-0.18799 0.05127-0.10596 0.05127-0.23242 0-0.12646-0.04102-0.23926-0.09912-0.19482-0.29394-0.29394l-0.08545-0.04102-1.91748 0 0-1.17578 3.73926 0q0.4751-0.01367 0.6289-0.02734 0.12646-0.01367 0.2666-0.05811l0.01368-0.01367q0.37598-0.12646 0.66308-0.39648 0.28711-0.27344 0.42725-0.65284l0.01367-0.04101q0.04443-0.12646 0.05811-0.25293 0.02734-0.18115 0.02734-0.71436l0.01367-4.64844q-0.01367-0.68359-0.02734-0.92285-0.01367-0.18115-0.04102-0.32129-0.14014-0.4751-0.50586-0.81005-0.3623-0.33838-0.84082-0.4375-0.10938-0.02734-0.81006-0.02735l-4.21435 0-4.17334 0q-0.72803 0.01367-0.8374 0.02735z m9.78564 1.14843q0.30762 0.04102 0.43408 0.32129l0.04102 0.09912 0 6.13184-0.04102 0.09912q-0.11279 0.2085-0.32471 0.29394l-0.0957 0.02735-9.5498 0-0.09571-0.02735q-0.21191-0.08545-0.3247-0.29394l-0.04102-0.09912 0-6.13184 0.04102-0.09912q0.05811-0.12646 0.16748-0.21533 0.11279-0.09229 0.23242-0.11279 0.11963-0.02051 4.78174-0.02051 4.66211 0 4.7749 0.02734z"
+                  fill="#6E6E73"
+                ></path>
+              </svg>
+              <div
+                data-pencil-name="Label"
+                className="text-[12.5px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+              >
+                macOS 12+
+              </div>
+            </div>
+            <div
+              data-pencil-name="Platform Windows 10+"
+              className="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] p-[6px_11px] justify-start items-center bg-[#FFFFFF08] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[999px]"
+            >
+              <svg
+                data-pencil-name="Icon"
+                data-icon-name="monitor"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                className="box-border w-[13px] shrink-0 h-[13px]"
+              >
+                <path
+                  d="M1.97559 1.20313q-0.47852 0.09912-0.83741 0.44433-0.35547 0.3418-0.4956 0.80322-0.02734 0.14014-0.04102 0.32129-0.01367 0.23926-0.02734 0.92285l0.01367 4.63477q0 0.54688 0.02734 0.72803 0.01367 0.12646 0.05811 0.25293l0.01367 0.04101q0.14014 0.37939 0.42725 0.65284 0.28711 0.27002 0.66308 0.39648l0.01368 0.01367q0.14014 0.04443 0.2666 0.05811 0.15381 0.01367 0.6289 0.02734l3.73926 0 0 1.17578-1.91748 0-0.08545 0.04102q-0.22217 0.11279-0.30078 0.33838-0.0752 0.22217 0.00684 0.43408 0.05811 0.0957 0.14013 0.18115 0.08545 0.08203 0.16748 0.11963 0.08545 0.03418 0.40674 0.03418l2.15674 0 2.15674 0q0.32129 0 0.40332-0.03418 0.08545-0.0376 0.16748-0.11963 0.08545-0.08545 0.1333-0.18799 0.05127-0.10596 0.05127-0.23242 0-0.12646-0.04102-0.23926-0.09912-0.19482-0.29394-0.29394l-0.08545-0.04102-1.91748 0 0-1.17578 3.73926 0q0.4751-0.01367 0.6289-0.02734 0.12646-0.01367 0.2666-0.05811l0.01368-0.01367q0.37598-0.12646 0.66308-0.39648 0.28711-0.27344 0.42725-0.65284l0.01367-0.04101q0.04443-0.12646 0.05811-0.25293 0.02734-0.18115 0.02734-0.71436l0.01367-4.64844q-0.01367-0.68359-0.02734-0.92285-0.01367-0.18115-0.04102-0.32129-0.14014-0.4751-0.50586-0.81005-0.3623-0.33838-0.84082-0.4375-0.10938-0.02734-0.81006-0.02735l-4.21435 0-4.17334 0q-0.72803 0.01367-0.8374 0.02735z m9.78564 1.14843q0.30762 0.04102 0.43408 0.32129l0.04102 0.09912 0 6.13184-0.04102 0.09912q-0.11279 0.2085-0.32471 0.29394l-0.0957 0.02735-9.5498 0-0.09571-0.02735q-0.21191-0.08545-0.3247-0.29394l-0.04102-0.09912 0-6.13184 0.04102-0.09912q0.05811-0.12646 0.16748-0.21533 0.11279-0.09229 0.23242-0.11279 0.11963-0.02051 4.78174-0.02051 4.66211 0 4.7749 0.02734z"
+                  fill="#6E6E73"
+                ></path>
+              </svg>
+              <div
+                data-pencil-name="Label"
+                className="text-[12.5px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+              >
+                Windows 10+
+              </div>
+            </div>
+            <div
+              data-pencil-name="Platform Linux"
+              className="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] p-[6px_11px] justify-start items-center bg-[#FFFFFF08] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[999px]"
+            >
+              <svg
+                data-pencil-name="Icon"
+                data-icon-name="monitor"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                className="box-border w-[13px] shrink-0 h-[13px]"
+              >
+                <path
+                  d="M1.97559 1.20313q-0.47852 0.09912-0.83741 0.44433-0.35547 0.3418-0.4956 0.80322-0.02734 0.14014-0.04102 0.32129-0.01367 0.23926-0.02734 0.92285l0.01367 4.63477q0 0.54688 0.02734 0.72803 0.01367 0.12646 0.05811 0.25293l0.01367 0.04101q0.14014 0.37939 0.42725 0.65284 0.28711 0.27002 0.66308 0.39648l0.01368 0.01367q0.14014 0.04443 0.2666 0.05811 0.15381 0.01367 0.6289 0.02734l3.73926 0 0 1.17578-1.91748 0-0.08545 0.04102q-0.22217 0.11279-0.30078 0.33838-0.0752 0.22217 0.00684 0.43408 0.05811 0.0957 0.14013 0.18115 0.08545 0.08203 0.16748 0.11963 0.08545 0.03418 0.40674 0.03418l2.15674 0 2.15674 0q0.32129 0 0.40332-0.03418 0.08545-0.0376 0.16748-0.11963 0.08545-0.08545 0.1333-0.18799 0.05127-0.10596 0.05127-0.23242 0-0.12646-0.04102-0.23926-0.09912-0.19482-0.29394-0.29394l-0.08545-0.04102-1.91748 0 0-1.17578 3.73926 0q0.4751-0.01367 0.6289-0.02734 0.12646-0.01367 0.2666-0.05811l0.01368-0.01367q0.37598-0.12646 0.66308-0.39648 0.28711-0.27344 0.42725-0.65284l0.01367-0.04101q0.04443-0.12646 0.05811-0.25293 0.02734-0.18115 0.02734-0.71436l0.01367-4.64844q-0.01367-0.68359-0.02734-0.92285-0.01367-0.18115-0.04102-0.32129-0.14014-0.4751-0.50586-0.81005-0.3623-0.33838-0.84082-0.4375-0.10938-0.02734-0.81006-0.02735l-4.21435 0-4.17334 0q-0.72803 0.01367-0.8374 0.02735z m9.78564 1.14843q0.30762 0.04102 0.43408 0.32129l0.04102 0.09912 0 6.13184-0.04102 0.09912q-0.11279 0.2085-0.32471 0.29394l-0.0957 0.02735-9.5498 0-0.09571-0.02735q-0.21191-0.08545-0.3247-0.29394l-0.04102-0.09912 0-6.13184 0.04102-0.09912q0.05811-0.12646 0.16748-0.21533 0.11279-0.09229 0.23242-0.11279 0.11963-0.02051 4.78174-0.02051 4.66211 0 4.7749 0.02734z"
+                  fill="#6E6E73"
+                ></path>
+              </svg>
+              <div
+                data-pencil-name="Label"
+                className="text-[12.5px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+              >
+                Linux
+              </div>
+            </div>
+            <div
+              data-pencil-name="Size"
+              className="text-[11.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+            >
+              12 MB · Tauri 2
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
