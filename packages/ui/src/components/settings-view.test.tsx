@@ -41,6 +41,15 @@ describe("SettingsView hotkeys", () => {
     expect(setQuickCopy.mock.calls[0][0].enabled).toBe(false);
   });
 
+  it("offers Never in the Auto-Lock picker and writes 0 when chosen", async () => {
+    const set = vi.fn().mockResolvedValue(undefined);
+    const b = backend({ autoLock: { get: async () => 5, set } });
+    render(<SettingsView backend={b} />);
+    fireEvent.click(await screen.findByText("Auto-Lock"));
+    fireEvent.click(await screen.findByText("Never"));
+    await waitFor(() => expect(set).toHaveBeenCalledWith(0));
+  });
+
   it("shows the external summon binding and a change-in-browser row", async () => {
     const open = vi.fn();
     const b = backend({

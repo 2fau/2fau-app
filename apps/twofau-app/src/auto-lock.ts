@@ -9,8 +9,11 @@ const DEFAULT_MINUTES = 5;
 let timer: number | undefined;
 
 export function getAutoLockMinutes(): number {
-  const n = Number(localStorage.getItem(KEY));
-  return Number.isFinite(n) && n > 0 ? n : DEFAULT_MINUTES;
+  const raw = localStorage.getItem(KEY);
+  if (raw === null) return DEFAULT_MINUTES;
+  const n = Number(raw);
+  // 0 is a valid stored value meaning "never lock"; only junk falls back.
+  return Number.isFinite(n) && n >= 0 ? n : DEFAULT_MINUTES;
 }
 
 export function setAutoLockMinutes(minutes: number): void {
@@ -20,7 +23,11 @@ export function setAutoLockMinutes(minutes: number): void {
 
 function arm(): void {
   if (timer !== undefined) window.clearTimeout(timer);
-  timer = window.setTimeout(() => void invoke("lock"), getAutoLockMinutes() * 60_000);
+  timer = undefined;
+  const minutes = getAutoLockMinutes();
+  // 0 means never: leave the watchdog disarmed until the interval changes.
+  if (minutes <= 0) return;
+  timer = window.setTimeout(() => void invoke("lock"), minutes * 60_000);
 }
 
 /** Start the watchdog and reset it on any user activity. Call once on launch. */

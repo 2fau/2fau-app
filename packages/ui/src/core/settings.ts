@@ -56,5 +56,5 @@ export interface SettingsBackend {
   };
 }
 
-/** Auto-lock choices offered in the picker, in minutes. */
-export const AUTO_LOCK_OPTIONS = [1, 5, 15, 30, 60] as const;
+/** Auto-lock choices offered in the picker, in minutes. `0` means never. */
+export const AUTO_LOCK_OPTIONS = [1, 5, 15, 30, 60, 0] as const;

@@ -32,7 +32,7 @@
     --card: #262628;
     --card-foreground: #f5f5f7;
     --muted: #2c2c2e;
-    --muted-foreground: #98989d;
+    --muted-foreground: #c3c3cc;
     --tertiary-foreground: #7c7c80;
     --secondary: #303032;
     --secondary-foreground: #f5f5f7;
@@ -137,20 +137,20 @@ body {
    AccountCard's bottom-rising radial glow. */
 .acct-glow {
   background-image: radial-gradient(
-    120% 95% at 50% 118%,
-    color-mix(in oklab, var(--row-accent) 38%, transparent) 0%,
-    color-mix(in oklab, var(--row-accent) 19%, transparent) 35%,
-    transparent 70%
+    120% 95% at 50% 8%,
+    color-mix(in oklab, var(--row-accent) 60%, transparent) 0%,
+    color-mix(in oklab, var(--row-accent) 30%, transparent) 35%,
+    transparent 100%
   );
 }
 
 @media (prefers-color-scheme: dark) {
   .acct-glow {
     background-image: radial-gradient(
-      120% 95% at 50% 118%,
+      120% 150% at 50% 8%,
       color-mix(in oklab, var(--row-accent) 60%, transparent) 0%,
-      color-mix(in oklab, var(--row-accent) 32%, transparent) 35%,
-      transparent 70%
+      color-mix(in oklab, var(--row-accent) 30%, transparent) 45%,
+      transparent 100%
     );
   }
 }

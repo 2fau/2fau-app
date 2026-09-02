@@ -31,6 +31,7 @@ import {
 type Screen = "main" | "password" | "import" | "autolock" | "sync" | "about" | "hotkeys";
 
 function lockLabel(minutes: number): string {
+  if (minutes === 0) return "Never";
   return minutes === 1 ? "1 minute" : `${minutes} minutes`;
 }
 

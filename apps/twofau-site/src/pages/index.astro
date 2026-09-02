@@ -1,8 +1,11 @@
 ---
 import { HomePage } from '../components/HomePage';
+import { HeroCta } from '../components/home/HeroCta';
 import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<HomePage />
+	<HomePage>
+		<HeroCta slot="heroCta" client:load />
+	</HomePage>
 </Layout>
