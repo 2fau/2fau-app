@@ -1,0 +1,46 @@
+[package]
+versioned_files = [
+    "package.json",
+    "apps/twofau-app/package.json",
+    "apps/twofau-extension/package.json",
+    "Cargo.toml",
+    "apps/twofau-app/src-tauri/Cargo.toml",
+    "crates/twofau-wasm/Cargo.toml",
+    "Cargo.lock",
+    { path = "apps/twofau-extension/manifest.json", regex = '"version": "(?<version>\d+\.\d+\.\d+)"' },
+    { path = "apps/twofau-app/src-tauri/tauri.conf.json", regex = '"version": "(?<version>\d+\.\d+\.\d+)"' },
+]
+changelog = "CHANGELOG.md"
+
+[github]
+owner = "2fau"
+repo = "2fau-app"
+
+[[workflows]]
+name = "prepare-release"
+[[workflows.steps]]
+type = "PrepareRelease"
+[[workflows.steps]]
+type = "CreatePullRequest"
+base = "main"
+[workflows.steps.title]
+template = "chore: Release {version}"
+variables = { "{version}" = "Version" }
+[workflows.steps.body]
+template = "Automated release. Merging publishes:\n\n{changelog}"
+variables = { "{changelog}" = "ChangelogEntry" }
+
+[[workflows]]
+name = "release"
+[[workflows.steps]]
+type = "Release"
+
+[[workflows]]
+name = "document-change"
+[[workflows.steps]]
+type = "CreateChangeFile"
+
+# CI guard fact (knope 0.23.0): when there is nothing to release, both
+# `prepare-release` and `release` exit 1 with error code `releases::no_release`
+# ("No packages are ready to release"). The workflows grep stdout for
+# `no_release` to treat that as a green no-op.
