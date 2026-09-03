@@ -96,5 +96,28 @@ human looking at the screen. Say so rather than implying a GUI fix was verified.
   `contents: read`.
 - `.github/workflows/release.yml` — pushes to `main` publish a **continuous prerelease**
   under a rolling `tip` tag (the run deletes and recreates the tag itself, so no PAT is
-  needed); `v*` tags produce a draft release. Matrix: macOS arm64 + x64, Ubuntu, Windows.
+  needed); `v*` tags build and upload installers + extensions to the matching release.
+  Matrix: macOS arm64 + x64, Ubuntu, Windows.
 - Neither installer is code-signed yet.
+
+### Releasing (Knope)
+
+Versioned releases are automated with [Knope](https://knope.tech); never edit version
+strings by hand.
+
+1. Land changes on `main` as **Conventional Commits** — `feat:` (→ patch while pre-1.0,
+   minor after), `fix:` (→ patch), `feat!:` / `BREAKING CHANGE:` (→ minor pre-1.0, major
+   after). `ci:` / `chore:` / `docs:` / `refactor:` / `test:` don't trigger a release. For
+   a hand-written note, add a change file with `knope document-change`.
+2. `prepare-release.yml` keeps a **"chore: Release x.y.z"** PR up to date with the next
+   version + `CHANGELOG.md`. Review and merge it to release.
+3. Merging runs the `knope-release` job in `release.yml`: `knope release` bumps every
+   version file (`package.json`s, `Cargo.toml`/`Cargo.lock`, `manifest.json`,
+   `tauri.conf.json`), tags `vX.Y.Z`, and creates the GitHub Release with the changelog.
+4. That `v*` tag triggers `release.yml`'s build matrix, which uploads the desktop
+   installers (`.dmg`/`.msi`/`.AppImage`/`.deb`/`.rpm`/…) and the extension
+   `.crx`/`.xpi`/`.zip` to the Knope-created release.
+5. The rolling **`tip`** prerelease is separate and always tracks the latest `main` commit.
+
+`knope.toml` holds the config (single `[package]` → `v{version}` tags). Requires the
+`RELEASE_TOKEN` secret so the Knope-created tag can trigger the build.
