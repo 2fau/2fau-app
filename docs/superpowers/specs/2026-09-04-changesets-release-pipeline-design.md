@@ -183,6 +183,13 @@ Actions are pinned to commit SHAs (repo convention).
 
 ### `.github/workflows/release.yml` (edit)
 
+**Invariant: the Continuous Release (`tip`) path is unchanged.** No edits to the
+`reset-tip` job, the `push: branches: [main]` trigger, the tauri-action inputs on
+the non-tag path, or the extension packaging/upload steps as they apply to `tip`.
+It keeps building the latest `main` commit and attaching assets to the rolling
+`tip` prerelease exactly as today. Every change below is gated to the tag path
+(`github.ref_type == 'tag'`) so the continuous build never sees it.
+
 - Tag path: set `releaseDraft: false` in the tauri-action step is **not** used —
   instead leave tauri-action to upload into the pre-created draft by `tagName`
   and do **not** pass a `releaseBody` on the tag path (so the changelog body set
