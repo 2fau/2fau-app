@@ -105,28 +105,40 @@ jobs:
           prerelease: ${{ github.ref_type != 'tag' }}
           args: ${{ matrix.target && format('--target {0}', matrix.target) || '' }}
 
-      # Package the Chrome + Firefox extensions in the Linux leg only, right after
-      # the release exists. Doing it here (rather than a separate job that needs
-      # the whole matrix) means it never waits on the other OS legs — an
-      # Intel-macOS runner that never gets scheduled used to block the extension
-      # entirely. The frontend prereqs (ts-rs bindings, WASM, node deps) are
-      # already set up above, so only the extension build + zips remain.
+      # Package every browser deliverable in the Linux leg only, right after the
+      # release exists. Doing it here (rather than a separate job that needs the
+      # whole matrix) means it never waits on the other OS legs — an Intel-macOS
+      # runner that never gets scheduled used to block the extension entirely.
+      # The frontend prereqs (ts-rs bindings, WASM, node deps) are already set up
+      # above, so `package` only has to build the extension and emit, into
+      # apps/twofau-extension/artifacts/:
+      #   2fau-chrome-<v>.crx    signed Chrome extension (CRXv3)
+      #   2fau-chrome-<v>.zip    Chrome payload as a plain zip (Web Store upload)
+      #   2fau-firefox-<v>.zip   Firefox payload as a plain zip (AMO upload)
+      #   2fau-firefox-<v>.xpi   Firefox add-on file
       #
-      # We ship .zip, not .crx/.xpi: Chrome refuses self-signed CRX files
-      # ("CRX_REQUIRED_PROOF_MISSING"). Install via chrome://extensions or
-      # about:debugging -> load the unzipped folder, or upload the .zip to the
-      # Chrome Web Store / AMO.
-      - name: Build the browser extensions (Chrome + Firefox)
+      # A stable crx signing key (repo secret CRX_PRIVATE_KEY, a PEM RSA private
+      # key) keeps the extension ID constant across releases; crx3 reuses the
+      # key.pem written here. Without the secret crx3 mints a throwaway key so the
+      # build still succeeds — but the ID then changes every run, which breaks
+      # updates and pinning.
+      #
+      # Caveat: a self-signed .crx cannot be drag-installed into stable Chrome
+      # ("CRX_REQUIRED_PROOF_MISSING"); it's for enterprise policy / self-hosted
+      # update manifests. For normal installs use the .zip (load unpacked or
+      # upload to the Web Store) or the AMO-signed .xpi produced below.
+      - name: Package the browser extensions (crx, xpi, zips)
         if: matrix.platform == 'ubuntu-22.04'
-        run: pnpm --filter @twofau/extension build:browsers
-
-      - name: Zip the unpacked extensions
-        if: matrix.platform == 'ubuntu-22.04'
+        env:
+          CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
         run: |
-          cd apps/twofau-extension/dist
-          zip -qr "$GITHUB_WORKSPACE/2FAu-extension-chrome.zip" .
-          cd ../dist-firefox
-          zip -qr "$GITHUB_WORKSPACE/2FAu-extension-firefox.zip" .
+          if [ -n "$CRX_PRIVATE_KEY" ]; then
+            printf '%s' "$CRX_PRIVATE_KEY" > apps/twofau-extension/key.pem
+          else
+            echo "::warning::CRX_PRIVATE_KEY secret is not set — a throwaway signing key will be generated; the extension ID will not be stable across releases."
+          fi
+          pnpm --filter @twofau/extension package
+          rm -f apps/twofau-extension/key.pem
 
       - name: Attach the extensions to the release
         if: matrix.platform == 'ubuntu-22.04'
@@ -137,12 +149,15 @@ jobs:
           TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'tip' }}
         run: |
           gh release upload "$TAG" \
-            2FAu-extension-chrome.zip 2FAu-extension-firefox.zip \
+            apps/twofau-extension/artifacts/*.crx \
+            apps/twofau-extension/artifacts/*.zip \
+            apps/twofau-extension/artifacts/*.xpi \
             --repo "$REPO" --clobber
 
       # Optional: produce an AMO-signed .xpi that installs in normal Firefox.
       # Runs only when the two AMO credentials are configured as repo secrets;
-      # otherwise it's skipped and the unsigned .zip above is the Firefox asset.
+      # otherwise it's skipped and the unsigned .zip/.xpi above are the Firefox
+      # assets (fine for AMO upload or a temporary about:debugging load).
       # Create the secrets from an AMO API key (addons.mozilla.org -> Manage API
       # Keys) and set the real add-on id via GECKO_ID in firefox-manifest.mjs.
       - name: Check for AMO credentials

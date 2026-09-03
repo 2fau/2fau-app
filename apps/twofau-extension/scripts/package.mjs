@@ -7,11 +7,12 @@ import { packCrx } from "./pack-crx.mjs";
 import { packFirefox } from "./pack-firefox.mjs";
 import { packXpi } from "./pack-xpi.mjs";
 
-const { crxPath, zipPath } = await packCrx();
+const { crxPath, zipPath: chromeZip } = await packCrx();
 packFirefox();
-const { xpiPath } = await packXpi();
+const { zipPath: firefoxZip, xpiPath } = await packXpi();
 
 console.log("\nPackaged:");
 console.log(`  Chrome CRX:  ${crxPath}`);
-console.log(`  Chrome ZIP:  ${zipPath} (Chrome Web Store upload)`);
+console.log(`  Chrome ZIP:  ${chromeZip} (Chrome Web Store upload)`);
+console.log(`  Firefox ZIP: ${firefoxZip} (AMO upload)`);
 console.log(`  Firefox XPI: ${xpiPath}`);
