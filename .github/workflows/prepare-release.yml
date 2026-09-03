@@ -20,7 +20,7 @@ jobs:
   prepare:
     # Skip the release PR's own bump commit so we don't loop preparing a release
     # of the release.
-    if: ${{ !startsWith(github.event.head_commit.message, 'chore: Release') }}
+    if: "${{ !startsWith(github.event.head_commit.message, 'chore: Release') }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
