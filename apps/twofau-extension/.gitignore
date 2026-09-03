@@ -1,3 +1,7 @@
 dist
 dist-firefox
+artifacts
 *.zip
+*.crx
+*.xpi
+key.pem

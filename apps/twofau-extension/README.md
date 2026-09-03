@@ -23,6 +23,26 @@ That produces two unpacked builds:
 `pnpm --filter @twofau/extension build` alone builds just the Chrome `dist/`;
 `pnpm --filter @twofau/extension pack:firefox` derives `dist-firefox/` from it.
 
+## Package (distributable files)
+
+To build both browsers' shippable files in one step:
+
+```bash
+pnpm --filter @twofau/extension package
+```
+
+That rebuilds `dist/`, then writes into `artifacts/`:
+
+- `2fau-chrome-<version>.crx` — signed Chrome extension (CRXv3).
+- `2fau-chrome-<version>.zip` — the same payload as a plain zip (Chrome Web
+  Store uploads want the zip, not the crx).
+- `2fau-firefox-<version>.xpi` — the Firefox add-on (Gecko manifest).
+
+`pack:chrome` / `pack:firefox:xpi` build just one browser's file from an
+existing `dist/`. The crx is signed with `key.pem`, generated on first run and
+reused after — it fixes the extension's id, so keep it (it is gitignored, never
+commit it). `artifacts/`, `*.crx`, `*.xpi` and `key.pem` are all gitignored.
+
 ## Load unpacked
 
 - **Chrome/Edge**: `chrome://extensions` → enable *Developer mode* → *Load

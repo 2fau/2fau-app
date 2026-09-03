@@ -1,5 +1,5 @@
 import { Check, Copy, Pencil, RotateCw, Trash2 } from "lucide-react";
-import { type CSSProperties, type PointerEvent, useState } from "react";
+import { type CSSProperties, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Item,
@@ -199,7 +199,6 @@ export function AccountRow({
       onClick={copy}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
-      onPointerMove={(e) => cardUpdate(e)}
     >
       <ItemContent className="min-w-0 gap-0.5">
         <ItemTitle className="max-w-full truncate text-[11px] font-medium text-muted-foreground">

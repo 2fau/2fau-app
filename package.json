@@ -9,6 +9,8 @@
     "build:site": "pnpm --filter @twofau/site build",
     "build:core-wasm": "pnpm --filter @twofau/core-wasm build:wasm",
     "build:app": "pnpm --filter @twofau/app build",
+    "build:ext": "pnpm --filter @twofau/extension build",
+    "pack:ext": "pnpm --filter @twofau/extension package",
     "site": "pnpm --filter @twofau/site dev",
     "test": "pnpm -r test",
     "dev": "pnpm --filter @twofau/app dev",
