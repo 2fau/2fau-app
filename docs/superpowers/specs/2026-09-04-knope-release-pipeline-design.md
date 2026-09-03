@@ -266,10 +266,12 @@ needed. This is a tag-path-only change and does not affect the `tip` path.
   would require a gather job and would duplicate the `tip` build matrix. Recorded
   as the alternative if the tag-path attach proves fragile.
 
-## Open decisions (confirm before planning)
+## Resolved decisions
 
-1. **Change documentation:** Conventional Commits as the primary source (with
-   Knope change files allowed), vs. change-files-only. Recommended: Conventional
-   Commits primary.
-2. **Asset attach mechanism:** reuse `release.yml`'s tag path via `gh release
-   upload` (recommended, minimal), vs. Knope-owns-assets gather job.
+1. **Change documentation:** Conventional Commits are the primary source
+   (`feat:` / `fix:` / `feat!:`), with Knope change files in `.changeset/`
+   allowed for changes worth a hand-written note.
+2. **Asset attach mechanism:** reuse `release.yml`'s tag path, uploading via
+   `gh release upload "$TAG" <artifacts> --clobber` so the Knope-set release body
+   is never overwritten. tauri-action runs build-only on the tag path (no release
+   metadata management); the `tip` path keeps using tauri-action as today.
