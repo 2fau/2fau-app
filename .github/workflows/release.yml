@@ -189,35 +189,44 @@ jobs:
             apps/twofau-extension/artifacts/*.xpi \
             --repo "$REPO" --clobber
 
-      # Optional: produce an AMO-signed .xpi that installs in normal Firefox.
-      # Runs only when the two AMO credentials are configured as repo secrets;
-      # otherwise it's skipped and the unsigned .zip/.xpi above are the Firefox
-      # assets (fine for AMO upload or a temporary about:debugging load).
-      # Create the secrets from an AMO API key (addons.mozilla.org -> Manage API
-      # Keys) and set the real add-on id via GECKO_ID in firefox-manifest.mjs.
+      # Submit a LISTED version to AMO (addons.mozilla.org) so the add-on ships
+      # from the Firefox store. Tag releases only — never the rolling `tip`
+      # continuous build (that would flood store review). Runs when the AMO API
+      # credentials are set as repo secrets (addons.mozilla.org -> Manage API
+      # Keys -> create JWT issuer/secret).
+      #
+      # One-time manual prerequisites:
+      #  - The listed add-on "firefox@2fau.app" (GECKO_ID in firefox-manifest.mjs)
+      #    must exist on AMO with its listing metadata filled in (name, summary,
+      #    categories, privacy policy, screenshots). A brand-new listed add-on's
+      #    first version is created here on upload, but the listing details must be
+      #    completed in the AMO Developer Hub before it goes public.
+      #  - Because the popup/background bundles are minified, Mozilla requires the
+      #    human-readable source: we upload a git archive of the tagged commit.
+      #    Reviewers follow apps/twofau-extension/REVIEWERS.md to reproduce it.
+      #
+      # --approval-timeout 0 uploads and returns immediately rather than blocking
+      # CI while a human reviews the listed submission (which can take days). No
+      # signed .xpi comes back for a listed submission — users install from the
+      # store — so nothing is attached to the GitHub release here; the unsigned
+      # .zip/.xpi from the packaging step above remain attached for reference.
       - name: Check for AMO credentials
-        if: matrix.platform == 'ubuntu-22.04'
+        if: matrix.platform == 'ubuntu-22.04' && github.ref_type == 'tag'
         id: amo
         run: echo "have=${{ secrets.AMO_JWT_ISSUER != '' && secrets.AMO_JWT_SECRET != '' }}" >> "$GITHUB_OUTPUT"
 
-      - name: Sign the Firefox extension (AMO)
-        if: matrix.platform == 'ubuntu-22.04' && steps.amo.outputs.have == 'true'
+      - name: Submit the Firefox add-on to AMO (listed)
+        if: matrix.platform == 'ubuntu-22.04' && github.ref_type == 'tag' && steps.amo.outputs.have == 'true'
         env:
           AMO_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
           AMO_SECRET: ${{ secrets.AMO_JWT_SECRET }}
         run: |
+          # Human-readable source for review: all tracked files at this tag.
+          git archive --format=zip -o "$GITHUB_WORKSPACE/twofau-source.zip" HEAD
           pnpm --filter @twofau/extension exec web-ext sign \
             --source-dir dist-firefox \
-            --channel unlisted \
+            --channel listed \
             --api-key "$AMO_ISSUER" \
             --api-secret "$AMO_SECRET" \
-            --artifacts-dir "$GITHUB_WORKSPACE/amo"
-
-      - name: Attach the signed Firefox add-on
-        if: matrix.platform == 'ubuntu-22.04' && steps.amo.outputs.have == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
-          REPO: ${{ github.repository }}
-          TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'tip' }}
-        run: |
-          gh release upload "$TAG" "$GITHUB_WORKSPACE"/amo/*.xpi --repo "$REPO" --clobber
+            --upload-source-code "$GITHUB_WORKSPACE/twofau-source.zip" \
+            --approval-timeout 0

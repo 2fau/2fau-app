@@ -116,8 +116,14 @@ strings by hand.
    `tauri.conf.json`), tags `vX.Y.Z`, and creates the GitHub Release with the changelog.
 4. That `v*` tag triggers `release.yml`'s build matrix, which uploads the desktop
    installers (`.dmg`/`.msi`/`.AppImage`/`.deb`/`.rpm`/…) and the extension
-   `.crx`/`.xpi`/`.zip` to the Knope-created release.
-5. The rolling **`tip`** prerelease is separate and always tracks the latest `main` commit.
+   `.crx`/`.xpi`/`.zip` to the Knope-created release. If the `AMO_JWT_ISSUER` /
+   `AMO_JWT_SECRET` secrets are set, it also submits a **listed** Firefox version
+   to addons.mozilla.org for review (`web-ext sign --channel listed`, with a
+   git-archive source upload — see `apps/twofau-extension/REVIEWERS.md`). The
+   Firefox add-on id is `firefox@2fau.app`; the listed add-on must exist on AMO
+   with its metadata filled in before the first version can go public.
+5. The rolling **`tip`** prerelease is separate and always tracks the latest `main`
+   commit; it never submits to AMO.
 
 `knope.toml` holds the config (single `[package]` → `v{version}` tags). Requires the
 `RELEASE_TOKEN` secret so the Knope-created tag can trigger the build.

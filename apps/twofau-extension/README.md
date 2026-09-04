@@ -69,10 +69,15 @@ guarded at runtime and unused on Firefox) and React's `innerHTML` assignments.
 ## Publish
 
 - **Chrome Web Store**: upload the zipped `dist/`.
-- **Firefox (AMO)**: set the real add-on id in `scripts/firefox-manifest.mjs`
-  (`GECKO_ID`), then either upload the zipped `dist-firefox/` on AMO, or let CI
-  sign it: add `AMO_JWT_ISSUER` and `AMO_JWT_SECRET` repo secrets (from an AMO
-  API key) and the release workflow attaches a signed `.xpi`.
+- **Firefox (AMO, listed)**: the add-on ships from addons.mozilla.org. The add-on
+  id is `firefox@2fau.app` (`GECKO_ID` in `scripts/firefox-manifest.mjs`) and must
+  match the AMO listing. On a `v*` tag, the release workflow submits a **listed**
+  version for review via `web-ext sign --channel listed` (with a git-archive source
+  upload, since the bundles are minified — see `REVIEWERS.md`). It runs only when
+  `AMO_JWT_ISSUER` and `AMO_JWT_SECRET` repo secrets are set (addons.mozilla.org →
+  Manage API Keys). One-time setup: create the listed add-on on AMO and complete
+  its listing metadata before the first version can go public. Listed submissions
+  don't produce a self-hosted `.xpi`; users install from the store.
 
 ## Per-browser differences
 

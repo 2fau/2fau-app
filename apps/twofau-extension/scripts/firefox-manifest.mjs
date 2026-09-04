@@ -6,8 +6,9 @@
 //  - drop the `offscreen` permission (Chrome-only; unknown to Firefox).
 //  - options_page -> options_ui (Firefox's spelling).
 
-/** Firefox add-on id. Replace with your AMO id before publishing. */
-export const GECKO_ID = "2fau@artkost.dev";
+/** Firefox add-on id, registered on AMO (addons.mozilla.org). Must match the
+ * listing; changing it after publishing creates a new, separate add-on. */
+export const GECKO_ID = "firefox@2fau.app";
 
 /** Minimum Firefox: MV3 + module background scripts + storage.session (121),
  * and `optional_host_permissions` for the desktop bridge (128). */
