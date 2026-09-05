@@ -27,22 +27,20 @@ describe("AccountRow", () => {
     await waitFor(() => expect(writeText).toHaveBeenCalledWith("492810"));
   });
 
-  it("reveals a copy button on hover that copies and flips to a checkmark", async () => {
+  it("has a copy button that copies the raw code and flips to a checkmark", async () => {
     const a = account();
-    const { container } = renderWithVault(
+    renderWithVault(
       <AccountRow account={a} onEdit={() => {}} />,
       fakeService([a], { a: "492810" }),
     );
     await screen.findByText("492 810");
-    expect(screen.queryByRole("button", { name: /copy code/i })).toBeNull();
 
-    fireEvent.mouseEnter(container.firstChild as HTMLElement);
-    fireEvent.click(screen.getByRole("button", { name: /copy code/i }));
+    // The whole row is a copy affordance via an overlay button labelled by issuer.
+    fireEvent.click(screen.getByRole("button", { name: /copy .*code/i }));
 
     await waitFor(() => expect(writeText).toHaveBeenCalledWith("492810"));
     expect(writeText).toHaveBeenCalledTimes(1); // stopPropagation: not double-fired via the row
-    expect(screen.getByText("492 810")).toHaveClass("text-success");
-    expect(screen.queryByRole("button", { name: /copy code/i })).toBeNull();
+    expect(await screen.findByText("Copied")).toBeInTheDocument();
   });
 
   it("renders a colored account (tinted row) without error", async () => {
@@ -62,22 +60,22 @@ describe("AccountRow", () => {
     expect(screen.queryAllByText("Google")).toHaveLength(1);
   });
 
-  it("shows the copied (success) state when flash is set", async () => {
+  it("shows the copied state when flash is set", async () => {
     const a = account();
     renderWithVault(
       <AccountRow account={a} onEdit={() => {}} flash />,
       fakeService([a], { a: "492810" }),
     );
-    expect(await screen.findByText("492 810")).toHaveClass("text-success");
+    expect(await screen.findByText("Copied")).toBeInTheDocument();
   });
 
   it("renders a keyboard hint for the given hotkeyIndex", async () => {
     const a = account();
     renderWithVault(
-      <AccountRow account={a} onEdit={() => {}} hotkeyIndex={1} />,
+      <AccountRow account={a} onEdit={() => {}} hotkeyIndex={1} modLabel="⌘" />,
       fakeService([a], { a: "492810" }),
     );
     await screen.findByText("492 810");
-    expect(screen.getByLabelText("Shortcut 1")).toBeInTheDocument();
+    expect(screen.getByText("⌘1")).toBeInTheDocument();
   });
 });
