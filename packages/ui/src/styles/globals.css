@@ -53,25 +53,28 @@
    the app's tint. Row backgrounds, borders, and the countdown bar all derive
    from one base colour via color-mix, so a single value is theme-aware. */
 :root {
-  --acct-red: #ff3b30;
-  --acct-orange: #ff9500;
-  --acct-yellow: #ffcc00;
-  --acct-green: #34c759;
-  --acct-teal: #30b0c7;
-  --acct-blue: #007aff;
-  --acct-purple: #af52de;
-  --acct-pink: #ff2d55;
+  --acct-red: #e5484d;
+  --acct-orange: #f76b15;
+  --acct-yellow: #f5c211;
+  --acct-green: #30a46c;
+  --acct-teal: #12a594;
+  --acct-blue: #3b82f6;
+  --acct-purple: #8e5cf0;
+  --acct-pink: #d6409f;
+  --acct-gray: #8b8f98;
 }
+
 @media (prefers-color-scheme: dark) {
   :root {
-    --acct-red: #ff453a;
-    --acct-orange: #ff9f0a;
-    --acct-yellow: #ffd60a;
-    --acct-green: #30d158;
-    --acct-teal: #40c8e0;
-    --acct-blue: #0a84ff;
-    --acct-purple: #bf5af2;
-    --acct-pink: #ff375f;
+    --acct-red: #e5484d;
+    --acct-orange: #f76b15;
+    --acct-yellow: #f5c211;
+    --acct-green: #30a46c;
+    --acct-teal: #12a594;
+    --acct-blue: #3b82f6;
+    --acct-purple: #8e5cf0;
+    --acct-pink: #d6409f;
+    --acct-gray: #8b8f98;
   }
 }
 
