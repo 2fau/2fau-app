@@ -23,7 +23,7 @@ const KEYS = new Set(ACCOUNT_COLORS.map((c) => c.key));
 
 /** The vivid base accent for a key, or undefined for none/unknown. Used for the
  * picker's solid swatches. */
-export function accountColorVar(key: string): string | undefined {
+export function accountColorVar(key: string): string {
   return key && KEYS.has(key) ? `var(--acct-${key})` : `var(--acct-gray)`;
 }
 

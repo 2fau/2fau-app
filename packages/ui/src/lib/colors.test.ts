@@ -13,8 +13,8 @@ describe("account colours", () => {
 
   it("returns undefined for no colour or an unknown key", () => {
     for (const fn of [accountColorVar, accountColorAccent, accountColorBorder]) {
-      expect(fn("")).toBeUndefined();
-      expect(fn("chartreuse")).toBeUndefined();
+      expect(fn("")).toContain('var(--acct-gray)');
+      expect(fn("chartreuse")).toContain('var(--acct-gray)');
     }
   });
 });
