@@ -1,12 +1,9 @@
-import {Check, CheckIcon, Copy, Pencil, PencilIcon, RotateCw, RotateCwIcon, Trash2, Trash2Icon} from "lucide-react";
+import {CheckIcon, PencilIcon, RotateCwIcon, Trash2Icon} from "lucide-react";
 import {useState} from "react";
 import {AnimatePresence, motion} from 'framer-motion'
-import {Button} from "@/components/ui/button";
-import {Item, ItemActions, ItemContent, ItemDescription, ItemTitle,} from "@/components/ui/item";
 import type {Account} from "@/core/types";
-import {accountColorBorder, accountColorVar} from "@/lib/colors";
+import {accountColorVar} from "@/lib/colors";
 import {formatCode} from "@/lib/format";
-import {cn} from "@/lib/utils";
 import {useClipboard} from "@/state/clipboard";
 import {useVault} from "@/state/vault-provider";
 
@@ -39,6 +36,7 @@ export function AccountRow({
     const [hovering, setHovering] = useState(false);
     const [confirmingDelete, setConfirmingDelete] = useState(false);
     const [actionError, setActionError] = useState<string | null>(null);
+    const [deleting, setDeleting] = useState(false)
 
     const code = codes[account.id] ?? "";
 
@@ -83,10 +81,13 @@ export function AccountRow({
 
     async function del() {
         try {
+            setDeleting(true)
             await remove(account.id);
         } catch (e) {
             setActionError(`Could not delete account: ${msg(e)}`);
             setConfirmingDelete(false);
+        } finally {
+            setDeleting(false)
         }
     }
 
@@ -154,9 +155,7 @@ export function AccountRow({
                         <span
                             className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.08em]"
                             style={{color: 'var(--label)'}}
-                        >
-                {issuer}
-              </span>
+                        >{issuer}</span>
                     </div>
 
                     <div className="mt-1 overflow-hidden">
@@ -178,7 +177,8 @@ export function AccountRow({
                         </AnimatePresence>
                     </div>
 
-                    <p className="mt-0.5 truncate text-[11.5px] text-zinc-500">{label}</p>
+                    {!actionError && <p className="mt-0.5 truncate text-[11.5px] text-zinc-500">{label}</p>}
+                    {actionError && <p className="basis-full text-[10px] text-destructive">{actionError}</p>}
                 </div>
 
                 <div
@@ -201,9 +201,10 @@ export function AccountRow({
                                 type="button"
                                 autoFocus
                                 onClick={del}
+                                disabled={deleting}
                                 className="rounded-md bg-red-600 px-2 py-[3px] text-[11px] font-medium text-white transition-colors duration-150 ease-out hover:bg-red-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70"
                             >
-                                Delete
+                                {deleting ? 'Deleting...' : 'Delete'}
                             </button>
                         </div>
                     ) : copied ? (
@@ -277,168 +278,6 @@ export function AccountRow({
         </span>
         </div>
     )
-
-
-    const deleteButton = (
-        <Button size="xs" variant="destructive" onClick={del}>
-            Delete
-        </Button>
-    )
-
-    const deleteAskButton = (
-        <Button
-            size="icon-sm"
-            variant="ghost"
-            className="text-destructive"
-            title="Delete"
-            onClick={() => setConfirmingDelete(true)}
-        >
-            <Trash2/>
-        </Button>
-    )
-
-    const cancelButton = (
-        <Button
-            size="xs"
-            variant="secondary"
-            onClick={() => setConfirmingDelete(false)}
-        >
-            Cancel
-        </Button>
-    )
-
-    const rotateButton = (
-        account.otp_type === "Hotp" ? (
-            <Button
-                size="icon-sm"
-                variant="ghost"
-                className="text-muted-foreground"
-                title="Next code"
-                onClick={advance}
-            >
-                <RotateCw/>
-            </Button>
-        ) : null
-    )
-
-    const editButton = (
-        <Button
-            size="icon-sm"
-            variant="ghost"
-            className="text-muted-foreground"
-            title="Edit"
-            onClick={onEdit}
-        >
-            <Pencil/>
-        </Button>
-    )
-
-    const copyButton = (
-        <button
-            type="button"
-            aria-label="Copy code"
-            title="Copy code"
-            className="text-muted-foreground transition-colors hover:text-foreground"
-            onClick={(e) => {
-                e.stopPropagation();
-                void copy();
-            }}
-        >
-            <Copy className="size-4"/>
-        </button>
-    )
-
-    const copiedIcon = (
-        <Check className="size-4 text-success"/>
-    )
-
-    const codeContent = (
-        <span
-            className={cn(
-                "font-mono text-2xl leading-none font-medium tabular-nums",
-                copiedShown && "text-success",
-                expiring && !copiedShown && "animate-blink",
-            )}
-        >{code}</span>
-    )
-
-    const hotkeyBadge = hotkeyIndex != null && (
-        <kbd
-            aria-label={`Shortcut ${hotkeyIndex}`}
-            className="ml-auto rounded border px-1 text-[10px] font-medium text-muted-foreground"
-        >
-            {hotkeyLabel}
-        </kbd>
-    )
-
-
-    return (
-        <Item
-            size="sm"
-            aria-label={`Copy ${account.issuer} code for ${account.label}. ${seconds} seconds remaining`}
-            style={
-                {
-                    "--row-accent": accountColorVar(account.color),
-                    borderColor: accountColorBorder(account.color),
-                } as React.CSSProperties
-            }
-            onClick={copy}
-            onMouseEnter={() => setHovering(true)}
-            onMouseLeave={() => setHovering(false)}
-        >
-
-            <ItemContent className="min-w-0 gap-0.5">
-                <ItemTitle className="max-w-full truncate text-[11px] font-medium text-muted-foreground">
-                    {issuer}&nbsp;
-                </ItemTitle>
-                <div className="flex items-center gap-1.5">
-                    {codeContent}
-                    {copiedShown ? copiedIcon : hovering ? copyButton : hotkeyBadge}
-                </div>
-                <ItemDescription className="max-w-full truncate text-[11px]">
-                    {label}&nbsp;
-                </ItemDescription>
-            </ItemContent>
-
-            {showActions && (
-                <ItemActions
-                    className="self-center"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    {confirmingDelete ? (
-                        <>{deleteButton}{cancelButton}</>
-                    ) : (
-                        <>{rotateButton}{editButton}{deleteAskButton}</>
-                    )}
-                </ItemActions>
-            )}
-
-            {actionError && (
-                <p className="basis-full text-[10px] text-destructive">{actionError}</p>
-            )}
-
-            {/* Per-account countdown: fills empty→full as the code ages, in the row's
-       * own accent (periods can differ). In its final seconds it blinks in sync
-       * with the code numbers to warn of an imminent roll. HOTP has no timer. */}
-            {timeBased && (
-                <span
-                    aria-hidden="true"
-                    className="absolute inset-x-0 bottom-0 h-[3px] rounded-lg bg-foreground/10"
-                >
-          <span
-              className={cn(
-                  "block h-full transition-[width] duration-300 ease-linear",
-                  expiring && "animate-blink",
-              )}
-              style={{
-                  width: `${(seconds / period) * 100}%`,
-                  backgroundColor: accountColorVar(account.color) ?? "var(--primary)",
-              }}
-          />
-        </span>
-            )}
-        </Item>
-    );
 }
 
 interface IconActionProps {
@@ -448,7 +287,7 @@ interface IconActionProps {
     children: React.ReactNode
 }
 
-function IconAction({ label, danger = false, onClick, children }: IconActionProps) {
+function IconAction({label, danger = false, onClick, children}: IconActionProps) {
     return (
         <button
             type="button"

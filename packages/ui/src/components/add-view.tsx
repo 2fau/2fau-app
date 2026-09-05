@@ -32,6 +32,7 @@ export function AddView({
   const [uri, setUri] = useState(prefill?.uri);
   const [pristine, setPristine] = useState(Boolean(prefill?.uri));
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null);
 
   function applyPrefill(p: AddPrefill) {
@@ -87,6 +88,7 @@ export function AddView({
 
   async function save() {
     try {
+      setSaving(true)
       // Color isn't part of the add/import path, so set it with a follow-up
       // update on the created account when one was chosen.
       const created =
@@ -97,6 +99,8 @@ export function AddView({
       onDone();
     } catch (e) {
       setError(`Could not add account: ${msg(e)}`);
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -218,8 +222,8 @@ export function AddView({
         <Button variant="secondary" size="sm" onClick={onDone}>
           Cancel
         </Button>
-        <Button size="sm" onClick={save}>
-          Save
+        <Button size="sm" onClick={save} disabled={saving}>
+          {saving ? 'Saving' : 'Save'}
         </Button>
       </div>
     </div>
