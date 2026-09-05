@@ -21,7 +21,14 @@ export function toFirefoxManifest(chrome) {
   firefox.background = { scripts: ["background.js"], type: "module" };
 
   firefox.browser_specific_settings = {
-    gecko: { id: GECKO_ID, strict_min_version: MIN_FIREFOX },
+    gecko: {
+      id: GECKO_ID,
+      strict_min_version: MIN_FIREFOX,
+      // Mandatory for new AMO submissions since 2025-11-03. 2FAU is local-first:
+      // codes are generated in the browser and never transmitted, so it collects
+      // no data. "none" must be the sole value in `required`.
+      data_collection_permissions: { required: ["none"] },
+    },
   };
 
   if (Array.isArray(firefox.permissions)) {
