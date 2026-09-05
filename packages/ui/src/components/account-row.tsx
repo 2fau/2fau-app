@@ -33,7 +33,6 @@ export function AccountRow({
     const {writeText} = useClipboard();
     const [copied, setCopied] = useState(false);
     const copiedShown = copied || !!flash;
-    const [hovering, setHovering] = useState(false);
     const [confirmingDelete, setConfirmingDelete] = useState(false);
     const [actionError, setActionError] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false)
@@ -46,7 +45,6 @@ export function AccountRow({
     const period = account.period || 30;
     const seconds = period - (Math.floor(now / 1000) % period);
     const expiring = timeBased && seconds <= EXPIRY_WARNING_S;
-    const showActions = (hovering || confirmingDelete)
 
     const label = account.label ?? " ";
     const issuer = account.issuer ?? " ";
@@ -94,8 +92,6 @@ export function AccountRow({
     return (
         <div
             onClick={copy}
-            onMouseEnter={() => setHovering(true)}
-            onMouseLeave={() => setHovering(false)}
             style={
                 {
                     "--row-accent": accountColorVar(account.color),
@@ -207,7 +203,7 @@ export function AccountRow({
                                 {deleting ? 'Deleting...' : 'Delete'}
                             </button>
                         </div>
-                    ) : copied ? (
+                    ) : copiedShown ? (
                         <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-emerald-400">
                 <CheckIcon className="h-3.5 w-3.5" strokeWidth={2.5}/>
                 Copied
