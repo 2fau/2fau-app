@@ -40,3 +40,22 @@ Features
 2FAu never sends your codes or secrets anywhere. No tracking, no analytics,
 no data collection.
 ```
+
+## Permission justifications (Chrome Web Store, ≤100 chars each)
+
+Paste one per permission in the "Privacy practices" tab. All are verified against
+the code in `src/`.
+
+| Permission | Justification |
+| --- | --- |
+| `storage` | Stores your encrypted 2FA vault and settings on this device and via chrome.storage.sync. |
+| `contextMenus` | Adds a right-click menu to quickly copy a recent 2FA code. |
+| `offscreen` | Copies a code to the clipboard from the service worker via an offscreen document. |
+| `activeTab` | Reads the active tab only when you scan a QR from it or autofill a code you triggered. |
+| `alarms` | Drives the auto-lock timer and the periodic vault sync check. |
+| `scripting` | Injects the 2FA code into the focused field of the active tab when you autofill. |
+| `notifications` | Shows brief confirmations and errors, e.g. after copying a code or scanning a QR. |
+| `http://127.0.0.1/*` (optional host) | Optional: connect to your own 2FAu desktop app over loopback for local sync. |
+
+**Remote code use:** No remote code; the Rust core is bundled as WebAssembly (needs wasm-unsafe-eval).
+
