@@ -244,3 +244,46 @@ jobs:
             --api-secret "$AMO_SECRET" \
             --upload-source-code "$GITHUB_WORKSPACE/twofau-source.zip" \
             --approval-timeout 0
+
+  # After every OS leg has uploaded its version-named installers, publish
+  # version-LESS copies plus a checksums.txt. This makes the stable
+  # `releases/latest/download/<name>` URLs the site links to resolve to the
+  # newest release, with no build-time API call. Tag releases only.
+  stabilize-downloads:
+    needs: [bundle]
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Publish stable-named installers + checksums
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          mkdir dl && cd dl
+          # Grab the installer artifacts this release already has. Globs miss
+          # nothing important; unrelated assets (extension zips, updater sigs)
+          # simply don't match the rename cases below.
+          gh release download "$TAG" --repo "$REPO" \
+            --pattern '*.dmg' --pattern '*.msi' --pattern '*.AppImage' \
+            --pattern '*.deb' --pattern '*.rpm' || true
+          # One stable name per platform/format (there is one of each per release).
+          for f in *; do
+            case "$f" in
+              2FAu-*) continue ;;                                  # already stable
+              *.dmg)       cp "$f" 2FAu-macos-arm64.dmg ;;
+              *.msi)       cp "$f" 2FAu-windows-x64.msi ;;
+              *.AppImage)  cp "$f" 2FAu-linux-x86_64.AppImage ;;
+              *.deb)       cp "$f" 2FAu-linux-amd64.deb ;;
+              *.rpm)       cp "$f" 2FAu-linux-x86_64.rpm ;;
+            esac
+          done
+          if ! ls 2FAu-* >/dev/null 2>&1; then
+            echo "::warning::No installer artifacts found to stabilize."
+            exit 0
+          fi
+          sha256sum 2FAu-* > checksums.txt
+          gh release upload "$TAG" --repo "$REPO" --clobber 2FAu-* checksums.txt
