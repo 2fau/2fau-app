@@ -1,16 +1,57 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "2FAu — Local-first 2FA authenticator for desktop & browser",
+  description = "2FAu generates your TOTP/HOTP two-factor codes in an encrypted local vault — no account, no server. Native desktop app for macOS, Windows and Linux, plus a Chrome & Firefox extension.",
+} = Astro.props;
+
+// Astro.site comes from astro.config `site`. Fall back so a missing config
+// can't throw during build.
+const site = Astro.site ?? new URL("https://2fau.app");
+const canonical = new URL(Astro.url.pathname, site);
+const ogImage = new URL("/og.png", site);
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
-	    <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter%3Awght%40100..900&family=JetBrains+Mono%3Awght%40100..800&display=swap"
-          rel="stylesheet"
-        />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<meta name="theme-color" content="#0B0B0D" />
+
+		<!-- Open Graph -->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="2FAu" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1280" />
+		<meta property="og:image:height" content="800" />
+		<meta property="og:image:alt" content="2FAu — two-factor codes that never leave your browser" />
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter%3Awght%40100..900&family=JetBrains+Mono%3Awght%40100..800&display=swap"
+			rel="stylesheet"
+		/>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<title>2FAu</title>
 	</head>
 	<body>
 		<slot />

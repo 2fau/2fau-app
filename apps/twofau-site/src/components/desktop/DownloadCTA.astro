@@ -1,3 +1,7 @@
+---
+import { DOWNLOAD } from "../../config/links";
+---
+
     <div
             data-pencil-name="Download CTA"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[100px_40px_108px_40px] justify-center items-start bg-[#0B0B0D]"
@@ -39,7 +43,7 @@
                 data-pencil-name="Download Buttons"
                 class="box-border w-fit h-fit shrink-0 flex flex-row gap-[12px] p-[34px_0px_0px_0px] justify-start items-center"
               >
-                <a href="/download/mac-arm64"
+                <a href={DOWNLOAD.macArm}
                   data-pencil-name="Download for macOS"
                   class="box-border w-fit shrink-0 h-fit flex flex-row gap-[11px] p-[12px_20px] justify-start items-center bg-[#0A84FF] [outline:1px_solid_#00000000] [outline-offset:-0.5px] rounded-[8px] no-underline"
                 >
@@ -77,7 +81,7 @@
                     </div>
                   </div>
                 </a>
-                <a href="/download/windows"
+                <a href={DOWNLOAD.windows}
                   data-pencil-name="Download for Windows"
                   class="box-border w-fit shrink-0 h-fit flex flex-row gap-[11px] p-[12px_20px] justify-start items-center bg-[#1B1B1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px] no-underline"
                 >
@@ -116,7 +120,7 @@
                     </div>
                   </div>
                 </a>
-                <a href="/download/linux-appimage"
+                <a href={DOWNLOAD.linuxAppImage}
                   data-pencil-name="Download for Linux"
                   class="box-border w-fit shrink-0 h-fit flex flex-row gap-[11px] p-[12px_20px] justify-start items-center bg-[#1B1B1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px] no-underline"
                 >

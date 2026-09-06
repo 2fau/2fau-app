@@ -7,6 +7,9 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   output: 'static',
 
+  // Canonical origin, used to build absolute URLs for canonical/OG/Twitter tags.
+  site: 'https://2fau.app',
+
   integrations: [react()],
 
   server: {

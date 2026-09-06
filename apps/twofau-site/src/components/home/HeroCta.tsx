@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SplitButton, type SplitButtonItem } from "../shared/SplitButton";
 import { DownloadIcon, PuzzleIcon } from "../shared/icons";
-import { STORE } from "../../config/links";
+import { DOWNLOAD, STORE } from "../../config/links";
 
 /**
  * Hero split buttons.
@@ -20,35 +20,35 @@ export const DOWNLOADS: SplitButtonItem[] = [
     label: "macOS · Apple silicon",
     meta: ".dmg",
     button: "Download for macOS",
-    href: "/download/mac-arm64",
+    href: DOWNLOAD.macArm,
   },
   {
     id: "mac-intel",
     label: "macOS · Intel",
     meta: ".dmg",
     button: "Download for macOS",
-    href: "/download/mac-x64",
+    href: DOWNLOAD.macIntel,
   },
   {
     id: "windows",
     label: "Windows",
     meta: ".msi",
     button: "Download for Windows",
-    href: "/download/windows",
+    href: DOWNLOAD.windows,
   },
   {
     id: "linux-appimage",
     label: "Linux",
     meta: ".AppImage",
     button: "Download for Linux",
-    href: "/download/linux-appimage",
+    href: DOWNLOAD.linuxAppImage,
   },
   {
     id: "linux-deb",
     label: "Linux",
     meta: ".deb",
     button: "Download for Linux",
-    href: "/download/linux-deb",
+    href: DOWNLOAD.linuxDeb,
   },
 ];
 
