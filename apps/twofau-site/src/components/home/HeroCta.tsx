@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { SplitButton, type SplitButtonItem } from "../shared/SplitButton";
 import { DownloadIcon, PuzzleIcon } from "../shared/icons";
+import { STORE } from "../../config/links";
 
 /**
  * Hero split buttons.
@@ -57,14 +58,14 @@ export const EXTENSIONS: SplitButtonItem[] = [
     label: "Chrome / Edge / Brave",
     meta: "Web Store",
     button: "Add to Chrome",
-    href: "/extension#chrome",
+    href: STORE.chrome,
   },
   {
     id: "firefox",
     label: "Firefox",
     meta: "AMO",
     button: "Add to Firefox",
-    href: "/extension#firefox",
+    href: STORE.firefox,
   },
 ];
 

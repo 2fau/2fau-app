@@ -1,3 +1,7 @@
+---
+import { STORE } from "../../config/links";
+---
+
     <div
             data-pencil-name="Page Header"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[92px_40px_76px_40px] justify-center items-start"
@@ -40,7 +44,7 @@
                 data-pencil-name="Install Row"
                 class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] p-[36px_0px_0px_0px] justify-start items-center"
               >
-                <a href="https://chromewebstore.google.com/" target="_blank" rel="noreferrer noopener"
+                <a href={STORE.chrome} target="_blank" rel="noreferrer noopener"
                   data-pencil-name="Btn Add to Chrome"
                   class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] p-[13px_20px] justify-start items-center bg-[#0A84FF] [outline:1px_solid_#00000000] [outline-offset:-0.5px] rounded-[8px] no-underline"
                 >
@@ -144,7 +148,7 @@
                     Add to Chrome
                   </div>
                 </a>
-                <a href="https://microsoftedge.microsoft.com/addons" target="_blank" rel="noreferrer noopener"
+                <a href={STORE.chrome} target="_blank" rel="noreferrer noopener"
                   data-pencil-name="Btn Edge"
                   class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] p-[13px_20px] justify-start items-center bg-[#1B1B1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px] no-underline"
                 >
@@ -193,7 +197,7 @@
                     Edge
                   </div>
                 </a>
-                <a href="https://addons.mozilla.org/firefox/" target="_blank" rel="noreferrer noopener"
+                <a href={STORE.firefox} target="_blank" rel="noreferrer noopener"
                   data-pencil-name="Btn Firefox"
                   class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] p-[13px_20px] justify-start items-center bg-[#1B1B1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px] no-underline"
                 >
