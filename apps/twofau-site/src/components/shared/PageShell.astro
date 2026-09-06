@@ -1,0 +1,25 @@
+---
+import SiteNav from "./SiteNav.astro";
+import SiteFooter from "./SiteFooter.astro";
+
+interface Props {
+  /** Mirrors the canvas frame name, so exported markup stays traceable. */
+  name: string;
+  active?: "desktop" | "extension" | "security";
+  chromeCta?: boolean;
+}
+
+const { name, active, chromeCta } = Astro.props;
+const RULE = "box-border w-full h-[1px] shrink-0 bg-[#262628]";
+---
+
+<div
+  data-pencil-name={name}
+  class="box-border h-fit flex flex-col gap-0 justify-start items-start bg-[#0B0B0D] overflow-hidden"
+>
+  <SiteNav active={active} chromeCta={chromeCta} />
+  <div data-pencil-name="Nav Divider" class={RULE}></div>
+  <slot />
+  <div data-pencil-name="Footer Divider Top" class={RULE}></div>
+  <SiteFooter />
+</div>

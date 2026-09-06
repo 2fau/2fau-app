@@ -1,0 +1,26 @@
+---
+import PageShell from "./shared/PageShell.astro";
+import Hero from "./home/Hero.astro";
+import ProductShot from "./home/ProductShot.astro";
+import SurfacesBand from "./home/SurfacesBand.astro";
+import Security from "./home/Security.astro";
+import Extension from "./home/Extension.astro";
+import Features from "./home/Features.astro";
+import FinalCta from "./home/FinalCta.astro";
+
+const DIVIDER = "box-border w-full h-[1px] shrink-0 bg-[#262628]";
+---
+
+<PageShell name="2FAu Landing">
+  <Hero>
+    <slot name="heroCta" slot="heroCta" />
+  </Hero>
+  <ProductShot />
+  <div data-pencil-name="Band Divider Top" class={DIVIDER}></div>
+  <SurfacesBand />
+  <div data-pencil-name="Band Divider Bottom" class={DIVIDER}></div>
+  <Security />
+  <Extension />
+  <Features />
+  <FinalCta />
+</PageShell>
