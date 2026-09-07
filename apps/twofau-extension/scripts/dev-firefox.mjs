@@ -4,7 +4,7 @@
 //   - web-ext runs Firefox with the add-on and reloads it when dist-firefox/
 //     changes.
 // Ctrl-C stops everything.
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { existsSync, watch } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import { setTimeout as delay } from "node:timers/promises";
@@ -31,6 +31,9 @@ function shutdown() {
 }
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+
+// 0) Generate _locales so the manifest's __MSG__ placeholders resolve.
+spawnSync("node", ["scripts/gen-locales.mjs"], { cwd: extDir, stdio: "inherit" });
 
 // 1) Vite watch build -> dist/.
 run("pnpm", ["exec", "vite", "build", "--watch", "--mode", "development"]);
