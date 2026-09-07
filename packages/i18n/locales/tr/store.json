@@ -1,1 +1,6 @@
-{}
+{
+  "_meta": { "review": "machine" },
+  "extName": "2FAu Authenticator",
+  "extDescription": "2FA kodlarını şifreli bir kasada saklayın. TOTP/HOTP kodlarını yerel olarak oluşturun ve macOS, Windows ve Linux için 2FAu masaüstü uygulamasıyla eşitleyin.",
+  "cmdAutofill": "Geçerli sitenin 2FA kodunu odaklanmış alana otomatik doldur"
+}

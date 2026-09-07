@@ -1,1 +1,6 @@
-{}
+{
+  "_meta": { "review": "machine" },
+  "extName": "2FAu Authenticator",
+  "extDescription": "Conserva i codici 2FA in un vault crittografato. Genera TOTP/HOTP in locale e sincronizza con l'app desktop 2FAu per macOS, Windows e Linux.",
+  "cmdAutofill": "Inserisci automaticamente il codice 2FA del sito corrente nel campo attivo"
+}

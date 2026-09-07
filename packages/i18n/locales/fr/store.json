@@ -1,1 +1,6 @@
-{}
+{
+  "_meta": { "review": "machine" },
+  "extName": "2FAu Authenticator",
+  "extDescription": "Stockez vos codes 2FA dans un coffre chiffré. Générez des TOTP/HOTP en local et synchronisez avec l'application de bureau 2FAu pour macOS, Windows et Linux.",
+  "cmdAutofill": "Remplir automatiquement le code 2FA du site actuel dans le champ ciblé"
+}

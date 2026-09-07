@@ -1,1 +1,6 @@
-{}
+{
+  "_meta": { "review": "machine" },
+  "extName": "2FAu Authenticator",
+  "extDescription": "Храните коды 2FA в зашифрованном хранилище. Генерируйте TOTP/HOTP локально и синхронизируйте с настольным приложением 2FAu для macOS, Windows и Linux.",
+  "cmdAutofill": "Автоматически вставить код 2FA для текущего сайта в активное поле"
+}

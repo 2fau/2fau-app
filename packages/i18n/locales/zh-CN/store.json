@@ -1,1 +1,6 @@
-{}
+{
+  "_meta": { "review": "machine" },
+  "extName": "2FAu Authenticator",
+  "extDescription": "将 2FA 验证码保存在加密保险库中。在本地生成 TOTP/HOTP，并与适用于 macOS、Windows 和 Linux 的 2FAu 桌面应用同步。",
+  "cmdAutofill": "将当前网站的 2FA 验证码自动填入焦点输入框"
+}

@@ -48,6 +48,32 @@ pnpm --filter @twofau/extension build     # -> apps/twofau-extension/dist (load 
 pnpm --filter @twofau/extension dev       # rebuild on change
 ```
 
+## Internationalization
+
+Every user-facing string is wrapped in `t('English')` / `plural(...)` from `@twofau/i18n`
+(the English source IS the key — no dot-path ids). The runtime, catalogs and tooling live
+in `packages/i18n`; catalogs are `packages/i18n/locales/<locale>/{ui,site,store}.json`.
+
+- **Add a string:** wrap it in `t('…')` in a component (UI/app/extension) or
+  `getT(Astro.currentLocale)` in the site, then run `pnpm i18n:extract` for its namespace:
+
+  ```bash
+  pnpm i18n:extract -- --namespace ui   --dir packages/ui/src --dir apps/twofau-app/src --dir apps/twofau-extension/src
+  pnpm i18n:extract -- --namespace site --dir apps/twofau-site/src
+  ```
+
+  Extraction rewrites `en/<ns>.json` (identity map) and adds the new key as `""` to every
+  other locale, ready to translate. English never ships as a locale file — it's the
+  identity fallback.
+- **Check parity:** `pnpm i18n:check` fails on missing/orphaned keys and warns (does not
+  fail) on empty — i.e. untranslated — values. It runs in CI.
+- **Add a locale:** add it to `SUPPORTED_LOCALES` + `LOCALE_NAMES` in
+  `packages/i18n/src/locales.ts` and to the site's `astro.config.mjs` i18n `locales`, then
+  re-extract to seed its stubs.
+- **Extension store listing** is the `store` namespace (short-id keyed); `gen-locales.mjs`
+  renders it into `_locales/<locale>/messages.json` at build (English fallback for empties).
+- Machine translations carry `"_meta": { "review": "machine" }` and need human review.
+
 ## Verify (run before claiming anything is done)
 
 ```bash
