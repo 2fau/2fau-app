@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Keys And Unlock"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#111113]"
@@ -18,22 +22,20 @@
                     data-pencil-name="Eyebrow"
                     class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                   >
-                    KEYS &amp; UNLOCK
+                    {t("KEYS & UNLOCK")}
                   </div>
                   <div
                     data-pencil-name="Title"
                     class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
                   >
-                    The key exists only while you're unlocked.
+                    {t("The key exists only while you're unlocked.")}
                   </div>
                 </div>
                 <div
                   data-pencil-name="Keys Note"
                   class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  There is no Secure Enclave equivalent across four platforms, so the vault is
-                  passphrase-derived. The key is never written to disk — only the salt it was derived
-                  from.
+                  {t("There is no Secure Enclave equivalent across four platforms, so the vault is passphrase-derived. The key is never written to disk — only the salt it was derived from.")}
                 </div>
               </div>
               <div
@@ -76,7 +78,7 @@
                       data-pencil-name="Step Title"
                       class="text-[18px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.3px] text-left [white-space:nowrap]"
                     >
-                      Unlock
+                      {t("Unlock")}
                     </div>
                   </div>
                   <div
@@ -87,8 +89,7 @@
                       data-pencil-name="Step Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      You type the passphrase, or the OS keyring hands it over on a device where you
-                      chose to remember it. Nothing leaves the machine either way.
+                      {t("You type the passphrase, or the OS keyring hands it over on a device where you chose to remember it. Nothing leaves the machine either way.")}
                     </div>
                   </div>
                 </div>
@@ -124,7 +125,7 @@
                       data-pencil-name="Step Title"
                       class="text-[18px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.3px] text-left [white-space:nowrap]"
                     >
-                      Derive
+                      {t("Derive")}
                     </div>
                   </div>
                   <div
@@ -135,8 +136,7 @@
                       data-pencil-name="Step Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      PBKDF2-HMAC-SHA256 runs 600,000 iterations over the vault's own 16-byte salt and
-                      produces a 32-byte AES key.
+                      {t("PBKDF2-HMAC-SHA256 runs 600,000 iterations over the vault's own 16-byte salt and produces a 32-byte AES key.")}
                     </div>
                   </div>
                 </div>
@@ -172,7 +172,7 @@
                       data-pencil-name="Step Title"
                       class="text-[18px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.3px] text-left [white-space:nowrap]"
                     >
-                      Hold
+                      {t("Hold")}
                     </div>
                   </div>
                   <div
@@ -183,8 +183,7 @@
                       data-pencil-name="Step Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The key lives in memory behind a lock and is zeroized on drop. An idle watchdog
-                      locks the vault after a timeout you set.
+                      {t("The key lives in memory behind a lock and is zeroized on drop. An idle watchdog locks the vault after a timeout you set.")}
                     </div>
                   </div>
                 </div>
@@ -205,7 +204,7 @@
                     data-pencil-name="Fact Key"
                     class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
                   >
-                    VAULT PATH
+                    {t("VAULT PATH")}
                   </div>
                   <div
                     data-pencil-name="Fact Value"
@@ -222,7 +221,7 @@
                     data-pencil-name="Fact Key"
                     class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
                   >
-                    KEYRING SERVICE
+                    {t("KEYRING SERVICE")}
                   </div>
                   <div
                     data-pencil-name="Fact Value"
@@ -239,7 +238,7 @@
                     data-pencil-name="Fact Key"
                     class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
                   >
-                    KEYRING USER
+                    {t("KEYRING USER")}
                   </div>
                   <div
                     data-pencil-name="Fact Value"

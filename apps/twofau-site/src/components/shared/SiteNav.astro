@@ -1,10 +1,15 @@
 ---
 import { NavInstallButton } from "./NavInstallButton";
+import LanguageSelector from "./LanguageSelector.astro";
+import { getT, localeUrl } from "../../i18n/t";
 
 interface Props {
   active?: "desktop" | "extension" | "security";
 }
 const { active } = Astro.props;
+const locale = Astro.currentLocale ?? "en";
+const t = getT(locale).t;
+const url = (path: string) => localeUrl(locale, path);
 ---
     <div
             data-pencil-name="Nav"
@@ -14,7 +19,7 @@ const { active } = Astro.props;
               data-pencil-name="Nav Left"
               class="box-border w-fit shrink-0 h-fit flex flex-row gap-[36px] justify-start items-center"
             >
-              <a href="/"
+              <a href={url("")}
                 data-pencil-name="Logo"
                 class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] justify-start items-center"
               >
@@ -59,20 +64,20 @@ const { active } = Astro.props;
                 data-pencil-name="Nav Links"
                 class="box-border w-fit shrink-0 h-fit flex flex-row gap-[26px] justify-start items-center"
               >
-                <a href="/desktop"
+                <a href={url("desktop")}
                   data-pencil-name="Desktop"
                   class={`text-[13.5px]/[normal] box-border ${active === "desktop" ? "text-[#F5F5F7]" : "text-[#98989D]"} font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap] transition-colors hover:text-[#F5F5F7]`}>
-                Desktop
+                {t("Desktop")}
                 </a>
-                <a href="/extension"
+                <a href={url("extension")}
                   data-pencil-name="Extension"
                   class={`text-[13.5px]/[normal] box-border ${active === "extension" ? "text-[#F5F5F7]" : "text-[#98989D]"} font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap] transition-colors hover:text-[#F5F5F7]`}>
-                Extension
+                {t("Extension")}
                 </a>
-                <a href="/security"
+                <a href={url("security")}
                   data-pencil-name="Security"
                   class={`text-[13.5px]/[normal] box-border ${active === "security" ? "text-[#F5F5F7]" : "text-[#98989D]"} font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap] transition-colors hover:text-[#F5F5F7]`}>
-                Security
+                {t("Security")}
                 </a>
               </div>
             </div>
@@ -80,12 +85,20 @@ const { active } = Astro.props;
               data-pencil-name="Nav Right"
               class="box-border w-fit shrink-0 h-fit flex flex-row gap-[10px] justify-start items-center"
             >
-              <a href="/desktop"
+              <a href={url("desktop")}
                 data-pencil-name="Download"
                 class="text-[13.5px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap] transition-colors hover:text-[#F5F5F7]"
               >
-                Download
+                {t("Download")}
               </a>
-              <NavInstallButton client:load />
+              <LanguageSelector />
+              <NavInstallButton
+                client:load
+                labels={{
+                  chrome: t("Add to Chrome"),
+                  firefox: t("Add to Firefox"),
+                  edge: t("Add to Edge"),
+                }}
+              />
             </div>
           </div>

@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Vault Format"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#111113]"
@@ -18,21 +22,20 @@
                     data-pencil-name="Eyebrow"
                     class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                   >
-                    VAULT FORMAT
+                    {t("VAULT FORMAT")}
                   </div>
                   <div
                     data-pencil-name="Title"
                     class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
                   >
-                    One sealed blob on disk.
+                    {t("One sealed blob on disk.")}
                   </div>
                 </div>
                 <div
                   data-pencil-name="Vault Note"
                   class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  The whole vault — accounts, tombstones and revision metadata — is a single JSON
-                  document, sealed as one AES-256-GCM ciphertext and rewritten on every mutation.
+                  {t("The whole vault — accounts, tombstones and revision metadata — is a single JSON document, sealed as one AES-256-GCM ciphertext and rewritten on every mutation.")}
                 </div>
               </div>
               <div
@@ -149,7 +152,7 @@
                       data-pencil-name="AAD Label"
                       class="text-[10.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      34-byte header · bound as associated data
+                      {t("34-byte header · bound as associated data")}
                     </div>
                   </div>
                 </div>
@@ -165,7 +168,7 @@
                       data-pencil-name="Chip Value"
                       class="text-[13px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      ciphertext
+                      {t("ciphertext")}
                     </div>
                     <div
                       data-pencil-name="Chip Sub"
@@ -186,7 +189,7 @@
                       data-pencil-name="Cipher Label"
                       class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      JSON VaultDocument · encrypted
+                      {t("JSON VaultDocument · encrypted")}
                     </div>
                   </div>
                 </div>
@@ -215,7 +218,7 @@
                         data-pencil-name="Key"
                         class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        Key derivation
+                        {t("Key derivation")}
                       </div>
                     </div>
                     <div
@@ -242,7 +245,7 @@
                         data-pencil-name="Key"
                         class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        Iterations
+                        {t("Iterations")}
                       </div>
                     </div>
                     <div
@@ -269,7 +272,7 @@
                         data-pencil-name="Key"
                         class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        Derived key
+                        {t("Derived key")}
                       </div>
                     </div>
                     <div
@@ -296,7 +299,7 @@
                         data-pencil-name="Key"
                         class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        Cipher
+                        {t("Cipher")}
                       </div>
                     </div>
                     <div
@@ -323,7 +326,7 @@
                         data-pencil-name="Key"
                         class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        Salt
+                        {t("Salt")}
                       </div>
                     </div>
                     <div
@@ -334,7 +337,7 @@
                         data-pencil-name="Value"
                         class="text-[13px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        16 bytes, per vault
+                        {t("16 bytes, per vault")}
                       </div>
                     </div>
                   </div>
@@ -350,7 +353,7 @@
                         data-pencil-name="Key"
                         class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        Nonce
+                        {t("Nonce")}
                       </div>
                     </div>
                     <div
@@ -361,7 +364,7 @@
                         data-pencil-name="Value"
                         class="text-[13px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        12 bytes, per write
+                        {t("12 bytes, per write")}
                       </div>
                     </div>
                   </div>
@@ -377,7 +380,7 @@
                         data-pencil-name="Key"
                         class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        Authenticated data
+                        {t("Authenticated data")}
                       </div>
                     </div>
                     <div
@@ -388,7 +391,7 @@
                         data-pencil-name="Value"
                         class="text-[13px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        full 34-byte header
+                        {t("full 34-byte header")}
                       </div>
                     </div>
                   </div>
@@ -404,7 +407,7 @@
                         data-pencil-name="Key"
                         class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        Key material
+                        {t("Key material")}
                       </div>
                     </div>
                     <div
@@ -415,7 +418,7 @@
                         data-pencil-name="Value"
                         class="text-[13px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
-                        zeroized on drop
+                        {t("zeroized on drop")}
                       </div>
                     </div>
                   </div>
@@ -446,7 +449,7 @@
                       data-pencil-name="Card Title"
                       class="text-[15px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
                     >
-                      Why PBKDF2 and not Argon2id?
+                      {t("Why PBKDF2 and not Argon2id?")}
                     </div>
                   </div>
                   <div
@@ -457,10 +460,7 @@
                       data-pencil-name="Card Body"
                       class="text-[14px]/[24px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Argon2id is the stronger choice on paper, but it needs threads and a large memory
-                      budget. 2FAu runs the same Rust core natively and as WebAssembly in a browser tab,
-                      where neither is reliably available. PBKDF2-HMAC-SHA256 behaves identically on all
-                      four targets.
+                      {t("Argon2id is the stronger choice on paper, but it needs threads and a large memory budget. 2FAu runs the same Rust core natively and as WebAssembly in a browser tab, where neither is reliably available. PBKDF2-HMAC-SHA256 behaves identically on all four targets.")}
                     </div>
                   </div>
                   <div
@@ -471,8 +471,7 @@
                       data-pencil-name="Card Note"
                       class="text-[13.5px]/[22px] box-border [flex:1_1_0] text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The kdf_id byte is versioned, so Argon2id can be added later without invalidating
-                      a single existing vault.
+                      {t("The kdf_id byte is versioned, so Argon2id can be added later without invalidating a single existing vault.")}
                     </div>
                   </div>
                 </div>

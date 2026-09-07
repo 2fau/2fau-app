@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Page Header"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[92px_40px_76px_40px] justify-center items-start bg-[#0B0B0D]"
@@ -10,7 +14,7 @@
                 data-pencil-name="Eyebrow"
                 class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
               >
-                SECURITY
+                {t("SECURITY")}
               </div>
               <div
                 data-pencil-name="Title Wrap"
@@ -20,7 +24,7 @@
                   data-pencil-name="Title"
                   class="text-[52px]/[56px] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.8px] text-left"
                 >
-                  What protects your secrets, and what doesn't.
+                  {t("What protects your secrets, and what doesn't.")}
                 </div>
               </div>
               <div
@@ -31,9 +35,7 @@
                   data-pencil-name="Subhead"
                   class="text-[17px]/[28px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  2FAu is a local-first authenticator: there is no account, no server and no sync target
-                  you don't run yourself. This page describes the vault format, the key handling, and
-                  the attacks it deliberately does not defend against.
+                  {t("2FAu is a local-first authenticator: there is no account, no server and no sync target you don't run yourself. This page describes the vault format, the key handling, and the attacks it deliberately does not defend against.")}
                 </div>
               </div>
               <div
@@ -48,7 +50,7 @@
                     data-pencil-name="Meta Key"
                     class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.6px] text-left [white-space:nowrap]"
                   >
-                    VAULT VERSION
+                    {t("VAULT VERSION")}
                   </div>
                   <div
                     data-pencil-name="Meta Value"
@@ -65,7 +67,7 @@
                     data-pencil-name="Meta Key"
                     class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.6px] text-left [white-space:nowrap]"
                   >
-                    KDF ID
+                    {t("KDF ID")}
                   </div>
                   <div
                     data-pencil-name="Meta Value"
@@ -82,7 +84,7 @@
                     data-pencil-name="Meta Key"
                     class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.6px] text-left [white-space:nowrap]"
                   >
-                    LICENCE
+                    {t("LICENCE")}
                   </div>
                   <div
                     data-pencil-name="Meta Value"

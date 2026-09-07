@@ -1,0 +1,20 @@
+---
+import ExtensionPage from '../../components/ExtensionPage.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getT } from '../../i18n/t';
+import { SUPPORTED_LOCALES } from '@twofau/i18n';
+
+export function getStaticPaths() {
+  return SUPPORTED_LOCALES.filter((l) => l !== 'en').map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale;
+const t = getT(locale).t;
+---
+
+<Layout
+	title={t("2FAu Browser Extension — 2FA codes in Chrome, Edge & Firefox")}
+	description={t("An encrypted 2FA vault right in your browser: search-as-you-type, hotkeys, QR-from-tab enrollment and optional sync. Add to Chrome, Edge or Firefox.")}
+>
+	<ExtensionPage />
+</Layout>

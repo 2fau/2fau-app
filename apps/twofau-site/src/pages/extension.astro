@@ -1,11 +1,14 @@
 ---
 import ExtensionPage from '../components/ExtensionPage.astro';
 import Layout from '../layouts/Layout.astro';
+import { getT } from '../i18n/t';
+
+const t = getT(Astro.currentLocale).t;
 ---
 
 <Layout
-	title="2FAu Browser Extension — 2FA codes in Chrome, Edge & Firefox"
-	description="An encrypted 2FA vault right in your browser: search-as-you-type, hotkeys, QR-from-tab enrollment and optional sync. Add to Chrome, Edge or Firefox."
+	title={t("2FAu Browser Extension — 2FA codes in Chrome, Edge & Firefox")}
+	description={t("An encrypted 2FA vault right in your browser: search-as-you-type, hotkeys, QR-from-tab enrollment and optional sync. Add to Chrome, Edge or Firefox.")}
 >
 	<ExtensionPage />
 </Layout>

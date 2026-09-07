@@ -10,21 +10,29 @@ import { STORE } from "../../config/links";
 
 type Target = { label: string; href: string };
 
-const CHROME: Target = { label: "Add to Chrome", href: STORE.chrome };
+/** The three install labels, resolved server-side for the active locale. */
+export type InstallLabels = { chrome: string; firefox: string; edge: string };
 
-export function detectInstall(ua: string): Target {
+const DEFAULT_LABELS: InstallLabels = {
+  chrome: "Add to Chrome",
+  firefox: "Add to Firefox",
+  edge: "Add to Edge",
+};
+
+export function detectInstall(ua: string, labels: InstallLabels): Target {
   const s = ua.toLowerCase();
-  if (/firefox\/|fxios/.test(s)) return { label: "Add to Firefox", href: STORE.firefox };
-  if (/edg\//.test(s)) return { label: "Add to Edge", href: STORE.chrome };
-  return CHROME; // Chrome, Brave, and other Chromium browsers install from the Web Store.
+  if (/firefox\/|fxios/.test(s)) return { label: labels.firefox, href: STORE.firefox };
+  if (/edg\//.test(s)) return { label: labels.edge, href: STORE.chrome };
+  // Chrome, Brave, and other Chromium browsers install from the Web Store.
+  return { label: labels.chrome, href: STORE.chrome };
 }
 
-export function NavInstallButton() {
-  const [target, setTarget] = useState<Target>(CHROME);
+export function NavInstallButton({ labels = DEFAULT_LABELS }: { labels?: InstallLabels }) {
+  const [target, setTarget] = useState<Target>({ label: labels.chrome, href: STORE.chrome });
 
   useEffect(() => {
-    setTarget(detectInstall(window.navigator.userAgent));
-  }, []);
+    setTarget(detectInstall(window.navigator.userAgent, labels));
+  }, [labels]);
 
   return (
     <a

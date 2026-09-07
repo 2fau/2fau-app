@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
       data-pencil-name="Extension"
       class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[100px_40px] justify-center items-start bg-[#0B0B0D]"
@@ -100,13 +104,13 @@
               data-pencil-name="Form Title"
               class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left [white-space:nowrap] relative [z-index:0]"
             >
-              Two-factor authentication
+              {t("Two-factor authentication")}
             </div>
             <div
               data-pencil-name="Form Sub"
               class="text-[13.5px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap] relative [z-index:1]"
             >
-              Open your authenticator app and enter the 6-digit code.
+              {t("Open your authenticator app and enter the 6-digit code.")}
             </div>
             <div
               data-pencil-name="Digits"
@@ -307,7 +311,7 @@
                           data-pencil-name="Label"
                           class="text-[10px]/[normal] box-border text-[#8FC2FF] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
                         >
-                          this site
+                          {t("this site")}
                         </div>
                       </div>
                     </div>
@@ -407,7 +411,7 @@
                     data-pencil-name="Count"
                     class="text-[12px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                   >
-                    2 accounts
+                    {t("2 accounts")}
                   </div>
                 </div>
                 <div
@@ -418,7 +422,7 @@
                     data-pencil-name="Label"
                     class="text-[12px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                   >
-                    Fill code
+                    {t("Fill code")}
                   </div>
                   <div
                     data-pencil-name="Key"
@@ -444,21 +448,19 @@
             data-pencil-name="Eyebrow"
             class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
           >
-            BROWSER
+            {t("BROWSER")}
           </div>
           <div
             data-pencil-name="Title"
             class="text-[40px]/[44px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.2px] text-left"
           >
-            Full parity in the tab you're already in.
+            {t("Full parity in the tab you're already in.")}
           </div>
           <div
             data-pencil-name="Body"
             class="text-[15.5px]/[26px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
           >
-            The extension runs the same Rust core compiled to WebAssembly. It recognises the 2FA
-            field, offers the matching account, and fills the code — without a background service,
-            a login, or a copy-paste round trip.
+            {t("The extension runs the same Rust core compiled to WebAssembly. It recognises the 2FA field, offers the matching account, and fills the code — without a background service, a login, or a copy-paste round trip.")}
           </div>
           <div
             data-pencil-name="Ext Stats"
@@ -478,7 +480,7 @@
                 data-pencil-name="Label"
                 class="text-[12px]/[17px] box-border w-[110px] text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                servers contacted
+                {t("servers contacted")}
               </div>
             </div>
             <div
@@ -495,7 +497,7 @@
                 data-pencil-name="Label"
                 class="text-[12px]/[17px] box-border w-[110px] text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                Rust core, two targets
+                {t("Rust core, two targets")}
               </div>
             </div>
             <div
@@ -512,7 +514,7 @@
                 data-pencil-name="Label"
                 class="text-[12px]/[17px] box-border w-[110px] text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                from field focus to fill
+                {t("from field focus to fill")}
               </div>
             </div>
           </div>

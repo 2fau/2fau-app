@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Features Section"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#111113]"
@@ -18,21 +22,20 @@
                     data-pencil-name="Eyebrow"
                     class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                   >
-                    WHAT IT DOES
+                    {t("WHAT IT DOES")}
                   </div>
                   <div
                     data-pencil-name="Title"
                     class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
                   >
-                    Eight things, and nothing that phones home.
+                    {t("Eight things, and nothing that phones home.")}
                   </div>
                 </div>
                 <div
                   data-pencil-name="Features Note"
                   class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  Every action below is something you trigger. The extension has no persistent content
-                  script and asks for no host permissions, so it cannot watch the pages you visit.
+                  {t("Every action below is something you trigger. The extension has no persistent content script and asks for no host permissions, so it cannot watch the pages you visit.")}
                 </div>
               </div>
               <div
@@ -69,7 +72,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Autofill on a shortcut
+                      {t("Autofill on a shortcut")}
                     </div>
                   </div>
                   <div
@@ -80,9 +83,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Press ⌘⇧Y (Ctrl+Shift+Y) and the code for the current site is inserted at the
-                      caret. It only writes into a focused, editable text field, and it never submits
-                      the form for you.
+                      {t("Press ⌘⇧Y (Ctrl+Shift+Y) and the code for the current site is inserted at the caret. It only writes into a focused, editable text field, and it never submits the form for you.")}
                     </div>
                   </div>
                   <div
@@ -123,7 +124,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Copy from the right-click menu
+                      {t("Copy from the right-click menu")}
                     </div>
                   </div>
                   <div
@@ -134,8 +135,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Right-click anywhere → 2FAU → pick an account and its code is on the clipboard.
-                      The badge flashes green. Works on pages the extension cannot script, too.
+                      {t("Right-click anywhere → 2FAU → pick an account and its code is on the clipboard. The badge flashes green. Works on pages the extension cannot script, too.")}
                     </div>
                   </div>
                   <div
@@ -181,7 +181,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      The popup, on a key
+                      {t("The popup, on a key")}
                     </div>
                   </div>
                   <div
@@ -192,8 +192,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      ⌘⇧U (Ctrl+Shift+U) opens the full vault: search, copy, add, reorder — the same
-                      React UI the desktop app runs, not a cut-down build.
+                      {t("⌘⇧U (Ctrl+Shift+U) opens the full vault: search, copy, add, reorder — the same React UI the desktop app runs, not a cut-down build.")}
                     </div>
                   </div>
                   <div
@@ -234,7 +233,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Scan a QR from the tab
+                      {t("Scan a QR from the tab")}
                     </div>
                   </div>
                   <div
@@ -245,8 +244,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Enrolling somewhere new? Capture the QR straight off the visible page from the
-                      popup. The grant is carried by your click on the button.
+                      {t("Enrolling somewhere new? Capture the QR straight off the visible page from the popup. The grant is carried by your click on the button.")}
                     </div>
                   </div>
                   <div
@@ -292,7 +290,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Encrypted, chunked storage
+                      {t("Encrypted, chunked storage")}
                     </div>
                   </div>
                   <div
@@ -303,8 +301,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The sealed vault is base64-chunked across chrome.storage.sync at 6 KB a chunk.
-                      Read the raw storage and you get a manifest and opaque blobs — nothing legible.
+                      {t("The sealed vault is base64-chunked across chrome.storage.sync at 6 KB a chunk. Read the raw storage and you get a manifest and opaque blobs — nothing legible.")}
                     </div>
                   </div>
                   <div
@@ -345,7 +342,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      A revision guard, not a last-write-wins
+                      {t("A revision guard, not a last-write-wins")}
                     </div>
                   </div>
                   <div
@@ -356,9 +353,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The manifest is the commit point. If a second browser wrote while you did, the
-                      Rust merge runs — newest-wins with tombstones — instead of one of you losing an
-                      account.
+                      {t("The manifest is the commit point. If a second browser wrote while you did, the Rust merge runs — newest-wins with tombstones — instead of one of you losing an account.")}
                     </div>
                   </div>
                   <div
@@ -404,7 +399,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Auto-lock you configure
+                      {t("Auto-lock you configure")}
                     </div>
                   </div>
                   <div
@@ -415,8 +410,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The derived key lives in chrome.storage.session, never the passphrase, and a
-                      chrome.alarms timer clears it after the interval you set in Options.
+                      {t("The derived key lives in chrome.storage.session, never the passphrase, and a chrome.alarms timer clears it after the interval you set in Options.")}
                     </div>
                   </div>
                   <div
@@ -457,7 +451,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Optional desktop bridge
+                      {t("Optional desktop bridge")}
                     </div>
                   </div>
                   <div
@@ -468,8 +462,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Point the extension at the desktop app over loopback and they sync directly. It is
-                      an optional permission for 127.0.0.1 only, off until you turn it on.
+                      {t("Point the extension at the desktop app over loopback and they sync directly. It is an optional permission for 127.0.0.1 only, off until you turn it on.")}
                     </div>
                   </div>
                   <div

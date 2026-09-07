@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Product Shot"
             class="box-border w-full h-fit shrink-0 flex flex-col gap-0 p-[96px_40px_104px_40px] justify-center items-center bg-[#0B0B0D]"
@@ -18,20 +22,19 @@
                   data-pencil-name="Eyebrow"
                   class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                 >
-                  DESKTOP APP
+                  {t("DESKTOP APP")}
                 </div>
                 <div
                   data-pencil-name="Title"
                   class="text-[38px]/[42px] box-border w-[560px] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.1px] text-left"
                 >
-                  Lives in the menu bar, never in your way.
+                  {t("Lives in the menu bar, never in your way.")}
                 </div>
                 <div
                   data-pencil-name="Body"
                   class="text-[15.5px]/[26px] box-border w-[560px] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  A window that opens on a hotkey and closes the moment it has done its job. No dock
-                  icon, no window management, no hunting for a phone.
+                  {t("A window that opens on a hotkey and closes the moment it has done its job. No dock icon, no window management, no hunting for a phone.")}
                 </div>
                 <div
                   data-pencil-name="Steps"
@@ -83,7 +86,7 @@
                       data-pencil-name="Label"
                       class="text-[15px]/[normal] box-border text-[#C5C5CA] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Summon it from any app
+                      {t("Summon it from any app")}
                     </div>
                   </div>
                   <div
@@ -114,7 +117,7 @@
                       data-pencil-name="Label"
                       class="text-[15px]/[normal] box-border text-[#C5C5CA] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Filter down to the account
+                      {t("Filter down to the account")}
                     </div>
                   </div>
                   <div
@@ -145,7 +148,7 @@
                       data-pencil-name="Label"
                       class="text-[15px]/[normal] box-border text-[#C5C5CA] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Code copied, window gone
+                      {t("Code copied, window gone")}
                     </div>
                   </div>
                 </div>
@@ -175,7 +178,7 @@
                       data-pencil-name="Label"
                       class="text-[12.5px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      macOS 12+
+                      {t("macOS 12+")}
                     </div>
                   </div>
                   <div
@@ -200,7 +203,7 @@
                       data-pencil-name="Label"
                       class="text-[12.5px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Windows 10+
+                      {t("Windows 10+")}
                     </div>
                   </div>
                   <div
@@ -225,7 +228,7 @@
                       data-pencil-name="Label"
                       class="text-[12.5px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Linux
+                      {t("Linux")}
                     </div>
                   </div>
                   <div

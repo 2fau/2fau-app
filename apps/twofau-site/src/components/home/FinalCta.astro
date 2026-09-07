@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
       data-pencil-name="Final CTA"
       class="box-border w-full h-fit shrink-0 flex flex-col gap-[26px] p-[110px_40px_96px_40px] justify-start items-center bg-[#0B0B0D] overflow-hidden relative"
@@ -14,13 +18,13 @@
           data-pencil-name="Title"
           class="text-[46px]/[50px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.6px] text-center"
         >
-          Stop hunting for six digits.
+          {t("Stop hunting for six digits.")}
         </div>
         <div
           data-pencil-name="Sub"
           class="text-[16.5px]/[normal] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-center"
         >
-          Free, open source, and yours to audit. Install it in under a minute.
+          {t("Free, open source, and yours to audit. Install it in under a minute.")}
         </div>
       </div>
       <div
@@ -49,7 +53,7 @@
             data-pencil-name="Label"
             class="text-[14.5px]/[normal] box-border text-[#FFFFFF] font-[Inter,system-ui,sans-serif] font-semibold text-left [white-space:nowrap]"
           >
-            Download for Mac
+            {t("Download for Mac")}
           </div>
         </div>
         <div
@@ -74,7 +78,7 @@
             data-pencil-name="Label"
             class="text-[14.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left [white-space:nowrap]"
           >
-            View the source
+            {t("View the source")}
           </div>
         </div>
       </div>

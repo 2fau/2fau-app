@@ -1,5 +1,7 @@
 ---
 import { STORE } from "../../config/links";
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
 ---
 
     <div
@@ -14,7 +16,7 @@ import { STORE } from "../../config/links";
                 data-pencil-name="Eyebrow"
                 class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
               >
-                INSTALL
+                {t("INSTALL")}
               </div>
               <div
                 data-pencil-name="Title Wrap"
@@ -24,7 +26,7 @@ import { STORE } from "../../config/links";
                   data-pencil-name="Title"
                   class="text-[42px]/[46px] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.4px] text-center"
                 >
-                  Add it to the browser you actually use.
+                  {t("Add it to the browser you actually use.")}
                 </div>
               </div>
               <div
@@ -35,8 +37,7 @@ import { STORE } from "../../config/links";
                   data-pencil-name="Sub"
                   class="text-[16px]/[26px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-center"
                 >
-                  Free, MIT licensed, and the same vault whether you land here from Chrome, Edge or
-                  Firefox.
+                  {t("Free, MIT licensed, and the same vault whether you land here from Chrome, Edge or Firefox.")}
                 </div>
               </div>
               <div
@@ -148,13 +149,13 @@ import { STORE } from "../../config/links";
                       data-pencil-name="Label"
                       class="text-[14.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left [white-space:nowrap]"
                     >
-                      Add to Chrome
+                      {t("Add to Chrome")}
                     </div>
                     <div
                       data-pencil-name="Store"
                       class="text-[10.5px]/[normal] box-border text-[#FFFFFFB8] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Chrome Web Store
+                      {t("Chrome Web Store")}
                     </div>
                   </div>
                 </a>
@@ -208,13 +209,13 @@ import { STORE } from "../../config/links";
                       data-pencil-name="Label"
                       class="text-[14.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
                     >
-                      Add to Edge
+                      {t("Add to Edge")}
                     </div>
                     <div
                       data-pencil-name="Store"
                       class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Edge Add-ons
+                      {t("Edge Add-ons")}
                     </div>
                   </div>
                 </a>
@@ -290,13 +291,13 @@ import { STORE } from "../../config/links";
                       data-pencil-name="Label"
                       class="text-[14.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
                     >
-                      Add to Firefox
+                      {t("Add to Firefox")}
                     </div>
                     <div
                       data-pencil-name="Store"
                       class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Mozilla Add-ons
+                      {t("Mozilla Add-ons")}
                     </div>
                   </div>
                 </a>
@@ -309,7 +310,7 @@ import { STORE } from "../../config/links";
                   data-pencil-name="Meta"
                   class="text-[12px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                 >
-                  v0.1.0 · MV3 · no account required · build it yourself from source
+                  {t("v0.1.0 · MV3 · no account required · build it yourself from source")}
                 </div>
               </div>
             </div>

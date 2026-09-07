@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Differences Section"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#0B0B0D]"
@@ -18,22 +22,20 @@
                     data-pencil-name="Eyebrow"
                     class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                   >
-                    CHROME / EDGE vs FIREFOX
+                    {t("CHROME / EDGE vs FIREFOX")}
                   </div>
                   <div
                     data-pencil-name="Title"
                     class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
                   >
-                    Where the two builds actually differ.
+                    {t("Where the two builds actually differ.")}
                   </div>
                 </div>
                 <div
                   data-pencil-name="Differences Note"
                   class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  Both are MV3 and both ship the same UI and the same WASM core. Gecko needs five
-                  concessions, and the Firefox manifest is generated from the Chrome one so they cannot
-                  drift apart.
+                  {t("Both are MV3 and both ship the same UI and the same WASM core. Gecko needs five concessions, and the Firefox manifest is generated from the Chrome one so they cannot drift apart.")}
                 </div>
               </div>
               <div
@@ -196,7 +198,7 @@
                       data-pencil-name="Head Text"
                       class="text-[10.5px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
                     >
-                      CHROME / EDGE
+                      {t("CHROME / EDGE")}
                     </div>
                   </div>
                   <div
@@ -267,7 +269,7 @@
                       data-pencil-name="Head Text"
                       class="text-[10.5px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
                     >
-                      FIREFOX
+                      {t("FIREFOX")}
                     </div>
                   </div>
                 </div>
@@ -283,7 +285,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Background
+                      {t("Background")}
                     </div>
                   </div>
                   <div
@@ -294,7 +296,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      service worker
+                      {t("service worker")}
                     </div>
                   </div>
                   <div
@@ -305,7 +307,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      event page · module scripts
+                      {t("event page · module scripts")}
                     </div>
                   </div>
                 </div>
@@ -321,7 +323,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Clipboard
+                      {t("Clipboard")}
                     </div>
                   </div>
                   <div
@@ -332,7 +334,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      offscreen document
+                      {t("offscreen document")}
                     </div>
                   </div>
                   <div
@@ -343,7 +345,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      direct DOM write in the background
+                      {t("direct DOM write in the background")}
                     </div>
                   </div>
                 </div>
@@ -359,7 +361,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Options page
+                      {t("Options page")}
                     </div>
                   </div>
                   <div
@@ -381,7 +383,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      options_ui · opens in a tab
+                      {t("options_ui · opens in a tab")}
                     </div>
                   </div>
                 </div>
@@ -397,7 +399,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      offscreen permission
+                      {t("offscreen permission")}
                     </div>
                   </div>
                   <div
@@ -408,7 +410,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      required
+                      {t("required")}
                     </div>
                   </div>
                   <div
@@ -419,7 +421,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      dropped — unknown to Gecko
+                      {t("dropped — unknown to Gecko")}
                     </div>
                   </div>
                 </div>
@@ -435,7 +437,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Minimum version
+                      {t("Minimum version")}
                     </div>
                   </div>
                   <div
@@ -446,7 +448,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      Chrome 116
+                      {t("Chrome 116")}
                     </div>
                   </div>
                   <div
@@ -457,7 +459,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      Firefox 128
+                      {t("Firefox 128")}
                     </div>
                   </div>
                 </div>
@@ -473,7 +475,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Distribution
+                      {t("Distribution")}
                     </div>
                   </div>
                   <div
@@ -484,7 +486,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      Chrome Web Store
+                      {t("Chrome Web Store")}
                     </div>
                   </div>
                   <div
@@ -495,7 +497,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      AMO, signed .xpi
+                      {t("AMO, signed .xpi")}
                     </div>
                   </div>
                 </div>
@@ -526,9 +528,7 @@
                   data-pencil-name="Strip Text"
                   class="text-[13.5px]/[21px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  scripts/firefox-manifest.mjs derives the Gecko manifest from the Chrome one — a pure
-                  function, unit-tested, so a permission added for Chrome shows up in the Firefox build
-                  or fails the suite.
+                  {t("scripts/firefox-manifest.mjs derives the Gecko manifest from the Chrome one — a pure function, unit-tested, so a permission added for Chrome shows up in the Firefox build or fails the suite.")}
                 </div>
               </div>
             </div>

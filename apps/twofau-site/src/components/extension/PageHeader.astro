@@ -1,5 +1,7 @@
 ---
 import { STORE } from "../../config/links";
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
 ---
 
     <div
@@ -14,7 +16,7 @@ import { STORE } from "../../config/links";
                 data-pencil-name="Eyebrow"
                 class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
               >
-                BROWSER EXTENSION
+                {t("BROWSER EXTENSION")}
               </div>
               <div
                 data-pencil-name="Title Wrap"
@@ -24,7 +26,7 @@ import { STORE } from "../../config/links";
                   data-pencil-name="Title"
                   class="text-[52px]/[56px] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.8px] text-left"
                 >
-                  One source. Two browsers. No servers in between.
+                  {t("One source. Two browsers. No servers in between.")}
                 </div>
               </div>
               <div
@@ -35,9 +37,7 @@ import { STORE } from "../../config/links";
                   data-pencil-name="Subhead"
                   class="text-[17px]/[28px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  The same Rust core, compiled to WebAssembly and running in the tab you're already in.
-                  Chrome, Edge and Firefox are built from one manifest, so a feature never lands on one
-                  and quietly skips the other.
+                  {t("The same Rust core, compiled to WebAssembly and running in the tab you're already in. Chrome, Edge and Firefox are built from one manifest, so a feature never lands on one and quietly skips the other.")}
                 </div>
               </div>
               <div
@@ -145,7 +145,7 @@ import { STORE } from "../../config/links";
                     data-pencil-name="Label"
                     class="text-[14.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left [white-space:nowrap]"
                   >
-                    Add to Chrome
+                    {t("Add to Chrome")}
                   </div>
                 </a>
                 <a href={STORE.chrome} target="_blank" rel="noreferrer noopener"
