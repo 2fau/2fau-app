@@ -32,6 +32,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@twofau/i18n/react";
 import { AccountRow } from "@/components/account-row";
 import { ItemGroup } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
@@ -57,19 +58,21 @@ const MAX_VISIBLE_ROWS = 5;
 const EXPIRY_WARNING_S = 5;
 
 function EmptyState() {
+  const { t } = useT();
   return (
       <div className="flex flex-col items-center gap-1.5 py-9">
         <ShieldCheck className="size-8 text-muted-foreground" />
-        <p className="text-[13px] text-muted-foreground">No accounts yet</p>
-        <p className="text-[11px] text-tertiary-foreground">Tap + to add one</p>
+        <p className="text-[13px] text-muted-foreground">{t("No accounts yet")}</p>
+        <p className="text-[11px] text-tertiary-foreground">{t("Tap + to add one")}</p>
       </div>
   );
 }
 
 function NoMatchesState() {
+  const { t } = useT();
   return (
       <p className="py-6 text-center text-[13px] text-muted-foreground">
-        No matches
+        {t("No matches")}
       </p>
   )
 }
@@ -113,6 +116,7 @@ function SortableReorderRow({ account }: { account: Account }) {
     transition,
     isDragging,
   } = useSortable({ id: account.id });
+  const { t } = useT();
   const accent = accountColorVar(account.color);
   const secondary = secondaryName(account);
   return (
@@ -137,7 +141,7 @@ function SortableReorderRow({ account }: { account: Account }) {
       </div>
       <span
         ref={setActivatorNodeRef}
-        aria-label="Drag to reorder"
+        aria-label={t("Drag to reorder")}
         className="shrink-0 cursor-grab touch-none p-1 text-muted-foreground active:cursor-grabbing"
         {...attributes}
         {...listeners}
@@ -161,21 +165,24 @@ function Footer({
   onOpenSettings,
   onLock
 }: FooterProps) {
+  const { t, plural } = useT();
   return (
       <div className="flex items-center px-3.5 py-2">
         <div className="flex flex-row items-center gap-2">
           <Button
               size="icon-xs"
               variant="ghost"
-              aria-label="Lock vault"
-              title="Lock vault"
+              aria-label={t("Lock vault")}
+              title={t("Lock vault")}
               className="text-muted-foreground"
               onClick={onLock}
           >
             <Lock />
           </Button>
           <span className="text-[11px] text-muted-foreground">
-            {accounts.length === 1 ? "1 account" : `${accounts.length} accounts`}
+            {plural(accounts.length, { one: "1 account", other: "{count} accounts" }, {
+              count: accounts.length,
+            })}
           </span>
         </div>
         <div className="ml-auto flex items-center gap-0.5">
@@ -183,7 +190,7 @@ function Footer({
               <Button
                   size="icon-xs"
                   variant="ghost"
-                  aria-label="Settings"
+                  aria-label={t("Settings")}
                   className="text-muted-foreground"
                   onClick={onOpenSettings}
               >
@@ -192,7 +199,7 @@ function Footer({
           )}
           {onQuit && (
               <Button size="xs" variant="ghost" className="text-muted-foreground" onClick={onQuit}>
-                Quit
+                {t("Quit")}
               </Button>
           )}
         </div>
@@ -231,6 +238,7 @@ export function MenuBarView({
   /** Which modifier + enable state drives the quick-copy 1..5 shortcuts. */
   quickCopy?: QuickCopyConfig;
 }) {
+  const { t } = useT();
   const { accounts, now, capabilities, lock, reorder, codes } = useVault();
   const { writeText } = useClipboard();
   const [search, setSearch] = useState("");
@@ -355,7 +363,7 @@ export function MenuBarView({
             <Button
               size="icon-xs"
               variant="ghost"
-              title="Scan QR from screen"
+              title={t("Scan QR from screen")}
               onClick={onScan}
             >
               <ScanLine />
@@ -365,7 +373,7 @@ export function MenuBarView({
             <Button
               size="icon-xs"
               variant="ghost"
-              title="Add from clipboard"
+              title={t("Add from clipboard")}
               className={pasteFailed ? "text-destructive" : undefined}
               onClick={handleQuickAdd}
             >
@@ -376,8 +384,8 @@ export function MenuBarView({
             <Button
               size="icon-xs"
               variant="ghost"
-              title={reordering ? "Done reordering" : "Reorder accounts"}
-              aria-label={reordering ? "Done reordering" : "Reorder accounts"}
+              title={reordering ? t("Done reordering") : t("Reorder accounts")}
+              aria-label={reordering ? t("Done reordering") : t("Reorder accounts")}
               className={reordering ? "text-primary" : undefined}
               onClick={toggleReorder}
             >
@@ -388,7 +396,7 @@ export function MenuBarView({
             <Button
               size="icon-xs"
               variant="ghost"
-              title="Add account"
+              title={t("Add account")}
               onClick={onAdd}
             >
               <Plus />
@@ -455,7 +463,7 @@ export function MenuBarView({
                 {matched.length > 0 && (
                   <>
                     <p className="px-2 pt-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                      For this site
+                      {t("For this site")}
                     </p>
                     {matched.map((a) => (
                       <AccountRow

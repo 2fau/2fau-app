@@ -1,6 +1,7 @@
 import {CheckIcon, PencilIcon, RotateCwIcon, Trash2Icon} from "lucide-react";
 import {useState} from "react";
 import {AnimatePresence, motion} from 'framer-motion'
+import {useT} from "@twofau/i18n/react";
 import type {Account} from "@/core/types";
 import {accountColorVar} from "@/lib/colors";
 import {formatCode} from "@/lib/format";
@@ -29,6 +30,7 @@ export function AccountRow({
     /** Formatted modifier shown before the digit in the hint (e.g. "⌘"). */
     modLabel?: string;
 }) {
+    const {t} = useT();
     const {codes, remove, advanceHotp, now} = useVault();
     const {writeText} = useClipboard();
     const [copied, setCopied] = useState(false);
@@ -73,7 +75,7 @@ export function AccountRow({
         try {
             await advanceHotp(account.id);
         } catch (e) {
-            setActionError(`Could not advance code: ${msg(e)}`);
+            setActionError(t("Could not advance code: {error}", {error: msg(e)}));
         }
     }
 
@@ -82,7 +84,7 @@ export function AccountRow({
             setDeleting(true)
             await remove(account.id);
         } catch (e) {
-            setActionError(`Could not delete account: ${msg(e)}`);
+            setActionError(t("Could not delete account: {error}", {error: msg(e)}));
             setConfirmingDelete(false);
         } finally {
             setDeleting(false)
@@ -121,7 +123,7 @@ export function AccountRow({
                         e.stopPropagation();
                         void copy();
                     }}
-                    aria-label={`Copy ${issuer} code for ${label}. ${seconds} seconds remaining`}
+                    aria-label={t("Copy {issuer} code for {label}. {seconds} seconds remaining", {issuer, label, seconds})}
                     className="absolute inset-0 z-0 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/30"
                 />
             )}
@@ -191,7 +193,7 @@ export function AccountRow({
                                 onClick={() => setConfirmingDelete(false)}
                                 className="rounded-md border border-line px-2 py-[3px] text-[11px] font-medium text-zinc-300 transition-colors duration-150 ease-out hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
                             >
-                                Cancel
+                                {t("Cancel")}
                             </button>
                             <button
                                 type="button"
@@ -200,20 +202,20 @@ export function AccountRow({
                                 disabled={deleting}
                                 className="rounded-md bg-red-600 px-2 py-[3px] text-[11px] font-medium text-white transition-colors duration-150 ease-out hover:bg-red-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70"
                             >
-                                {deleting ? 'Deleting...' : 'Delete'}
+                                {deleting ? t("Deleting…") : t("Delete")}
                             </button>
                         </div>
                     ) : copiedShown ? (
                         <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-emerald-400">
                 <CheckIcon className="h-3.5 w-3.5" strokeWidth={2.5}/>
-                Copied
+                {t("Copied")}
               </span>
                     ) : (
                         <>
                             <div
                                 className="pointer-events-auto flex items-center gap-0.5 opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100 group-focus-within:opacity-100">
                                 <IconAction
-                                    label={`Generate a new ${account.issuer} code`}
+                                    label={t("Generate a new {issuer} code", {issuer: account.issuer})}
                                     onClick={advance}
                                 >
                                     <motion.span
@@ -227,13 +229,13 @@ export function AccountRow({
                                     </motion.span>
                                 </IconAction>
                                 <IconAction
-                                    label={`Edit ${account.issuer} account`}
+                                    label={t("Edit {issuer} account", {issuer: account.issuer})}
                                     onClick={onEdit}
                                 >
                                     <PencilIcon className="h-[13px] w-[13px]"/>
                                 </IconAction>
                                 <IconAction
-                                    label={`Delete ${account.issuer} account`}
+                                    label={t("Delete {issuer} account", {issuer: account.issuer})}
                                     danger
                                     onClick={() => setConfirmingDelete(true)}
                                 >

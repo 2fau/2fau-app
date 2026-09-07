@@ -1,5 +1,6 @@
 import { ShieldPlus } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { useT } from "@twofau/i18n/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useVault } from "@/state/vault-provider";
@@ -9,6 +10,7 @@ const MIN_LENGTH = 8;
 /** First-run screen: create the passphrase that encrypts the vault on this
  * device. Distinct from UnlockView, which enters an existing passphrase. */
 export function SetupView() {
+  const { t } = useT();
   const { unlock } = useVault();
   const [passphrase, setPassphrase] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -27,7 +29,11 @@ export function SetupView() {
     try {
       await unlock(passphrase);
     } catch (err) {
-      setError(`Could not create vault: ${err instanceof Error ? err.message : String(err)}`);
+      setError(
+        t("Could not create vault: {error}", {
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
     } finally {
       setBusy(false);
     }
@@ -36,22 +42,22 @@ export function SetupView() {
   return (
     <form className="flex flex-col items-center gap-3 px-6 py-8" onSubmit={submit}>
       <ShieldPlus className="size-9 text-primary" />
-      <p className="text-[15px] font-semibold">Create a passphrase</p>
+      <p className="text-[15px] font-semibold">{t("Create a passphrase")}</p>
       <p className="text-center text-[11px] text-muted-foreground">
-        It encrypts your accounts on this device and can’t be recovered — don’t forget it.
+        {t("It encrypts your accounts on this device and can’t be recovered — don’t forget it.")}
       </p>
 
       <Input
         type="password"
         autoFocus
-        placeholder="Passphrase"
+        placeholder={t("Passphrase")}
         value={passphrase}
         aria-invalid={tooShort}
         onChange={(e) => setPassphrase(e.target.value)}
       />
       <Input
         type="password"
-        placeholder="Confirm passphrase"
+        placeholder={t("Confirm passphrase")}
         value={confirm}
         aria-invalid={mismatch}
         onChange={(e) => setConfirm(e.target.value)}
@@ -59,14 +65,14 @@ export function SetupView() {
 
       {tooShort && (
         <p className="text-[11px] text-muted-foreground">
-          Use at least {MIN_LENGTH} characters.
+          {t("Use at least {count} characters.", { count: MIN_LENGTH })}
         </p>
       )}
-      {mismatch && <p className="text-[11px] text-destructive">Passphrases don’t match.</p>}
+      {mismatch && <p className="text-[11px] text-destructive">{t("Passphrases don’t match.")}</p>}
       {error && <p className="text-[11px] text-destructive">{error}</p>}
 
       <Button type="submit" className="w-full" disabled={busy || !valid}>
-        Create vault
+        {t("Create vault")}
       </Button>
     </form>
   );

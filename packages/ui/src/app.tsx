@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { I18nProvider } from "@twofau/i18n/react";
+import type { Messages } from "@twofau/i18n";
 import { RootView } from "@/components/root-view";
 import type { Account, ParsedOtp } from "@/core/types";
 import type { VaultService } from "@/core/vault-service";
@@ -23,6 +25,8 @@ export function TwoFAUApp({
   focusNonce,
   requestClose,
   quickCopy: quickCopyProp,
+  locale,
+  messages,
 }: {
   service: VaultService;
   onScan?: () => void;
@@ -50,15 +54,19 @@ export function TwoFAUApp({
   requestClose?: () => void;
   /** Initial quick-copy config from the host's settings store. */
   quickCopy?: QuickCopyConfig;
+  /** Active UI locale + its loaded catalog. Defaults to English (identity). */
+  locale?: string;
+  messages?: Messages;
 }) {
   // Owned so an in-panel Settings edit (desktop) applies to the open list live.
   const [quickCopy, setQuickCopy] = useState<QuickCopyConfig>(
     quickCopyProp ?? DEFAULT_QUICK_COPY,
   );
   return (
-    <ClipboardProvider readText={readClipboard} writeText={writeClipboard}>
-      <VaultProvider service={service}>
-        <RootView
+    <I18nProvider locale={locale ?? "en"} messages={messages ?? {}}>
+      <ClipboardProvider readText={readClipboard} writeText={writeClipboard}>
+        <VaultProvider service={service}>
+          <RootView
           onScan={onScan}
           onQuit={onQuit}
           settingsBackend={settingsBackend}
@@ -67,10 +75,11 @@ export function TwoFAUApp({
           parseMigration={parseMigration}
           focusNonce={focusNonce}
           requestClose={requestClose}
-          quickCopy={quickCopy}
-          onQuickCopyChange={setQuickCopy}
-        />
-      </VaultProvider>
-    </ClipboardProvider>
+            quickCopy={quickCopy}
+            onQuickCopyChange={setQuickCopy}
+          />
+        </VaultProvider>
+      </ClipboardProvider>
+    </I18nProvider>
   );
 }

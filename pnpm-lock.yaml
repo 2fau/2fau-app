@@ -191,6 +191,9 @@ importers:
       '@twofau/core-wasm':
         specifier: workspace:*
         version: link:../core-wasm
+      '@twofau/i18n':
+        specifier: workspace:*
+        version: link:../i18n
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1

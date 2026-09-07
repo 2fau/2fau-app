@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from "react";
+import { useT } from "@twofau/i18n/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AppIcon } from "@/components/ui/logo";
@@ -7,6 +8,7 @@ import { useVault } from "@/state/vault-provider";
 /** Net-new screen (no Swift equivalent): passphrase unlock, since the
  * cross-platform root of trust is a passphrase, not the Secure Enclave. */
 export function UnlockView() {
+  const { t } = useT();
   const { unlock } = useVault();
   const [passphrase, setPassphrase] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +21,11 @@ export function UnlockView() {
     try {
       await unlock(passphrase);
     } catch (err) {
-      setError(`Could not unlock: ${err instanceof Error ? err.message : String(err)}`);
+      setError(
+        t("Could not unlock: {error}", {
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
     } finally {
       setBusy(false);
     }
@@ -37,7 +43,7 @@ export function UnlockView() {
             2FA<span style={{ color: "var(--primary)" }}>u</span>
           </span>
           <p className="text-[12px] text-muted-foreground">
-            Enter your passphrase to unlock
+            {t("Enter your passphrase to unlock")}
           </p>
         </div>
       </div>
@@ -46,7 +52,7 @@ export function UnlockView() {
         <Input
           type="password"
           autoFocus
-          placeholder="Passphrase"
+          placeholder={t("Passphrase")}
           aria-invalid={!!error}
           value={passphrase}
           onChange={(e) => {
@@ -62,7 +68,7 @@ export function UnlockView() {
           className="w-full"
           disabled={busy || passphrase.length === 0}
         >
-          {busy ? "Unlocking…" : "Unlock"}
+          {busy ? t("Unlocking…") : t("Unlock")}
         </Button>
       </div>
     </form>

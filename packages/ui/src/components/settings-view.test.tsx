@@ -12,6 +12,7 @@ function backend(over: Partial<SettingsBackend> = {}): SettingsBackend {
     import: { kind: "native", run: async () => 0 },
     changePassphrase: async () => {},
     autoLock: { get: async () => 5, set: async () => {} },
+    locale: { get: async () => "en", set: async () => {} },
     sync: { summary: "x", screen: <div /> },
     openLink: () => {},
     hotkeys: {
