@@ -1,5 +1,6 @@
 import { ChevronLeft } from "lucide-react";
 import { useRef, useState } from "react";
+import { useT } from "@twofau/i18n/react";
 import { Button } from "@/components/ui/button";
 import { ColorPicker } from "@/components/color-picker";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ export function AddView({
   onImport?: () => void;
   prefill?: AddPrefill;
 }) {
+  const { t } = useT();
   const { addUri, addManual, update, capabilities } = useVault();
   const [issuer, setIssuer] = useState(prefill?.issuer ?? "");
   const [label, setLabel] = useState(prefill?.label ?? "");
@@ -55,20 +57,20 @@ export function AddView({
         await navigator.clipboard.readText(),
       );
       if (!p) {
-        setError("No otpauth:// URI or Base32 secret on the clipboard");
+        setError(t("No otpauth:// URI or Base32 secret on the clipboard"));
         return;
       }
       applyPrefill(p);
       setError(null);
     } catch (e) {
-      setError(`Could not read clipboard: ${msg(e)}`);
+      setError(t("Could not read clipboard: {error}", { error: msg(e) }));
     }
   }
 
   async function importFromFile(file: File) {
     const uri = await decodeQrImage(file);
     if (!uri) {
-      setError("No QR code found");
+      setError(t("No QR code found"));
       return;
     }
     try {
@@ -82,7 +84,7 @@ export function AddView({
       );
       setError(null);
     } catch (e) {
-      setError(`Could not read QR: ${msg(e)}`);
+      setError(t("Could not read QR: {error}", { error: msg(e) }));
     }
   }
 
@@ -98,7 +100,7 @@ export function AddView({
       if (color) await update({ ...created, color });
       onDone();
     } catch (e) {
-      setError(`Could not add account: ${msg(e)}`);
+      setError(t("Could not add account: {error}", { error: msg(e) }));
     } finally {
       setSaving(false)
     }
@@ -110,23 +112,23 @@ export function AddView({
         <Button size="icon-sm" variant="ghost" onClick={onDone}>
           <ChevronLeft />
         </Button>
-        <span className="text-[15px] font-semibold">Add account</span>
+        <span className="text-[15px] font-semibold">{t("Add account")}</span>
       </div>
 
       <div className="border-t" />
 
       <div className="flex flex-col gap-2">
-        <div className="text-[13px] text-muted-foreground">Paste from:</div>
+        <div className="text-[13px] text-muted-foreground">{t("Paste from:")}</div>
         <div className="flex gap-2">
           {capabilities.paste && (
             <Button
               variant="secondary"
               size="sm"
               className="min-w-0 flex-1 px-2 text-xs"
-              title="Paste an otpauth:// link or Base32 secret"
+              title={t("Paste an otpauth:// link or Base32 secret")}
               onClick={importFromClipboard}
             >
-              Clipboard
+              {t("Clipboard")}
             </Button>
           )}
           {capabilities.qrImage && (
@@ -136,7 +138,7 @@ export function AddView({
               className="min-w-0 flex-1 px-2 text-xs"
               onClick={() => fileInput.current?.click()}
             >
-              QR image
+              {t("QR image")}
             </Button>
           )}
           {onImport && (
@@ -144,10 +146,10 @@ export function AddView({
               variant="secondary"
               size="sm"
               className="min-w-0 flex-1 px-2 text-xs"
-              title="Import many, or a Google Authenticator export"
+              title={t("Import many, or a Google Authenticator export")}
               onClick={onImport}
             >
-              Bulk
+              {t("Bulk")}
             </Button>
           )}
         </div>
@@ -165,7 +167,7 @@ export function AddView({
       </div>
 
       <Input
-        placeholder="Issuer (e.g. GitHub)"
+        placeholder={t("Issuer (e.g. GitHub)")}
         value={issuer}
         onChange={(e) => {
           setIssuer(e.target.value);
@@ -173,7 +175,7 @@ export function AddView({
         }}
       />
       <Input
-        placeholder="Label (e.g. me@x.com)"
+        placeholder={t("Label (e.g. me@x.com)")}
         value={label}
         onChange={(e) => {
           setLabel(e.target.value);
@@ -181,7 +183,7 @@ export function AddView({
         }}
       />
       <Input
-        placeholder="Secret (Base32)"
+        placeholder={t("Secret (Base32)")}
         value={secret}
         onChange={(e) => {
           setSecret(e.target.value);
@@ -212,7 +214,7 @@ export function AddView({
       </ToggleGroup>
 
       <div className="flex flex-col gap-1.5">
-        <span className="text-[11px] text-muted-foreground">Row color</span>
+        <span className="text-[11px] text-muted-foreground">{t("Row color")}</span>
         <ColorPicker value={color} onChange={setColor} />
       </div>
 
@@ -220,10 +222,10 @@ export function AddView({
 
       <div className="flex justify-end gap-2">
         <Button variant="secondary" size="sm" onClick={onDone}>
-          Cancel
+          {t("Cancel")}
         </Button>
         <Button size="sm" onClick={save} disabled={saving}>
-          {saving ? 'Saving' : 'Save'}
+          {saving ? t("Saving") : t("Save")}
         </Button>
       </div>
     </div>

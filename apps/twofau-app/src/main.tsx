@@ -2,12 +2,13 @@ import { invoke } from "@tauri-apps/api/core";
 import { getVersion } from "@tauri-apps/api/app";
 import { readText, writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
-import { TwoFAUApp } from "@twofau/ui";
-import type { ParsedOtp } from "@twofau/ui";
+import { TwoFAUApp, loadMessages } from "@twofau/ui";
+import type { Messages, ParsedOtp } from "@twofau/ui";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { initAutoLock } from "./auto-lock";
 import { getQuickCopy } from "./hotkeys";
+import { getLocale } from "./locale";
 import { tauriSettingsBackend } from "./settings-backend";
 import { TauriVaultService } from "./tauri-vault-service";
 import "./index.css";
@@ -16,10 +17,14 @@ function Root({
   startUnlocked,
   needsSetup,
   version,
+  locale,
+  messages,
 }: {
   startUnlocked: boolean;
   needsSetup: boolean;
   version: string;
+  locale: string;
+  messages: Messages;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const service = useRef(new TauriVaultService(startUnlocked, needsSetup)).current;
@@ -64,6 +69,8 @@ function Root({
     >
       <TwoFAUApp
         service={service}
+        locale={locale}
+        messages={messages}
         onQuit={() => void invoke("quit")}
         settingsBackend={settingsBackend}
         parseMigration={(uri) => invoke<ParsedOtp[]>("parse_migration", { uri })}
@@ -90,8 +97,16 @@ async function bootstrap() {
     // stay locked; the unlock screen will handle it
   }
   const version = await getVersion().catch(() => "0.0.0");
+  const locale = getLocale();
+  const messages = await loadMessages(locale, "ui");
   ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-    <Root startUnlocked={startUnlocked} needsSetup={needsSetup} version={version} />,
+    <Root
+      startUnlocked={startUnlocked}
+      needsSetup={needsSetup}
+      version={version}
+      locale={locale}
+      messages={messages}
+    />,
   );
 }
 

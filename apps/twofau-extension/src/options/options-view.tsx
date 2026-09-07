@@ -1,8 +1,10 @@
 import {
   modsFromToken,
   modsToToken,
+  resolveLocale,
   SettingsGroup,
   SettingsView,
+  useT,
   type QuickCopyConfig,
   type SettingsBackend,
 } from "@twofau/ui";
@@ -26,11 +28,13 @@ const LINKS = {
   translate: "https://github.com/2fau/2fau-app",
 };
 
-const SYNC_SUMMARY: Record<BridgeMode, string> = {
-  independent: "This browser",
-  sync: "Sync with desktop",
-  client: "Desktop vault",
-};
+type T = ReturnType<typeof useT>["t"];
+
+function syncSummary(mode: BridgeMode, t: T): string {
+  if (mode === "sync") return t("Sync with desktop");
+  if (mode === "client") return t("Desktop vault");
+  return t("This browser");
+}
 
 async function vaultService() {
   const { ExtensionVaultService } = await import("../vault/extension-vault-service");
@@ -46,6 +50,7 @@ async function readSummonShortcut(): Promise<string | null> {
 }
 
 export function OptionsView() {
+  const { t } = useT();
   const [mode, setMode] = useState<BridgeMode | null>(null);
 
   useEffect(() => {
@@ -74,8 +79,17 @@ export function OptionsView() {
           await writeSettings({ autoLockMinutes: minutes });
         },
       },
+      locale: {
+        get: async () => {
+          const s = await readSettings();
+          return s.locale || resolveLocale(navigator.language);
+        },
+        set: async (l) => {
+          await writeSettings({ locale: l });
+        },
+      },
       sync: {
-        summary: mode ? SYNC_SUMMARY[mode] : undefined,
+        summary: mode ? syncSummary(mode, t) : undefined,
         screen: <SyncScreen onModeChange={setMode} />,
       },
       openLink: (url) => window.open(url, "_blank", "noopener,noreferrer"),
@@ -94,7 +108,7 @@ export function OptionsView() {
         },
       },
     }),
-    [mode],
+    [mode, t],
   );
 
   return (
@@ -107,6 +121,7 @@ export function OptionsView() {
 /** The extension's Sync sub-screen: where the vault lives, and (for the bridge
  * modes) the desktop pairing flow. */
 function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void }) {
+  const { t } = useT();
   const [mode, setMode] = useState<BridgeMode>("independent");
   const [storageArea, setStorageArea] = useState<"sync" | "local">("sync");
   const [port, setPort] = useState(4849);
@@ -137,7 +152,7 @@ function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void })
     setError(null);
     setStatus(null);
     if (next !== "independent" && !(await ensureBridgePermission())) {
-      setError("Permission to reach the desktop app was declined.");
+      setError(t("Permission to reach the desktop app was declined."));
       return;
     }
     // The desktop vault and the local vault use different keys, so a session key
@@ -158,12 +173,12 @@ function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void })
     setStatus(null);
     try {
       if (!(await pingBridge())) {
-        setError("Desktop app not found on that port. Is the bridge enabled?");
+        setError(t("Desktop app not found on that port. Is the bridge enabled?"));
         return;
       }
       await pairBridge(code.trim());
       setCode("");
-      setStatus("Paired. Open the popup and unlock with your desktop passphrase.");
+      setStatus(t("Paired. Open the popup and unlock with your desktop passphrase."));
       await refreshConn();
     } catch (err) {
       setError(err instanceof BridgeUnreachableError ? err.message : String(err));
@@ -171,14 +186,14 @@ function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void })
   }
 
   const MODE_LABELS: { value: BridgeMode; label: string }[] = [
-    { value: "independent", label: "This browser" },
-    { value: "sync", label: "Sync with desktop" },
-    { value: "client", label: "Desktop vault" },
+    { value: "independent", label: t("This browser") },
+    { value: "sync", label: t("Sync with desktop") },
+    { value: "client", label: t("Desktop vault") },
   ];
 
   return (
     <>
-      <SettingsGroup header="Where the vault lives" footer={modeHelp(mode)}>
+      <SettingsGroup header={t("Where the vault lives")} footer={modeHelp(mode, t)}>
         {MODE_LABELS.map((m) => (
           <label
             key={m.value}
@@ -200,7 +215,11 @@ function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void })
         <SettingsGroup
           footer={
             usage
-              ? `Using ${(usage.bytes / 1024).toFixed(1)} KB of ${(usage.quota / 1024).toFixed(0)} KB (${usage.percent.toFixed(0)}%).`
+              ? t("Using {used} KB of {quota} KB ({percent}%).", {
+                  used: (usage.bytes / 1024).toFixed(1),
+                  quota: (usage.quota / 1024).toFixed(0),
+                  percent: usage.percent.toFixed(0),
+                })
               : undefined
           }
         >
@@ -215,13 +234,13 @@ function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void })
                 void writeSettings({ storageArea: area });
               }}
             />
-            Sync across my Chrome profile
+            {t("Sync across my Chrome profile")}
           </label>
         </SettingsGroup>
       )}
 
       {mode !== "independent" && (
-        <SettingsGroup header="Desktop pairing">
+        <SettingsGroup header={t("Desktop pairing")}>
           <div className="flex items-center gap-2 px-3.5 py-2.5 text-[13px]">
             <span
               aria-hidden="true"
@@ -235,17 +254,17 @@ function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void })
             />
             <span>
               {conn == null
-                ? "Checking…"
+                ? t("Checking…")
                 : conn.reachable
-                  ? "Paired — desktop connected"
+                  ? t("Paired — desktop connected")
                   : conn.paired
-                    ? "Paired — desktop unreachable"
-                    : "Not paired yet"}
+                    ? t("Paired — desktop unreachable")
+                    : t("Not paired yet")}
             </span>
           </div>
           <div className="flex flex-col gap-2 p-3 text-[13px]">
             <label className="flex items-center justify-between gap-2">
-              Port
+              {t("Port")}
               <input
                 type="number"
                 className="w-24 rounded-md border px-2 py-1"
@@ -261,7 +280,7 @@ function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void })
             </label>
             <input
               className="rounded-md border px-2 py-1.5"
-              placeholder="Pairing code from the desktop app"
+              placeholder={t("Pairing code from the desktop app")}
               value={code}
               onChange={(e) => setCode(e.target.value)}
             />
@@ -270,7 +289,7 @@ function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void })
               className="rounded-md border px-2 py-1.5 active:bg-muted"
               onClick={() => void pair()}
             >
-              Pair with desktop
+              {t("Pair with desktop")}
             </button>
           </div>
         </SettingsGroup>
@@ -282,9 +301,9 @@ function SyncScreen({ onModeChange }: { onModeChange: (m: BridgeMode) => void })
   );
 }
 
-function modeHelp(mode: BridgeMode): string {
-  if (mode === "client") return "Vaults live in the desktop app; this browser is a client.";
+function modeHelp(mode: BridgeMode, t: T): string {
+  if (mode === "client") return t("Vaults live in the desktop app; this browser is a client.");
   if (mode === "sync")
-    return "This browser keeps its own vault and syncs it with the desktop app when it's running.";
-  return "This browser keeps its own vault.";
+    return t("This browser keeps its own vault and syncs it with the desktop app when it's running.");
+  return t("This browser keeps its own vault.");
 }

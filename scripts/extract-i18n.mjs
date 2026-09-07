@@ -44,8 +44,10 @@ function walk(dir, files = []) {
 
 // Match t('…') / t("…") — first string arg. Handles escaped quotes.
 const T_RE = /\bt\(\s*(['"])((?:\\.|(?!\1).)*)\1/g;
-// Match the `other:` form inside plural(...) calls.
-const PLURAL_OTHER_RE = /\bplural\(\s*[^,]+,\s*\{[^}]*?other\s*:\s*(['"])((?:\\.|(?!\1).)*)\1/g;
+// Match the `other:` form inside plural(...) calls. Lazily skip anything (incl.
+// a `one` form containing {vars}, whose braces would trip a `[^}]` class) up to
+// the first `other:` after `plural(`.
+const PLURAL_OTHER_RE = /\bplural\([\s\S]*?other\s*:\s*(['"])((?:\\.|(?!\1).)*)\1/g;
 
 function unescape(s, quote) {
   return s.replace(new RegExp(`\\\\${quote}`, "g"), quote).replace(/\\\\/g, "\\");

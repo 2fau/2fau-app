@@ -65,6 +65,7 @@ describe("settings", () => {
       bridgePort: 4849,
       quickCopyEnabled: true,
       quickCopyMods: "mod",
+      locale: "",
     });
     expect(await writeSettings({ storageArea: "local" })).toEqual({
       autoLockMinutes: DEFAULT_AUTO_LOCK_MINUTES,
@@ -73,6 +74,7 @@ describe("settings", () => {
       bridgePort: 4849,
       quickCopyEnabled: true,
       quickCopyMods: "mod",
+      locale: "",
     });
     expect((await readSettings()).storageArea).toBe("local");
   });
@@ -88,6 +90,7 @@ describe("settings", () => {
       bridgePort: 4849,
       quickCopyEnabled: true,
       quickCopyMods: "mod",
+      locale: "",
     });
   });
 
