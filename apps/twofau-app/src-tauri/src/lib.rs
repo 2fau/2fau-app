@@ -2,6 +2,7 @@ pub mod bridge;
 pub mod time_sync;
 pub mod vault;
 
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 use bridge::{BridgeController, BridgeStatus};
@@ -28,6 +29,30 @@ const DEFAULT_SHORTCUT: &str = "CmdOrCtrl+Shift+U";
 
 /// Filesystem location of the persisted summon accelerator (beside vault.dat).
 struct ShortcutPath(std::path::PathBuf);
+
+/// Set while a native file dialog is open. The popup hides on focus loss
+/// (menu-bar behaviour), but a save/open dialog steals focus — without this the
+/// window would hide and take the dialog with it, so the export/import silently
+/// aborts. The window-event handler skips hiding while this is set.
+#[derive(Clone, Default)]
+struct DialogOpen(Arc<AtomicBool>);
+
+/// RAII marker: flags a dialog open for its lifetime and clears it on drop, so
+/// the flag resets even on an early return or error.
+struct DialogGuard(Arc<AtomicBool>);
+
+impl DialogGuard {
+    fn new(flag: &DialogOpen) -> Self {
+        flag.0.store(true, Ordering::SeqCst);
+        Self(flag.0.clone())
+    }
+}
+
+impl Drop for DialogGuard {
+    fn drop(&mut self) {
+        self.0.store(false, Ordering::SeqCst);
+    }
+}
 
 /// Read the persisted summon accelerator, falling back to the default when the
 /// file is missing or empty.
@@ -158,8 +183,13 @@ fn list_accounts(vault: State<Arc<AppVault>>) -> Result<Vec<Account>, String> {
 // `async` so Tauri runs these off the main thread — the blocking file dialog
 // deadlocks the event loop if invoked on it (macOS).
 #[tauri::command]
-async fn export_vault(app: AppHandle, vault: State<'_, Arc<AppVault>>) -> Result<bool, String> {
+async fn export_vault(
+    app: AppHandle,
+    vault: State<'_, Arc<AppVault>>,
+    dialog_open: State<'_, DialogOpen>,
+) -> Result<bool, String> {
     let blob = vault.export_blob()?;
+    let _guard = DialogGuard::new(&dialog_open);
     let Some(path) = app
         .dialog()
         .file()
@@ -181,8 +211,10 @@ async fn export_vault(app: AppHandle, vault: State<'_, Arc<AppVault>>) -> Result
 async fn import_vault(
     app: AppHandle,
     vault: State<'_, Arc<AppVault>>,
+    dialog_open: State<'_, DialogOpen>,
     passphrase: String,
 ) -> Result<Option<usize>, String> {
+    let _guard = DialogGuard::new(&dialog_open);
     let Some(path) = app
         .dialog()
         .file()
@@ -449,6 +481,7 @@ pub fn run() {
             let time_path = vault_path.with_file_name("time-offset");
             let shortcut_path = vault_path.with_file_name("shortcut");
             app.manage(ShortcutPath(shortcut_path.clone()));
+            app.manage(DialogOpen::default());
             let vault = Arc::new(AppVault::new(vault_path));
             app.manage(vault.clone());
 
@@ -522,9 +555,16 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
-            // Dismiss the popup when it loses focus (menu-bar behaviour).
+            // Dismiss the popup when it loses focus (menu-bar behaviour) — but not
+            // when a native file dialog stole focus, or hiding would take the
+            // dialog with it and abort the export/import.
             if let WindowEvent::Focused(false) = event {
-                let _ = window.hide();
+                let dialog_open = window
+                    .try_state::<DialogOpen>()
+                    .is_some_and(|s| s.0.load(Ordering::SeqCst));
+                if !dialog_open {
+                    let _ = window.hide();
+                }
             }
         })
         .invoke_handler(tauri::generate_handler![
