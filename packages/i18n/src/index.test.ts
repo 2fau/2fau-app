@@ -12,6 +12,12 @@ describe("createTranslator", () => {
     expect(t("Auto-Lock")).toBe("Automatische Sperre");
   });
 
+  it("falls back to the source for an empty-string stub (untranslated key)", () => {
+    const { t } = createTranslator("ru", { "Auto-Lock": "", "Delete {issuer} account": "" });
+    expect(t("Auto-Lock")).toBe("Auto-Lock");
+    expect(t("Delete {issuer} account", { issuer: "GitHub" })).toBe("Delete GitHub account");
+  });
+
   it("interpolates {vars}", () => {
     const { t } = createTranslator("en", {});
     expect(t("Use at least {n} characters.", { n: 8 })).toBe("Use at least 8 characters.");

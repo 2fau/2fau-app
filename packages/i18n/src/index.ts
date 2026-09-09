@@ -20,8 +20,11 @@ function interpolate(template: string, vars?: Vars): string {
 export function createTranslator(locale: string, messages: Messages) {
   const t = (source: string, vars?: Vars): string => {
     const ctxKey = vars?._ctx ? `${vars._ctx}${CTX}${source}` : null;
-    const hit = ctxKey != null && messages[ctxKey] != null ? messages[ctxKey] : messages[source];
-    const template = typeof hit === "string" ? hit : source;
+    // An empty string is an untranslated stub, not a translation — fall back to
+    // the English source (the key) so a half-filled locale never renders blank.
+    const ctxHit = ctxKey != null ? messages[ctxKey] : undefined;
+    const hit = typeof ctxHit === "string" && ctxHit !== "" ? ctxHit : messages[source];
+    const template = typeof hit === "string" && hit !== "" ? hit : source;
     return interpolate(template, vars);
   };
 
