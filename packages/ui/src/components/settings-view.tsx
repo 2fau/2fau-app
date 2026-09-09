@@ -1,14 +1,14 @@
 import {
   Check,
   Clock,
-  Code2,
+  // Code2,
   Download,
   Globe,
   Info,
   Keyboard,
   KeyRound,
   Languages,
-  MessageSquare,
+  // MessageSquare,
   Power,
   RefreshCw,
   Upload,
@@ -27,8 +27,9 @@ import {
   DEFAULT_SUMMON,
   formatChord,
   toAccelerator,
+  parseAccelerator,
   type Chord,
-  type QuickCopyConfig, parseAccelerator,
+  type QuickCopyConfig,
 } from "@/lib/hotkeys";
 
 type Screen =
@@ -213,13 +214,13 @@ export function SettingsView({
       </SettingsGroup>
 
       <SettingsGroup>
-        <SettingsRow
-          icon={<MessageSquare />}
-          iconBg="#ff9f0a"
-          label={t("Feedback")}
-          chevron
-          onClick={() => backend.openLink(backend.links.feedback)}
-        />
+        {/*<SettingsRow*/}
+        {/*  icon={<MessageSquare />}*/}
+        {/*  iconBg="#ff9f0a"*/}
+        {/*  label={t("Feedback")}*/}
+        {/*  chevron*/}
+        {/*  onClick={() => backend.openLink(backend.links.feedback)}*/}
+        {/*/>*/}
         <SettingsRow
           icon={<Languages />}
           iconBg="#5856d6"
@@ -227,13 +228,13 @@ export function SettingsView({
           chevron
           onClick={() => backend.openLink(backend.links.translate)}
         />
-        <SettingsRow
-          icon={<Code2 />}
-          iconBg="#af52de"
-          label={t("Source Code")}
-          chevron
-          onClick={() => backend.openLink(backend.links.sourceCode)}
-        />
+        {/*<SettingsRow*/}
+        {/*  icon={<Code2 />}*/}
+        {/*  iconBg="#af52de"*/}
+        {/*  label={t("Source Code")}*/}
+        {/*  chevron*/}
+        {/*  onClick={() => backend.openLink(backend.links.sourceCode)}*/}
+        {/*/>*/}
         <SettingsRow
           icon={<Info />}
           iconBg="#8e8e93"
