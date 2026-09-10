@@ -1,8 +1,16 @@
 [package]
+# Single package: every file below moves to the same version on each release.
+# `crates/twofau-core` is not listed — it inherits `version.workspace = true`
+# from the root `Cargo.toml`, so bumping that entry covers it. Knope errors if
+# any listed file disagrees on the current version, so keep them all in sync.
 versioned_files = [
     "package.json",
     "apps/twofau-app/package.json",
     "apps/twofau-extension/package.json",
+    "apps/twofau-site/package.json",
+    "packages/core-wasm/package.json",
+    "packages/i18n/package.json",
+    "packages/ui/package.json",
     "Cargo.toml",
     "apps/twofau-app/src-tauri/Cargo.toml",
     "crates/twofau-wasm/Cargo.toml",
