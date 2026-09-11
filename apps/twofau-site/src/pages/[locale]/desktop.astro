@@ -1,0 +1,20 @@
+---
+import DesktopPage from '../../components/DesktopPage.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getT } from '../../i18n/t';
+import { SUPPORTED_LOCALES } from '@twofau/i18n';
+
+export function getStaticPaths() {
+  return SUPPORTED_LOCALES.filter((l) => l !== 'en').map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale;
+const t = getT(locale).t;
+---
+
+<Layout
+	title={t("2FAu Desktop — menu-bar 2FA authenticator for macOS, Windows, Linux")}
+	description={t("A fast menu-bar/tray authenticator with an encrypted vault, a global hotkey and quick-copy shortcuts. Codes are generated locally in Rust. Download for macOS, Windows or Linux.")}
+>
+	<DesktopPage />
+</Layout>

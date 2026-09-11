@@ -4,6 +4,7 @@ import type { SettingsBackend } from "@twofau/ui";
 import { BridgeSettings } from "./bridge-settings";
 import { getAutoLockMinutes, setAutoLockMinutes } from "./auto-lock";
 import { getQuickCopy, setQuickCopy } from "./hotkeys";
+import { getLocale, setLocale } from "./locale";
 
 /** External links surfaced in Settings. Edit these to point at the real repo. */
 const LINKS = {
@@ -28,6 +29,10 @@ export function tauriSettingsBackend(version: string): SettingsBackend {
     autoLock: {
       get: async () => getAutoLockMinutes(),
       set: async (minutes) => setAutoLockMinutes(minutes),
+    },
+    locale: {
+      get: async () => getLocale(),
+      set: async (l) => setLocale(l),
     },
     autostart: {
       get: () => invoke<boolean>("get_autostart"),

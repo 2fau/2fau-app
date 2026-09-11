@@ -1,11 +1,14 @@
 ---
 import SecurityPage from '../components/SecurityPage.astro';
 import Layout from '../layouts/Layout.astro';
+import { getT } from '../i18n/t';
+
+const t = getT(Astro.currentLocale).t;
 ---
 
 <Layout
-	title="2FAu Security — encrypted vault, local-first, open source"
-	description="How 2FAu protects your secrets: an AES-256-GCM vault, PBKDF2 key derivation, no account or server, and a single audited Rust crypto core shared by every platform."
+	title={t("2FAu Security — encrypted vault, local-first, open source")}
+	description={t("How 2FAu protects your secrets: an AES-256-GCM vault, PBKDF2 key derivation, no account or server, and a single audited Rust crypto core shared by every platform.")}
 >
 	<SecurityPage />
 </Layout>

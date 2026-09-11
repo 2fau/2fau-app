@@ -1,11 +1,14 @@
 ---
 import DesktopPage from '../components/DesktopPage.astro';
 import Layout from '../layouts/Layout.astro';
+import { getT } from '../i18n/t';
+
+const t = getT(Astro.currentLocale).t;
 ---
 
 <Layout
-	title="2FAu Desktop — menu-bar 2FA authenticator for macOS, Windows, Linux"
-	description="A fast menu-bar/tray authenticator with an encrypted vault, a global hotkey and quick-copy shortcuts. Codes are generated locally in Rust. Download for macOS, Windows or Linux."
+	title={t("2FAu Desktop — menu-bar 2FA authenticator for macOS, Windows, Linux")}
+	description={t("A fast menu-bar/tray authenticator with an encrypted vault, a global hotkey and quick-copy shortcuts. Codes are generated locally in Rust. Download for macOS, Windows or Linux.")}
 >
 	<DesktopPage />
 </Layout>

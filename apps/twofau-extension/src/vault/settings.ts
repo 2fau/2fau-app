@@ -18,6 +18,8 @@ export interface Settings {
   quickCopyEnabled: boolean;
   /** Quick-copy modifier token, e.g. "mod" or "mod+shift". */
   quickCopyMods: string;
+  /** UI language tag. "" means "auto" (negotiate from the browser language). */
+  locale: string;
 }
 
 const DEFAULTS: Settings = {
@@ -27,6 +29,7 @@ const DEFAULTS: Settings = {
   bridgePort: DEFAULT_BRIDGE_PORT,
   quickCopyEnabled: true,
   quickCopyMods: "mod",
+  locale: "",
 };
 
 const MODES: BridgeMode[] = ["independent", "client", "sync"];
@@ -61,6 +64,7 @@ export async function readSettings(): Promise<Settings> {
         : DEFAULTS.quickCopyEnabled,
     quickCopyMods:
       typeof stored.quickCopyMods === "string" ? stored.quickCopyMods : DEFAULTS.quickCopyMods,
+    locale: typeof stored.locale === "string" ? stored.locale : DEFAULTS.locale,
   };
 }
 

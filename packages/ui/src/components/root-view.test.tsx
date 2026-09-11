@@ -12,6 +12,7 @@ const fakeBackend: SettingsBackend = {
   import: { kind: "native", run: async () => 0 },
   changePassphrase: async () => {},
   autoLock: { get: async () => 5, set: async () => {} },
+  locale: { get: async () => "en", set: async () => {} },
   sync: { summary: "Off", screen: <p>sync body</p> },
   openLink: () => {},
   hotkeys: {

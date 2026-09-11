@@ -1,0 +1,29 @@
+{
+  "name": "@twofau/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./react": "./src/react.tsx",
+    "./locales/*": "./locales/*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.8",
+    "react": "^19.1.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.9"
+  }
+}

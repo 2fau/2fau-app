@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Features Section"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#0B0B0D]"
@@ -18,21 +22,20 @@
                     data-pencil-name="Eyebrow"
                     class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                   >
-                    WHAT IT DOES
+                    {t("WHAT IT DOES")}
                   </div>
                   <div
                     data-pencil-name="Title"
                     class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
                   >
-                    Built for the two seconds you actually need it.
+                    {t("Built for the two seconds you actually need it.")}
                   </div>
                 </div>
                 <div
                   data-pencil-name="Features Note"
                   class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  Summon, copy, gone. Everything else — setup, settings, sync — is there when you go
-                  looking for it and invisible when you are not.
+                  {t("Summon, copy, gone. Everything else — setup, settings, sync — is there when you go looking for it and invisible when you are not.")}
                 </div>
               </div>
               <div
@@ -69,7 +72,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      A hotkey from anywhere
+                      {t("A hotkey from anywhere")}
                     </div>
                   </div>
                   <div
@@ -80,8 +83,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      ⌘⇧U on macOS, Ctrl+Shift+U elsewhere, and rebindable to whatever you like. The
-                      choice is written beside the vault, so it survives updates.
+                      {t("⌘⇧U on macOS, Ctrl+Shift+U elsewhere, and rebindable to whatever you like. The choice is written beside the vault, so it survives updates.")}
                     </div>
                   </div>
                   <div
@@ -122,7 +124,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Quick copy from the tray
+                      {t("Quick copy from the tray")}
                     </div>
                   </div>
                   <div
@@ -133,8 +135,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Right-click the tray icon and your five most recent accounts are right there, no
-                      window needed. The list only appears while the vault is unlocked.
+                      {t("Right-click the tray icon and your five most recent accounts are right there, no window needed. The list only appears while the vault is unlocked.")}
                     </div>
                   </div>
                   <div
@@ -145,7 +146,7 @@
                       data-pencil-name="Feature Tag"
                       class="text-[11px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.3px] text-left [white-space:nowrap]"
                     >
-                      5 recent accounts
+                      {t("5 recent accounts")}
                     </div>
                   </div>
                 </div>
@@ -180,7 +181,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Unlocks from the OS keyring
+                      {t("Unlocks from the OS keyring")}
                     </div>
                   </div>
                   <div
@@ -191,8 +192,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Choose to remember and the passphrase goes into the system keyring, so you type it
-                      once per device rather than once per launch.
+                      {t("Choose to remember and the passphrase goes into the system keyring, so you type it once per device rather than once per launch.")}
                     </div>
                   </div>
                   <div
@@ -203,7 +203,7 @@
                       data-pencil-name="Feature Tag"
                       class="text-[11px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.3px] text-left [white-space:nowrap]"
                     >
-                      keyring · opt-in
+                      {t("keyring · opt-in")}
                     </div>
                   </div>
                 </div>
@@ -233,7 +233,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Starts with your session
+                      {t("Starts with your session")}
                     </div>
                   </div>
                   <div
@@ -244,8 +244,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      LaunchAgent on macOS, a Run key on Windows, an autostart .desktop on Linux — the
-                      real OS mechanism each time, not a setting we invented.
+                      {t("LaunchAgent on macOS, a Run key on Windows, an autostart .desktop on Linux — the real OS mechanism each time, not a setting we invented.")}
                     </div>
                   </div>
                   <div
@@ -256,7 +255,7 @@
                       data-pencil-name="Feature Tag"
                       class="text-[11px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.3px] text-left [white-space:nowrap]"
                     >
-                      launch at login
+                      {t("launch at login")}
                     </div>
                   </div>
                 </div>
@@ -291,7 +290,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Corrects a wrong clock
+                      {t("Corrects a wrong clock")}
                     </div>
                   </div>
                   <div
@@ -302,8 +301,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      TOTP breaks when the machine clock drifts. 2FAu samples a trusted time over HTTPS
-                      four times, keeps the fastest round-trip, and stores the offset — not the instant.
+                      {t("TOTP breaks when the machine clock drifts. 2FAu samples a trusted time over HTTPS four times, keeps the fastest round-trip, and stores the offset — not the instant.")}
                     </div>
                   </div>
                   <div
@@ -314,7 +312,7 @@
                       data-pencil-name="Feature Tag"
                       class="text-[11px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.3px] text-left [white-space:nowrap]"
                     >
-                      4 samples · lowest RTT
+                      {t("4 samples · lowest RTT")}
                     </div>
                   </div>
                 </div>
@@ -344,7 +342,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Import what you already have
+                      {t("Import what you already have")}
                     </div>
                   </div>
                   <div
@@ -355,8 +353,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Bring accounts across with otpauth migration URIs, or move the whole encrypted
-                      vault between machines by exporting and importing the blob.
+                      {t("Bring accounts across with otpauth migration URIs, or move the whole encrypted vault between machines by exporting and importing the blob.")}
                     </div>
                   </div>
                   <div
@@ -367,7 +364,7 @@
                       data-pencil-name="Feature Tag"
                       class="text-[11px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.3px] text-left [white-space:nowrap]"
                     >
-                      otpauth · vault export
+                      {t("otpauth · vault export")}
                     </div>
                   </div>
                 </div>
@@ -402,7 +399,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      TOTP and HOTP
+                      {t("TOTP and HOTP")}
                     </div>
                   </div>
                   <div
@@ -413,8 +410,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Time-based codes rotate on their own; counter-based ones advance when you ask, so
-                      hardware-style tokens work the same as everything else.
+                      {t("Time-based codes rotate on their own; counter-based ones advance when you ask, so hardware-style tokens work the same as everything else.")}
                     </div>
                   </div>
                   <div
@@ -455,7 +451,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Hosts the sync bridge
+                      {t("Hosts the sync bridge")}
                     </div>
                   </div>
                   <div
@@ -466,9 +462,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The desktop app serves the browser extension over loopback on port 4849. Pairing
-                      codes expire, each browser gets its own bearer token, and you can revoke any of
-                      them.
+                      {t("The desktop app serves the browser extension over loopback on port 4849. Pairing codes expire, each browser gets its own bearer token, and you can revoke any of them.")}
                     </div>
                   </div>
                   <div
@@ -514,7 +508,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Copy without the mouse
+                      {t("Copy without the mouse")}
                     </div>
                   </div>
                   <div
@@ -525,8 +519,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The configured modifier plus a digit — ⌘1 to ⌘5, Ctrl elsewhere — copies that
-                      row's code. Each row shows its own badge, so you never count positions.
+                      {t("The configured modifier plus a digit — ⌘1 to ⌘5, Ctrl elsewhere — copies that row's code. Each row shows its own badge, so you never count positions.")}
                     </div>
                   </div>
                   <div
@@ -537,7 +530,7 @@
                       data-pencil-name="Feature Tag"
                       class="text-[11px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.3px] text-left [white-space:nowrap]"
                     >
-                      modifier + 1…5
+                      {t("modifier + 1…5")}
                     </div>
                   </div>
                 </div>
@@ -567,7 +560,7 @@
                       data-pencil-name="Feature Title"
                       class="text-[16px]/[normal] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Search once the list grows
+                      {t("Search once the list grows")}
                     </div>
                   </div>
                   <div
@@ -578,8 +571,7 @@
                       data-pencil-name="Feature Body"
                       class="text-[14px]/[23px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Start typing and the list filters down. The field only appears when you have
-                      enough accounts to need it, so a short vault stays uncluttered.
+                      {t("Start typing and the list filters down. The field only appears when you have enough accounts to need it, so a short vault stays uncluttered.")}
                     </div>
                   </div>
                   <div
@@ -590,7 +582,7 @@
                       data-pencil-name="Feature Tag"
                       class="text-[11px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.3px] text-left [white-space:nowrap]"
                     >
-                      type to filter
+                      {t("type to filter")}
                     </div>
                   </div>
                 </div>

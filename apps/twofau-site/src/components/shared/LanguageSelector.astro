@@ -1,0 +1,48 @@
+---
+import { LOCALE_NAMES, SUPPORTED_LOCALES } from "@twofau/i18n";
+import { localeUrl } from "../../i18n/t";
+
+const locale = Astro.currentLocale ?? "en";
+
+// The current path with its locale prefix stripped, so each link points at the
+// same page in another language.
+let rest = Astro.url.pathname;
+if (locale !== "en" && (rest === `/${locale}` || rest.startsWith(`/${locale}/`))) {
+  rest = rest.slice(locale.length + 1) || "/";
+}
+const path = rest.replace(/^\//, "");
+
+const current = LOCALE_NAMES[locale as keyof typeof LOCALE_NAMES] ?? locale;
+---
+
+<details data-pencil-name="Language Selector" class="relative">
+  <summary
+    class="box-border flex cursor-pointer list-none flex-row items-center gap-[5px] rounded-[999px] px-[12px] py-[7px] text-[13px] text-[#98989D] [outline:1px_solid_#262628] transition-colors hover:text-[#F5F5F7]"
+  >
+    <svg viewBox="0 0 24 24" fill="none" class="h-[14px] w-[14px]" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"></circle>
+      <path
+        d="M3 12h18M12 3c2.5 2.5 3.8 5.7 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.7-3.8-9S9.5 5.5 12 3Z"
+        stroke="currentColor"
+        stroke-width="1.6"
+      ></path>
+    </svg>
+    <span class="font-[Inter,system-ui,sans-serif]">{current}</span>
+  </summary>
+  <div
+    class="absolute right-0 z-50 mt-[8px] max-h-[320px] w-[180px] overflow-y-auto rounded-[12px] bg-[#1C1C1E] p-[6px] [outline:1px_solid_#38383A]"
+  >
+    {
+      SUPPORTED_LOCALES.map((l) => (
+        <a
+          href={localeUrl(l, path)}
+          class={`block rounded-[8px] px-[12px] py-[8px] text-[13px] font-[Inter,system-ui,sans-serif] no-underline transition-colors ${
+            l === locale ? "text-[#0A84FF]" : "text-[#F5F5F7] hover:bg-[#2C2C2E]"
+          }`}
+        >
+          {LOCALE_NAMES[l]}
+        </a>
+      ))
+    }
+  </div>
+</details>

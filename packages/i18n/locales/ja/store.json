@@ -1,0 +1,6 @@
+{
+  "_meta": { "review": "machine" },
+  "extName": "2FAu Authenticator",
+  "extDescription": "2FA コードを暗号化された保管庫に保存します。TOTP/HOTP をローカルで生成し、macOS・Windows・Linux 向けの 2FAu デスクトップアプリと同期できます。",
+  "cmdAutofill": "現在のサイトの 2FA コードをフォーカス中のフィールドに自動入力します"
+}

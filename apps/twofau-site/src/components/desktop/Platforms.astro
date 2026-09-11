@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Platforms Section"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#111113]"
@@ -18,21 +22,20 @@
                     data-pencil-name="Eyebrow"
                     class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                   >
-                    THREE PLATFORMS
+                    {t("THREE PLATFORMS")}
                   </div>
                   <div
                     data-pencil-name="Title"
                     class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
                   >
-                    One binary per OS, built the native way.
+                    {t("One binary per OS, built the native way.")}
                   </div>
                 </div>
                 <div
                   data-pencil-name="Platforms Note"
                   class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  Where the platforms disagree, 2FAu follows the platform instead of inventing its own
-                  convention. These are the places that actually differ.
+                  {t("Where the platforms disagree, 2FAu follows the platform instead of inventing its own convention. These are the places that actually differ.")}
                 </div>
               </div>
               <div
@@ -80,7 +83,7 @@
                       data-pencil-name="Head Text"
                       class="text-[10.5px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
                     >
-                      MACOS
+                      {t("MACOS")}
                     </div>
                   </div>
                   <div
@@ -108,7 +111,7 @@
                       data-pencil-name="Head Text"
                       class="text-[10.5px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
                     >
-                      WINDOWS
+                      {t("WINDOWS")}
                     </div>
                   </div>
                   <div
@@ -146,7 +149,7 @@
                       data-pencil-name="Head Text"
                       class="text-[10.5px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
                     >
-                      LINUX
+                      {t("LINUX")}
                     </div>
                   </div>
                 </div>
@@ -162,7 +165,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Launch at login
+                      {t("Launch at login")}
                     </div>
                   </div>
                   <div
@@ -211,7 +214,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Popup anchor
+                      {t("Popup anchor")}
                     </div>
                   </div>
                   <div
@@ -222,7 +225,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      below the menu bar
+                      {t("below the menu bar")}
                     </div>
                   </div>
                   <div
@@ -233,7 +236,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      above the taskbar
+                      {t("above the taskbar")}
                     </div>
                   </div>
                   <div
@@ -244,7 +247,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      above the taskbar
+                      {t("above the taskbar")}
                     </div>
                   </div>
                 </div>
@@ -260,7 +263,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      App presence
+                      {t("App presence")}
                     </div>
                   </div>
                   <div
@@ -271,7 +274,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      accessory — no Dock icon
+                      {t("accessory — no Dock icon")}
                     </div>
                   </div>
                   <div
@@ -282,7 +285,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      skips the taskbar
+                      {t("skips the taskbar")}
                     </div>
                   </div>
                   <div
@@ -293,7 +296,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      skips the taskbar
+                      {t("skips the taskbar")}
                     </div>
                   </div>
                 </div>
@@ -309,7 +312,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Released for
+                      {t("Released for")}
                     </div>
                   </div>
                   <div
@@ -358,7 +361,7 @@
                       data-pencil-name="Aspect"
                       class="text-[14px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      Code signing
+                      {t("Code signing")}
                     </div>
                   </div>
                   <div
@@ -369,7 +372,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      not yet signed
+                      {t("not yet signed")}
                     </div>
                   </div>
                   <div
@@ -380,7 +383,7 @@
                       data-pencil-name="Value"
                       class="text-[12.5px]/[19px] box-border [flex:1_1_0] text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left"
                     >
-                      not yet signed
+                      {t("not yet signed")}
                     </div>
                   </div>
                   <div

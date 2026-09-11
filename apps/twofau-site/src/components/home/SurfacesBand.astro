@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
       data-pencil-name="Surfaces Band"
       class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[0px_40px] justify-center items-start bg-[#0B0B0D]"
@@ -28,14 +32,13 @@
             data-pencil-name="Title"
             class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
           >
-            Menu bar app
+            {t("Menu bar app")}
           </div>
           <div
             data-pencil-name="Body"
             class="text-[14.5px]/[23px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
           >
-            Lives in the tray on macOS, Windows and Linux. One global hotkey, codes copied, window
-            gone.
+            {t("Lives in the tray on macOS, Windows and Linux. One global hotkey, codes copied, window gone.")}
           </div>
           <div
             data-pencil-name="Tag"
@@ -70,14 +73,13 @@
             data-pencil-name="Title"
             class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
           >
-            Browser extension
+            {t("Browser extension")}
           </div>
           <div
             data-pencil-name="Body"
             class="text-[14.5px]/[23px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
           >
-            The same vault inside Chrome and Firefox. Detects the 2FA field, fills the code,
-            submits.
+            {t("The same vault inside Chrome and Firefox. Detects the 2FA field, fills the code, submits.")}
           </div>
           <div
             data-pencil-name="Tag"
@@ -112,20 +114,19 @@
             data-pencil-name="Title"
             class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
           >
-            Rust core
+            {t("Rust core")}
           </div>
           <div
             data-pencil-name="Body"
             class="text-[14.5px]/[23px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
           >
-            OTP, crypto, storage and merge logic live once in Rust and are shared by every
-            surface.
+            {t("OTP, crypto, storage and merge logic live once in Rust and are shared by every surface.")}
           </div>
           <div
             data-pencil-name="Tag"
             class="text-[11.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.4px] text-left [white-space:nowrap]"
           >
-            One implementation
+            {t("One implementation")}
           </div>
         </div>
       </div>

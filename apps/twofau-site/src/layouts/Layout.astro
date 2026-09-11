@@ -1,4 +1,7 @@
 ---
+import { SUPPORTED_LOCALES } from "@twofau/i18n";
+import { localeUrl } from "../i18n/t";
+
 interface Props {
   title?: string;
   description?: string;
@@ -14,10 +17,25 @@ const {
 const site = Astro.site ?? new URL("https://2fau.app");
 const canonical = new URL(Astro.url.pathname, site);
 const ogImage = new URL("/og.png", site);
+
+const locale = Astro.currentLocale ?? "en";
+
+// The current path stripped of its locale prefix, so each hreflang alternate
+// points at the same page in another language.
+let rest = Astro.url.pathname;
+if (locale !== "en" && (rest === `/${locale}` || rest.startsWith(`/${locale}/`))) {
+  rest = rest.slice(locale.length + 1) || "/";
+}
+const bare = rest.replace(/^\//, "");
+const alternates = SUPPORTED_LOCALES.map((l) => ({
+  locale: l,
+  href: new URL(localeUrl(l, bare), site).href,
+}));
+const ogLocale = locale.replace("-", "_");
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -28,9 +46,15 @@ const ogImage = new URL("/og.png", site);
 		<link rel="canonical" href={canonical} />
 		<meta name="theme-color" content="#0B0B0D" />
 
+		{alternates.map((a) => (
+			<link rel="alternate" hreflang={a.locale} href={a.href} />
+		))}
+		<link rel="alternate" hreflang="x-default" href={new URL(bare, site).href} />
+
 		<!-- Open Graph -->
 		<meta property="og:type" content="website" />
 		<meta property="og:site_name" content="2FAu" />
+		<meta property="og:locale" content={ogLocale} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonical} />

@@ -1,5 +1,6 @@
 import { ChevronLeft } from "lucide-react";
 import { useRef, useState } from "react";
+import { useT } from "@twofau/i18n/react";
 import { Button } from "@/components/ui/button";
 import type { ParsedOtp } from "@/core/types";
 import { buildOtpauthUri } from "@/lib/otpauth";
@@ -18,6 +19,7 @@ export function ImportView({
   onDone: () => void;
   parseMigration?: (uri: string) => Promise<ParsedOtp[]>;
 }) {
+  const { t, plural } = useT();
   const { addUri, capabilities } = useVault();
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -62,7 +64,7 @@ export function ImportView({
     try {
       const uris = await collectUris();
       if (uris.length === 0) {
-        setError("No otpauth:// links or a Google Authenticator export found.");
+        setError(t("No otpauth:// links or a Google Authenticator export found."));
         return;
       }
       let added = 0;
@@ -74,7 +76,16 @@ export function ImportView({
           // skip a bad entry rather than abort the whole batch
         }
       }
-      setStatus(`Imported ${added} of ${uris.length} account${uris.length === 1 ? "" : "s"}.`);
+      setStatus(
+        plural(
+          uris.length,
+          {
+            one: "Imported {added} of {count} account.",
+            other: "Imported {added} of {count} accounts.",
+          },
+          { added, count: uris.length },
+        ),
+      );
       if (added > 0) setText("");
     } catch (e) {
       setError(msg(e));
@@ -86,7 +97,7 @@ export function ImportView({
   async function importFromImage(file: File) {
     const uri = await decodeQrImage(file);
     if (!uri) {
-      setError("No QR code found in that image.");
+      setError(t("No QR code found in that image."));
       return;
     }
     setText((t) => (t ? `${t}\n${uri}` : uri));
@@ -99,14 +110,15 @@ export function ImportView({
         <Button size="icon-sm" variant="ghost" onClick={onDone}>
           <ChevronLeft />
         </Button>
-        <span className="text-[15px] font-semibold">Import accounts</span>
+        <span className="text-[15px] font-semibold">{t("Import accounts")}</span>
       </div>
 
       <div className="border-t" />
 
       <p className="text-[12px] text-muted-foreground">
-        Paste <code>otpauth://</code> links (one per line) or a Google Authenticator
-        export (<code>otpauth-migration://</code>).
+        {t("Paste")} <code>otpauth://</code>{" "}
+        {t("links (one per line) or a Google Authenticator export")} (
+        <code>otpauth-migration://</code>).
       </p>
 
       <textarea
@@ -119,7 +131,7 @@ export function ImportView({
       {capabilities.qrImage && (
         <div>
           <Button variant="secondary" size="sm" onClick={() => fileInput.current?.click()}>
-            From QR image
+            {t("From QR image")}
           </Button>
           <input
             ref={fileInput}
@@ -140,10 +152,10 @@ export function ImportView({
 
       <div className="flex justify-end gap-2">
         <Button variant="secondary" size="sm" onClick={onDone}>
-          Done
+          {t("Done")}
         </Button>
         <Button size="sm" disabled={busy || text.trim().length === 0} onClick={run}>
-          {busy ? "Importing…" : "Import"}
+          {busy ? t("Importing…") : t("Import")}
         </Button>
       </div>
     </div>

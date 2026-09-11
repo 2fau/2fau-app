@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Threat Model"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#0B0B0D]"
@@ -18,21 +22,20 @@
                     data-pencil-name="Eyebrow"
                     class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                   >
-                    THREAT MODEL
+                    {t("THREAT MODEL")}
                   </div>
                   <div
                     data-pencil-name="Title"
                     class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
                   >
-                    Local-first moves the risk. It doesn't delete it.
+                    {t("Local-first moves the risk. It doesn't delete it.")}
                   </div>
                 </div>
                 <div
                   data-pencil-name="Threat Note"
                   class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  Removing the server removes a whole class of attack and hands you a different one:
-                  your device is now the only thing standing between an attacker and your secrets.
+                  {t("Removing the server removes a whole class of attack and hands you a different one: your device is now the only thing standing between an attacker and your secrets.")}
                 </div>
               </div>
               <div
@@ -69,7 +72,7 @@
                       data-pencil-name="Col Title"
                       class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
                     >
-                      Protected against
+                      {t("Protected against")}
                     </div>
                   </div>
                   <div
@@ -102,14 +105,13 @@
                           data-pencil-name="Item Title"
                           class="text-[14.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                         >
-                          A stolen vault file
+                          {t("A stolen vault file")}
                         </div>
                         <div
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          vault.dat on its own is inert. Change the version, kdf id, salt or nonce and
-                          the GCM tag check fails before a single byte is decrypted.
+                          {t("vault.dat on its own is inert. Change the version, kdf id, salt or nonce and the GCM tag check fails before a single byte is decrypted.")}
                         </div>
                       </div>
                     </div>
@@ -139,14 +141,13 @@
                           data-pencil-name="Item Title"
                           class="text-[14.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                         >
-                          A server breach
+                          {t("A server breach")}
                         </div>
                         <div
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          There is no server, no account and no cloud copy. There is nothing to breach
-                          on our side because there is no our side.
+                          {t("There is no server, no account and no cloud copy. There is nothing to breach on our side because there is no our side.")}
                         </div>
                       </div>
                     </div>
@@ -176,14 +177,13 @@
                           data-pencil-name="Item Title"
                           class="text-[14.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                         >
-                          Network observation
+                          {t("Network observation")}
                         </div>
                         <div
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          Codes are derived on the device from a local secret. Generating one sends
-                          nothing anywhere.
+                          {t("Codes are derived on the device from a local secret. Generating one sends nothing anywhere.")}
                         </div>
                       </div>
                     </div>
@@ -213,14 +213,13 @@
                           data-pencil-name="Item Title"
                           class="text-[14.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                         >
-                          The interface itself
+                          {t("The interface itself")}
                         </div>
                         <div
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          Secrets never reach the UI model. The frontend asks for a code by account id
-                          and gets six digits back.
+                          {t("Secrets never reach the UI model. The frontend asks for a code by account id and gets six digits back.")}
                         </div>
                       </div>
                     </div>
@@ -250,14 +249,13 @@
                           data-pencil-name="Item Title"
                           class="text-[14.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                         >
-                          A stale device
+                          {t("A stale device")}
                         </div>
                         <div
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          Merge is newest-wins with tombstones, so an old device syncing late can never
-                          resurrect an account you deleted.
+                          {t("Merge is newest-wins with tombstones, so an old device syncing late can never resurrect an account you deleted.")}
                         </div>
                       </div>
                     </div>
@@ -289,7 +287,7 @@
                       data-pencil-name="Col Title"
                       class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
                     >
-                      Not protected against
+                      {t("Not protected against")}
                     </div>
                   </div>
                   <div
@@ -322,14 +320,13 @@
                           data-pencil-name="Item Title"
                           class="text-[14.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                         >
-                          Malware running as you
+                          {t("Malware running as you")}
                         </div>
                         <div
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          Anything with your user privileges can read vault.dat, and once the vault is
-                          unlocked, the decrypted document in memory.
+                          {t("Anything with your user privileges can read vault.dat, and once the vault is unlocked, the decrypted document in memory.")}
                         </div>
                       </div>
                     </div>
@@ -359,14 +356,13 @@
                           data-pencil-name="Item Title"
                           class="text-[14.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                         >
-                          A weak passphrase
+                          {t("A weak passphrase")}
                         </div>
                         <div
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          600,000 PBKDF2 iterations make an offline guess expensive. They do not rescue
-                          a passphrase that was already guessable.
+                          {t("600,000 PBKDF2 iterations make an offline guess expensive. They do not rescue a passphrase that was already guessable.")}
                         </div>
                       </div>
                     </div>
@@ -396,14 +392,13 @@
                           data-pencil-name="Item Title"
                           class="text-[14.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                         >
-                          Remembering the passphrase
+                          {t("Remembering the passphrase")}
                         </div>
                         <div
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          Enabling "remember" stores it in the OS keyring. From then on your vault is
-                          exactly as strong as that keyring.
+                          {t('Enabling "remember" stores it in the OS keyring. From then on your vault is exactly as strong as that keyring.')}
                         </div>
                       </div>
                     </div>
@@ -433,14 +428,13 @@
                           data-pencil-name="Item Title"
                           class="text-[14.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                         >
-                          Unsigned installers
+                          {t("Unsigned installers")}
                         </div>
                         <div
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          Windows and macOS builds are not code-signed yet. Verify checksums, or build
-                          from source.
+                          {t("Windows and macOS builds are not code-signed yet. Verify checksums, or build from source.")}
                         </div>
                       </div>
                     </div>
@@ -470,14 +464,13 @@
                           data-pencil-name="Item Title"
                           class="text-[14.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                         >
-                          The issuer's copy
+                          {t("The issuer's copy")}
                         </div>
                         <div
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          TOTP is a shared secret by design. Whoever issued the seed can still generate
-                          the same codes you can.
+                          {t("TOTP is a shared secret by design. Whoever issued the seed can still generate the same codes you can.")}
                         </div>
                       </div>
                     </div>

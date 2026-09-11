@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Window Section"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#111113]"
@@ -18,7 +22,7 @@
                     data-pencil-name="Eyebrow"
                     class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                   >
-                    THE WINDOW
+                    {t("THE WINDOW")}
                   </div>
                   <div
                     data-pencil-name="Title Wrap"
@@ -28,7 +32,7 @@
                       data-pencil-name="Title"
                       class="text-[36px]/[41px] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
                     >
-                      A panel, not an application.
+                      {t("A panel, not an application.")}
                     </div>
                   </div>
                 </div>
@@ -40,9 +44,7 @@
                     data-pencil-name="Body"
                     class="text-[14.5px]/[24px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                   >
-                    The window starts hidden and is anchored to the tray icon each time it opens — below
-                    the menu bar on macOS, above the taskbar on Windows and Linux, and clamped so it
-                    never lands off-screen on a second monitor.
+                    {t("The window starts hidden and is anchored to the tray icon each time it opens — below the menu bar on macOS, above the taskbar on Windows and Linux, and clamped so it never lands off-screen on a second monitor.")}
                   </div>
                 </div>
               </div>
@@ -70,14 +72,13 @@
                       data-pencil-name="Caption Title"
                       class="text-[15.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Locked by default
+                      {t("Locked by default")}
                     </div>
                     <div
                       data-pencil-name="Caption Body"
                       class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Every launch starts here — unless you let the OS keyring remember the passphrase,
-                      in which case it opens straight to the list.
+                      {t("Every launch starts here — unless you let the OS keyring remember the passphrase, in which case it opens straight to the list.")}
                     </div>
                   </div>
                 </div>
@@ -97,14 +98,13 @@
                       data-pencil-name="Caption Title"
                       class="text-[15.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Search, or just press ⌘1
+                      {t("Search, or just press ⌘1")}
                     </div>
                     <div
                       data-pencil-name="Caption Body"
                       class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Codes rotate in place with the ring underneath. The top accounts get ⌘1 to ⌘5, so
-                      copying one never needs the mouse.
+                      {t("Codes rotate in place with the ring underneath. The top accounts get ⌘1 to ⌘5, so copying one never needs the mouse.")}
                     </div>
                   </div>
                 </div>
@@ -124,14 +124,13 @@
                       data-pencil-name="Caption Title"
                       class="text-[15.5px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left"
                     >
-                      Everything in one panel
+                      {t("Everything in one panel")}
                     </div>
                     <div
                       data-pencil-name="Caption Body"
                       class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Export and import the vault, change the password, set auto-lock and the summon
-                      hotkey, open at login, turn on sync.
+                      {t("Export and import the vault, change the password, set auto-lock and the summon hotkey, open at login, turn on sync.")}
                     </div>
                   </div>
                 </div>
@@ -170,14 +169,13 @@
                       data-pencil-name="Trait Title"
                       class="text-[15px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                     >
-                      Hides the moment it loses focus
+                      {t("Hides the moment it loses focus")}
                     </div>
                     <div
                       data-pencil-name="Trait Body"
                       class="text-[14px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Click anywhere else and it is gone. Nothing to close, nothing left open behind
-                      your work.
+                      {t("Click anywhere else and it is gone. Nothing to close, nothing left open behind your work.")}
                     </div>
                   </div>
                 </div>
@@ -207,14 +205,13 @@
                       data-pencil-name="Trait Title"
                       class="text-[15px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                     >
-                      No Dock icon, no taskbar entry
+                      {t("No Dock icon, no taskbar entry")}
                     </div>
                     <div
                       data-pencil-name="Trait Body"
                       class="text-[14px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      macOS runs it as an accessory app; Windows and Linux skip the taskbar. It exists
-                      in the tray and nowhere else.
+                      {t("macOS runs it as an accessory app; Windows and Linux skip the taskbar. It exists in the tray and nowhere else.")}
                     </div>
                   </div>
                 </div>
@@ -244,14 +241,13 @@
                       data-pencil-name="Trait Title"
                       class="text-[15px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                     >
-                      Always on top, never resizable
+                      {t("Always on top, never resizable")}
                     </div>
                     <div
                       data-pencil-name="Trait Body"
                       class="text-[14px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      It opens at one size in one place, so the code you want is always in the same
-                      spot.
+                      {t("It opens at one size in one place, so the code you want is always in the same spot.")}
                     </div>
                   </div>
                 </div>
@@ -281,14 +277,13 @@
                       data-pencil-name="Trait Title"
                       class="text-[15px]/[normal] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left"
                     >
-                      Resizes itself to the content
+                      {t("Resizes itself to the content")}
                     </div>
                     <div
                       data-pencil-name="Trait Body"
                       class="text-[14px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The frontend measures itself and the window follows, so short lists do not leave
-                      empty space.
+                      {t("The frontend measures itself and the window follows, so short lists do not leave empty space.")}
                     </div>
                   </div>
                 </div>

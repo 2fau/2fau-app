@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
       data-pencil-name="Features"
       class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[84px_40px_88px_40px] justify-center items-start bg-[#111113]"
@@ -14,19 +18,19 @@
             data-pencil-name="Eyebrow"
             class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
           >
-            FEATURES
+            {t("FEATURES")}
           </div>
           <div
             data-pencil-name="Title"
             class="text-[34px]/[39px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1px] text-left"
           >
-            Everything you need for 2FA.
+            {t("Everything you need for 2FA.")}
           </div>
           <div
             data-pencil-name="Body"
             class="text-[15px]/[24px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
           >
-            Nothing you don't. No dashboards, no upsells, no account.
+            {t("Nothing you don't. No dashboards, no upsells, no account.")}
           </div>
           <div
             data-pencil-name="Link"
@@ -36,7 +40,7 @@
               data-pencil-name="Label"
               class="text-[14px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
             >
-              Full feature list
+              {t("Full feature list")}
             </div>
             <svg
               data-pencil-name="Arrow"
@@ -88,7 +92,7 @@
                   data-pencil-name="Label"
                   class="text-[15.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium tracking-[-0.2px] text-left [white-space:nowrap]"
                 >
-                  Local-only encryption
+                  {t("Local-only encryption")}
                 </div>
               </div>
               <div
@@ -128,14 +132,14 @@
                   data-pencil-name="Label"
                   class="text-[15.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium tracking-[-0.2px] text-left [white-space:nowrap]"
                 >
-                  Password lock
+                  {t("Password lock")}
                 </div>
               </div>
               <div
                 data-pencil-name="Qualifier"
                 class="text-[13.5px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                Argon2id, recovery code
+                {t("Argon2id, recovery code")}
               </div>
             </div>
             <div
@@ -168,14 +172,14 @@
                   data-pencil-name="Label"
                   class="text-[15.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium tracking-[-0.2px] text-left [white-space:nowrap]"
                 >
-                  Offline codes
+                  {t("Offline codes")}
                 </div>
               </div>
               <div
                 data-pencil-name="Qualifier"
                 class="text-[13.5px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                no network, ever
+                {t("no network, ever")}
               </div>
             </div>
             <div
@@ -208,14 +212,14 @@
                   data-pencil-name="Label"
                   class="text-[15.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium tracking-[-0.2px] text-left [white-space:nowrap]"
                 >
-                  Time drift check
+                  {t("Time drift check")}
                 </div>
               </div>
               <div
                 data-pencil-name="Qualifier"
                 class="text-[13.5px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                codes stay valid
+                {t("codes stay valid")}
               </div>
             </div>
             <div
@@ -248,14 +252,14 @@
                   data-pencil-name="Label"
                   class="text-[15.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium tracking-[-0.2px] text-left [white-space:nowrap]"
                 >
-                  Zero telemetry
+                  {t("Zero telemetry")}
                 </div>
               </div>
               <div
                 data-pencil-name="Qualifier"
                 class="text-[13.5px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                nothing phones home
+                {t("nothing phones home")}
               </div>
             </div>
           </div>
@@ -289,14 +293,14 @@
                   data-pencil-name="Label"
                   class="text-[15.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium tracking-[-0.2px] text-left [white-space:nowrap]"
                 >
-                  QR scanner
+                  {t("QR scanner")}
                 </div>
               </div>
               <div
                 data-pencil-name="Qualifier"
                 class="text-[13.5px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                capture from screen
+                {t("capture from screen")}
               </div>
             </div>
             <div
@@ -329,7 +333,7 @@
                   data-pencil-name="Label"
                   class="text-[15.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium tracking-[-0.2px] text-left [white-space:nowrap]"
                 >
-                  Import and export
+                  {t("Import and export")}
                 </div>
               </div>
               <div
@@ -369,14 +373,14 @@
                   data-pencil-name="Label"
                   class="text-[15.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium tracking-[-0.2px] text-left [white-space:nowrap]"
                 >
-                  Instant search
+                  {t("Instant search")}
                 </div>
               </div>
               <div
                 data-pencil-name="Qualifier"
                 class="text-[13.5px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                type, Enter, copied
+                {t("type, Enter, copied")}
               </div>
             </div>
             <div
@@ -409,14 +413,14 @@
                   data-pencil-name="Label"
                   class="text-[15.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium tracking-[-0.2px] text-left [white-space:nowrap]"
                 >
-                  Local auto-backup
+                  {t("Local auto-backup")}
                 </div>
               </div>
               <div
                 data-pencil-name="Qualifier"
                 class="text-[13.5px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                last seven days
+                {t("last seven days")}
               </div>
             </div>
             <div
@@ -449,14 +453,14 @@
                   data-pencil-name="Label"
                   class="text-[15.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium tracking-[-0.2px] text-left [white-space:nowrap]"
                 >
-                  Menu bar and browser
+                  {t("Menu bar and browser")}
                 </div>
               </div>
               <div
                 data-pencil-name="Qualifier"
                 class="text-[13.5px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                one vault, two surfaces
+                {t("one vault, two surfaces")}
               </div>
             </div>
           </div>

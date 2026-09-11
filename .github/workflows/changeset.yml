@@ -1,0 +1,99 @@
+name: Changeset
+
+# Stands in for the Knope GitHub bot's PR check: every PR into main must add a
+# change file in .changeset/ so `knope prepare-release` has something to fold
+# into the next version + changelog. We diff the branch against the PR base and
+# require at least one newly added .md under .changeset/.
+#
+# The job keeps a single sticky comment on the PR (found by a hidden marker):
+#   - no changeset  -> "changeset required" + how to add one, and the check fails
+#   - changeset(s)  -> "changeset detected" + each file's contents in <pre>
+# Escape hatch: label the PR "skip-changeset" for chore/docs/ci work that
+# doesn't warrant a release entry. The labeled/unlabeled triggers re-run when
+# the label is toggled.
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  changeset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0 # need the base commit in history to diff against
+      - name: Require a changeset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          set -euo pipefail
+
+          case ",$LABELS," in
+            *,skip-changeset,*)
+              echo "::notice title=Changeset skipped::PR is labeled 'skip-changeset'."
+              exit 0 ;;
+          esac
+
+          MARKER='<!-- changeset-check -->'
+          BODY="$RUNNER_TEMP/comment.md"
+
+          # New change files this branch adds, relative to the PR base.
+          mapfile -t FILES < <(
+            git diff --name-only --diff-filter=A "$BASE_SHA" "$HEAD_SHA" -- .changeset/ \
+              | grep -E '\.md$' \
+              | grep -vx '.changeset/README.md' || true
+          )
+
+          # Escape a stream for safe inclusion in an HTML <pre> block.
+          esc() { sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'; }
+
+          {
+            printf '%s\n' "$MARKER"
+            if [ "${#FILES[@]}" -eq 0 ]; then
+              printf '### ⚠️ Changeset required\n\n'
+              printf 'This PR adds no change file in `.changeset/`, so a release would not mention it. Add one:\n\n'
+              printf '```sh\nknope document-change\n```\n\n'
+              printf 'Commit the generated file. If this PR should not produce a release entry, add the **skip-changeset** label.\n'
+            else
+              printf '### ✅ Changeset detected\n\n'
+              for f in "${FILES[@]}"; do
+                printf '**`%s`**\n\n<pre>\n' "$f"
+                esc < "$f"
+                printf '\n</pre>\n\n'
+              done
+            fi
+          } > "$BODY"
+
+          # Upsert the sticky comment (best-effort: forks get a read-only token,
+          # so commenting may fail — don't let that mask the pass/fail result).
+          upsert() {
+            local payload id
+            payload="$RUNNER_TEMP/comment.json"
+            jq -n --rawfile body "$BODY" '{body: $body}' > "$payload"
+            id="$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+              --jq "[.[] | select(.body | contains(\"$MARKER\")) | .id][0]")"
+            if [ -n "$id" ]; then
+              gh api --method PATCH "repos/$REPO/issues/comments/$id" --input "$payload" >/dev/null
+            else
+              gh api --method POST "repos/$REPO/issues/$PR/comments" --input "$payload" >/dev/null
+            fi
+          }
+          if ! upsert; then
+            echo "::warning title=Comment failed::Could not post the changeset comment (read-only token on fork PRs?)."
+          fi
+
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "::error title=Missing changeset::This PR adds no change file in .changeset/. Run 'knope document-change', or add the 'skip-changeset' label."
+            exit 1
+          fi
+          printf 'Found changeset: %s\n' "${FILES[@]}"

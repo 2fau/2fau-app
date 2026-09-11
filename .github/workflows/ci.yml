@@ -43,6 +43,9 @@ jobs:
       # Emit ts-rs bindings so the typed index has its types.
       - run: cargo test -p twofau-core
       - run: pnpm install --frozen-lockfile=false
+      # Every wrapped string must exist in all locale catalogs (empty values are a
+      # warning, not a failure — see scripts/check-i18n.mjs).
+      - run: pnpm i18n:check
       - run: pnpm build:core-wasm
       - run: pnpm --filter @twofau/core-wasm test
       - run: pnpm --filter @twofau/ui test

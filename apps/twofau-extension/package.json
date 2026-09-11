@@ -4,9 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite build --watch --mode development",
+    "gen:locales": "node scripts/gen-locales.mjs",
+    "dev": "node scripts/gen-locales.mjs && vite build --watch --mode development",
     "dev:firefox": "node scripts/dev-firefox.mjs",
-    "build": "tsc --noEmit && vite build",
+    "build": "node scripts/gen-locales.mjs && tsc --noEmit && vite build",
     "pack:firefox": "node scripts/pack-firefox.mjs",
     "pack:firefox:xpi": "node scripts/pack-firefox.mjs && node scripts/pack-xpi.mjs",
     "pack:chrome": "node scripts/pack-crx.mjs",

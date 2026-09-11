@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
             data-pencil-name="Permissions Section"
             class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#111113]"
@@ -18,21 +22,20 @@
                     data-pencil-name="Eyebrow"
                     class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                   >
-                    PERMISSIONS
+                    {t("PERMISSIONS")}
                   </div>
                   <div
                     data-pencil-name="Title"
                     class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
                   >
-                    Seven permissions. No host access.
+                    {t("Seven permissions. No host access.")}
                   </div>
                 </div>
                 <div
                   data-pencil-name="Permissions Note"
                   class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
-                  The install prompt is short on purpose. There is no "read your data on all websites"
-                  line, because the extension never asks for one.
+                  {t('The install prompt is short on purpose. There is no "read your data on all websites" line, because the extension never asks for one.')}
                 </div>
               </div>
               <div
@@ -80,7 +83,7 @@
                       data-pencil-name="Perm Desc"
                       class="text-[14px]/[normal] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Holds the sealed vault chunks and your settings.
+                      {t("Holds the sealed vault chunks and your settings.")}
                     </div>
                   </div>
                 </div>
@@ -121,7 +124,7 @@
                       data-pencil-name="Perm Desc"
                       class="text-[14px]/[normal] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Builds the right-click menu of recent accounts.
+                      {t("Builds the right-click menu of recent accounts.")}
                     </div>
                   </div>
                 </div>
@@ -162,7 +165,7 @@
                       data-pencil-name="Perm Desc"
                       class="text-[14px]/[normal] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      A one-shot grant on the tab you act on — never standing access.
+                      {t("A one-shot grant on the tab you act on — never standing access.")}
                     </div>
                   </div>
                 </div>
@@ -203,7 +206,7 @@
                       data-pencil-name="Perm Desc"
                       class="text-[14px]/[normal] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Inserts the code into the focused field when you press the shortcut.
+                      {t("Inserts the code into the focused field when you press the shortcut.")}
                     </div>
                   </div>
                 </div>
@@ -244,7 +247,7 @@
                       data-pencil-name="Perm Desc"
                       class="text-[14px]/[normal] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Runs the auto-lock timer that clears the session key.
+                      {t("Runs the auto-lock timer that clears the session key.")}
                     </div>
                   </div>
                 </div>
@@ -285,7 +288,7 @@
                       data-pencil-name="Perm Desc"
                       class="text-[14px]/[normal] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Chrome only: a hidden document used purely to write the clipboard.
+                      {t("Chrome only: a hidden document used purely to write the clipboard.")}
                     </div>
                   </div>
                 </div>
@@ -326,7 +329,7 @@
                       data-pencil-name="Perm Desc"
                       class="text-[14px]/[normal] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      Reports a failed copy or fill instead of doing nothing.
+                      {t("Reports a failed copy or fill instead of doing nothing.")}
                     </div>
                   </div>
                 </div>
@@ -367,8 +370,7 @@
                     data-pencil-name="Optional Body"
                     class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                   >
-                    Requested only if you switch on the desktop bridge, and scoped to loopback so it
-                    cannot reach the network. Leave it off and the extension is entirely self-contained.
+                    {t("Requested only if you switch on the desktop bridge, and scoped to loopback so it cannot reach the network. Leave it off and the extension is entirely self-contained.")}
                   </div>
                 </div>
               </div>

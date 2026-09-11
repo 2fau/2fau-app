@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@twofau/i18n/react";
 import { cn } from "@/lib/utils";
 import {
   chordFromEvent,
@@ -22,6 +23,7 @@ export function HotkeyRecorder({
   captureKey: boolean;
   error?: string | null;
 }) {
+  const { t } = useT();
   const [recording, setRecording] = useState(false);
   const [draft, setDraft] = useState<Chord | null>(null);
 
@@ -44,7 +46,7 @@ export function HotkeyRecorder({
     if (!captureKey && draft && isValidQuickCopyMods(draft)) commit(draft, e.currentTarget);
   }
 
-  const label = recording ? (draft ? formatChord(draft) : "Press keys…") : formatChord(value);
+  const label = recording ? (draft ? formatChord(draft) : t("Press keys…")) : formatChord(value);
 
   return (
     <div className="flex flex-col gap-1">

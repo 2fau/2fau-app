@@ -14,60 +14,60 @@ import { DOWNLOAD, STORE } from "../../config/links";
  * and the first client render agree (no hydration mismatch).
  */
 
-export const DOWNLOADS: SplitButtonItem[] = [
-  {
-    id: "mac-arm",
-    label: "macOS · Apple silicon",
-    meta: ".dmg",
-    button: "Download for macOS",
-    href: DOWNLOAD.macArm,
-  },
-  {
-    id: "mac-intel",
-    label: "macOS · Intel",
-    meta: ".dmg",
-    button: "Download for macOS",
-    href: DOWNLOAD.macIntel,
-  },
-  {
-    id: "windows",
-    label: "Windows",
-    meta: ".msi",
-    button: "Download for Windows",
-    href: DOWNLOAD.windows,
-  },
-  {
-    id: "linux-appimage",
-    label: "Linux",
-    meta: ".AppImage",
-    button: "Download for Linux",
-    href: DOWNLOAD.linuxAppImage,
-  },
-  {
-    id: "linux-deb",
-    label: "Linux",
-    meta: ".deb",
-    button: "Download for Linux",
-    href: DOWNLOAD.linuxDeb,
-  },
-];
+/** Server-resolved labels for the active locale (technical `meta` tokens like
+ * ".dmg"/"AMO" stay literal). */
+export type HeroCtaDict = {
+  macApple: string;
+  macIntel: string;
+  windows: string;
+  linux: string;
+  chromeEdgeBrave: string;
+  firefox: string;
+  downloadMac: string;
+  downloadWindows: string;
+  downloadLinux: string;
+  addChrome: string;
+  addFirefox: string;
+  download: string;
+  getExtension: string;
+  choosePlatform: string;
+  chooseBrowser: string;
+};
 
-export const EXTENSIONS: SplitButtonItem[] = [
-  {
-    id: "chromium",
-    label: "Chrome / Edge / Brave",
-    meta: "Web Store",
-    button: "Add to Chrome",
-    href: STORE.chrome,
-  },
-  {
-    id: "firefox",
-    label: "Firefox",
-    meta: "AMO",
-    button: "Add to Firefox",
-    href: STORE.firefox,
-  },
-];
+const DEFAULT_DICT: HeroCtaDict = {
+  macApple: "macOS · Apple silicon",
+  macIntel: "macOS · Intel",
+  windows: "Windows",
+  linux: "Linux",
+  chromeEdgeBrave: "Chrome / Edge / Brave",
+  firefox: "Firefox",
+  downloadMac: "Download for macOS",
+  downloadWindows: "Download for Windows",
+  downloadLinux: "Download for Linux",
+  addChrome: "Add to Chrome",
+  addFirefox: "Add to Firefox",
+  download: "Download",
+  getExtension: "Get the extension",
+  choosePlatform: "Choose a platform to download",
+  chooseBrowser: "Choose a browser",
+};
+
+function downloads(d: HeroCtaDict): SplitButtonItem[] {
+  return [
+    { id: "mac-arm", label: d.macApple, meta: ".dmg", button: d.downloadMac, href: DOWNLOAD.macArm },
+    { id: "mac-intel", label: d.macIntel, meta: ".dmg", button: d.downloadMac, href: DOWNLOAD.macIntel },
+    { id: "windows", label: d.windows, meta: ".msi", button: d.downloadWindows, href: DOWNLOAD.windows },
+    { id: "linux-appimage", label: d.linux, meta: ".AppImage", button: d.downloadLinux, href: DOWNLOAD.linuxAppImage },
+    { id: "linux-deb", label: d.linux, meta: ".deb", button: d.downloadLinux, href: DOWNLOAD.linuxDeb },
+  ];
+}
+
+function extensions(d: HeroCtaDict): SplitButtonItem[] {
+  return [
+    { id: "chromium", label: d.chromeEdgeBrave, meta: "Web Store", button: d.addChrome, href: STORE.chrome },
+    { id: "firefox", label: d.firefox, meta: "AMO", button: d.addFirefox, href: STORE.firefox },
+  ];
+}
 
 export function detectOs(ua: string, platform: string): string | null {
   const s = `${ua} ${platform}`.toLowerCase();
@@ -89,12 +89,14 @@ export function detectBrowser(ua: string): string | null {
   return null;
 }
 
-export function HeroCta() {
+export function HeroCta({ dict = DEFAULT_DICT }: { dict?: HeroCtaDict }) {
   // Server render matches the design's default state; detection corrects it on
   // mount, and an explicit pick from the menu overrides both.
   const [os, setOs] = useState<string | null>("mac-arm");
   const [browser, setBrowser] = useState<string | null>("chromium");
   const [picked, setPicked] = useState({ os: false, browser: false });
+  const DOWNLOADS = downloads(dict);
+  const EXTENSIONS = extensions(dict);
 
   useEffect(() => {
     const nav = window.navigator;
@@ -118,9 +120,9 @@ export function HeroCta() {
           setOs(id);
           setPicked((p) => ({ ...p, os: true }));
         }}
-        fallbackLabel="Download"
+        fallbackLabel={dict.download}
         fallbackHref="#download"
-        menuLabel="Choose a platform to download"
+        menuLabel={dict.choosePlatform}
       />
       <SplitButton
         variant="secondary"
@@ -131,9 +133,9 @@ export function HeroCta() {
           setBrowser(id);
           setPicked((p) => ({ ...p, browser: true }));
         }}
-        fallbackLabel="Get the extension"
+        fallbackLabel={dict.getExtension}
         fallbackHref="/extension"
-        menuLabel="Choose a browser"
+        menuLabel={dict.chooseBrowser}
       />
     </div>
   );

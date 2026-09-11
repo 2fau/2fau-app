@@ -1,0 +1,20 @@
+---
+import SecurityPage from '../../components/SecurityPage.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getT } from '../../i18n/t';
+import { SUPPORTED_LOCALES } from '@twofau/i18n';
+
+export function getStaticPaths() {
+  return SUPPORTED_LOCALES.filter((l) => l !== 'en').map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale;
+const t = getT(locale).t;
+---
+
+<Layout
+	title={t("2FAu Security — encrypted vault, local-first, open source")}
+	description={t("How 2FAu protects your secrets: an AES-256-GCM vault, PBKDF2 key derivation, no account or server, and a single audited Rust crypto core shared by every platform.")}
+>
+	<SecurityPage />
+</Layout>

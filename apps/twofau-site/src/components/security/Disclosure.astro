@@ -1,5 +1,7 @@
 ---
 import { LINKS } from "../../config/links";
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
 ---
 
     <div
@@ -18,7 +20,7 @@ import { LINKS } from "../../config/links";
                   data-pencil-name="Eyebrow"
                   class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
                 >
-                  REPORTING
+                  {t("REPORTING")}
                 </div>
                 <div
                   data-pencil-name="Title Wrap"
@@ -28,7 +30,7 @@ import { LINKS } from "../../config/links";
                     data-pencil-name="Title"
                     class="text-[36px]/[41px] box-border w-[520px] shrink-0 text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
                   >
-                    Found something? Tell us before you tell the internet.
+                    {t("Found something? Tell us before you tell the internet.")}
                   </div>
                 </div>
                 <div
@@ -39,10 +41,7 @@ import { LINKS } from "../../config/links";
                     data-pencil-name="Body"
                     class="text-[15.5px]/[26px] box-border w-[520px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                   >
-                    Report vulnerabilities privately through a GitHub security advisory. We aim to
-                    acknowledge within 72 hours and to ship a fix before any public disclosure. The code
-                    is MIT licensed — read it, audit it, and open an issue if the implementation
-                    disagrees with this page.
+                    {t("Report vulnerabilities privately through a GitHub security advisory. We aim to acknowledge within 72 hours and to ship a fix before any public disclosure. The code is MIT licensed — read it, audit it, and open an issue if the implementation disagrees with this page.")}
                   </div>
                 </div>
                 <div
@@ -71,7 +70,7 @@ import { LINKS } from "../../config/links";
                       data-pencil-name="Label"
                       class="text-[14.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold text-left [white-space:nowrap]"
                     >
-                      Report a vulnerability
+                      {t("Report a vulnerability")}
                     </div>
                   </a>
                   <a href={LINKS.sourceCode} target="_blank" rel="noreferrer noopener"
@@ -96,7 +95,7 @@ import { LINKS } from "../../config/links";
                       data-pencil-name="Label"
                       class="text-[14.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
                     >
-                      Read the source
+                      {t("Read the source")}
                     </div>
                   </a>
                 </div>
@@ -109,7 +108,7 @@ import { LINKS } from "../../config/links";
                   data-pencil-name="Scope Label"
                   class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
                 >
-                  IN SCOPE
+                  {t("IN SCOPE")}
                 </div>
                 <div
                   data-pencil-name="Scope List"
@@ -137,7 +136,7 @@ import { LINKS } from "../../config/links";
                       data-pencil-name="Text"
                       class="text-[14px]/[22px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The vault format, KDF and sealing in twofau-core
+                      {t("The vault format, KDF and sealing in twofau-core")}
                     </div>
                   </div>
                   <div
@@ -162,7 +161,7 @@ import { LINKS } from "../../config/links";
                       data-pencil-name="Text"
                       class="text-[14px]/[22px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The desktop shell, keyring handling and IPC surface
+                      {t("The desktop shell, keyring handling and IPC surface")}
                     </div>
                   </div>
                   <div
@@ -187,7 +186,7 @@ import { LINKS } from "../../config/links";
                       data-pencil-name="Text"
                       class="text-[14px]/[22px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The browser extension and its WASM boundary
+                      {t("The browser extension and its WASM boundary")}
                     </div>
                   </div>
                   <div
@@ -212,7 +211,7 @@ import { LINKS } from "../../config/links";
                       data-pencil-name="Text"
                       class="text-[14px]/[22px] box-border [flex:1_1_0] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
-                      The localhost sync bridge and merge semantics
+                      {t("The localhost sync bridge and merge semantics")}
                     </div>
                   </div>
                 </div>
@@ -224,8 +223,7 @@ import { LINKS } from "../../config/links";
                     data-pencil-name="Scope Note"
                     class="text-[13px]/[21px] box-border [flex:1_1_0] text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
                   >
-                    Out of scope: attacks that require an already-compromised device, and the absence of
-                    code signing, which is tracked openly.
+                    {t("Out of scope: attacks that require an already-compromised device, and the absence of code signing, which is tracked openly.")}
                   </div>
                 </div>
               </div>

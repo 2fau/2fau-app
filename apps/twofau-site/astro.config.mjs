@@ -12,6 +12,12 @@ export default defineConfig({
 
   integrations: [react()],
 
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'zh-CN', 'es', 'pt-BR', 'ja', 'de', 'fr', 'ru', 'ko', 'it', 'tr', 'pl'],
+    routing: { prefixDefaultLocale: false },
+  },
+
   server: {
       port: 4322
   },

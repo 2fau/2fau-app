@@ -1,0 +1,24 @@
+---
+import HomePage from '../../components/HomePage.astro';
+import { HeroCta } from '../../components/home/HeroCta';
+import Layout from '../../layouts/Layout.astro';
+import { getT } from '../../i18n/t';
+import { heroDict } from '../../i18n/hero-dict';
+import { SUPPORTED_LOCALES } from '@twofau/i18n';
+
+export function getStaticPaths() {
+  return SUPPORTED_LOCALES.filter((l) => l !== 'en').map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale;
+const t = getT(locale).t;
+---
+
+<Layout
+	title={t("2FAu — Local-first 2FA authenticator for desktop & browser")}
+	description={t("Generate your TOTP/HOTP two-factor codes in an encrypted local vault — no account, no server. A native menu-bar app for macOS, Windows and Linux, plus a Chrome & Firefox extension, from one Rust core.")}
+>
+	<HomePage>
+		<HeroCta slot="heroCta" client:load dict={heroDict(locale)} />
+	</HomePage>
+</Layout>

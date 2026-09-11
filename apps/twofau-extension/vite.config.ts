@@ -19,6 +19,7 @@ export default defineConfig({
       targets: [
         { src: "manifest.json", dest: "." },
         { src: "icons/*", dest: "." },
+        { src: "_locales/**/*", dest: "." },
       ],
     }),
   ],

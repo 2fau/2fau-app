@@ -1,0 +1,6 @@
+{
+  "_meta": { "review": "machine" },
+  "extName": "2FAu Authenticator",
+  "extDescription": "Speichern Sie 2FA-Codes in einem verschlüsselten Tresor. Generieren Sie TOTP/HOTP lokal und synchronisieren Sie mit der 2FAu-Desktop-App für macOS, Windows und Linux.",
+  "cmdAutofill": "Den 2FA-Code für die aktuelle Website automatisch in das fokussierte Feld einfügen"
+}

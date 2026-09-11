@@ -1,3 +1,7 @@
+---
+import { getT } from "../../i18n/t";
+const t = getT(Astro.currentLocale).t;
+---
     <div
       data-pencil-name="Security"
       class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[100px_40px] justify-center items-start bg-[#111113]"
@@ -14,21 +18,19 @@
             data-pencil-name="Eyebrow"
             class="text-[11.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.4px] text-left [white-space:nowrap]"
           >
-            SECURITY
+            {t("SECURITY")}
           </div>
           <div
             data-pencil-name="Title"
             class="text-[40px]/[44px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.2px] text-left"
           >
-            Your secrets never leave the device.
+            {t("Your secrets never leave the device.")}
           </div>
           <div
             data-pencil-name="Body"
             class="text-[15.5px]/[26px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
           >
-            The vault is a single encrypted blob on your disk. Codes are computed in Rust and
-            handed to the UI already formatted — the interface never sees a shared secret, and
-            neither does a server, because there isn't one.
+            {t("The vault is a single encrypted blob on your disk. Codes are computed in Rust and handed to the UI already formatted — the interface never sees a shared secret, and neither does a server, because there isn't one.")}
           </div>
           <div
             data-pencil-name="Bullets"
@@ -56,7 +58,7 @@
                 data-pencil-name="Text"
                 class="text-[14.5px]/[normal] box-border [flex:1_1_0] text-[#B6B3C0] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                AES-256-GCM with Argon2id key derivation
+                {t("AES-256-GCM with Argon2id key derivation")}
               </div>
             </div>
             <div
@@ -81,7 +83,7 @@
                 data-pencil-name="Text"
                 class="text-[14.5px]/[normal] box-border [flex:1_1_0] text-[#B6B3C0] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                Auto-lock on sleep, on blur, on a timer you set
+                {t("Auto-lock on sleep, on blur, on a timer you set")}
               </div>
             </div>
             <div
@@ -106,7 +108,7 @@
                 data-pencil-name="Text"
                 class="text-[14.5px]/[normal] box-border [flex:1_1_0] text-[#B6B3C0] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                Optional device-to-device sync over your own network
+                {t("Optional device-to-device sync over your own network")}
               </div>
             </div>
             <div
@@ -131,7 +133,7 @@
                 data-pencil-name="Text"
                 class="text-[14.5px]/[normal] box-border [flex:1_1_0] text-[#B6B3C0] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                Reproducible builds, MIT licence, audited dependencies
+                {t("Reproducible builds, MIT licence, audited dependencies")}
               </div>
             </div>
           </div>
@@ -143,7 +145,7 @@
               data-pencil-name="Link Label"
               class="text-[14.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
             >
-              Read the threat model
+              {t("Read the threat model")}
             </div>
             <svg
               data-pencil-name="Arrow"
@@ -210,7 +212,7 @@
             data-pencil-name="Layout Label"
             class="text-[10.5px]/[normal] box-border text-[#4A4854] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.2px] text-left [white-space:nowrap]"
           >
-            BLOB LAYOUT
+            {t("BLOB LAYOUT")}
           </div>
           <div
             data-pencil-name="Byte Layout"
@@ -323,8 +325,7 @@
             data-pencil-name="Card Note"
             class="text-[13px]/[21px] box-border w-full text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
           >
-            The 6-byte header is self-describing and bound as associated data, so a tampered
-            version or KDF id fails the tag check before anything is decrypted.
+            {t("The 6-byte header is self-describing and bound as associated data, so a tampered version or KDF id fails the tag check before anything is decrypted.")}
           </div>
           <div
             data-pencil-name="Card Divider"

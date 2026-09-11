@@ -1,4 +1,5 @@
 import { Check, Ban } from "lucide-react";
+import { useT } from "@twofau/i18n/react";
 import { ACCOUNT_COLORS } from "@/lib/colors";
 import { cn } from "@/lib/utils";
 
@@ -11,12 +12,13 @@ export function ColorPicker({
   value: string;
   onChange: (key: string) => void;
 }) {
+  const { t } = useT();
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       <button
         type="button"
-        aria-label="No color"
-        title="No color"
+        aria-label={t("No color")}
+        title={t("No color")}
         onClick={() => onChange("")}
         className={cn(
           "flex size-6 items-center justify-center rounded-full border text-muted-foreground",
@@ -29,8 +31,8 @@ export function ColorPicker({
         <button
           key={c.key}
           type="button"
-          aria-label={c.label}
-          title={c.label}
+          aria-label={t(c.label)}
+          title={t(c.label)}
           onClick={() => onChange(c.key)}
           style={{ backgroundColor: `var(--acct-${c.key})` }}
           className={cn(

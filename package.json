@@ -16,7 +16,9 @@
     "dev": "pnpm --filter @twofau/app dev",
     "preview": "pnpm --filter @twofau/app preview",
     "tauri": "pnpm --filter @twofau/app tauri",
-    "storybook": "pnpm --filter @twofau/ui storybook"
+    "storybook": "pnpm --filter @twofau/ui storybook",
+    "i18n:extract": "node scripts/extract-i18n.mjs",
+    "i18n:check": "node scripts/check-i18n.mjs"
   },
   "dependencies": {
     "wrangler": "4.125.0"

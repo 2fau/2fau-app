@@ -35,6 +35,12 @@ export interface SettingsBackend {
     get: () => Promise<number>;
     set: (minutes: number) => Promise<void>;
   };
+  /** UI language. `get` resolves the stored (or navigator-negotiated) locale;
+   * `set` persists a new choice. */
+  locale: {
+    get: () => Promise<string>;
+    set: (locale: string) => Promise<void>;
+  };
   /** Launch-on-login toggle. Desktop-only; omitted where the platform can't
    * self-register at startup (e.g. the browser extension). */
   autostart?: {

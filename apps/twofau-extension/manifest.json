@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "2FAu Authenticator",
+  "default_locale": "en",
+  "name": "__MSG_extName__",
   "version": "0.1.0",
-  "description": "Store 2FA codes in an encrypted vault. Generate TOTP/HOTP locally and sync with the 2FAU desktop app for macOS, Windows and Linux.",
+  "description": "__MSG_extDescription__",
   "minimum_chrome_version": "116",
   "action": { "default_popup": "popup.html", "default_title": "2FAu" },
   "options_page": "options.html",
@@ -13,7 +14,7 @@
     },
     "autofill": {
       "suggested_key": { "default": "Ctrl+Shift+Y", "mac": "Command+Shift+Y" },
-      "description": "Autofill the 2FA code for the current site into the focused field"
+      "description": "__MSG_cmdAutofill__"
     }
   },
   "permissions": [

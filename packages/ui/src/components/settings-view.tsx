@@ -1,18 +1,21 @@
 import {
   Check,
   Clock,
-  Code2,
+  // Code2,
   Download,
+  Globe,
   Info,
   Keyboard,
   KeyRound,
   Languages,
-  MessageSquare,
+  // MessageSquare,
   Power,
   RefreshCw,
   Upload,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useT } from "@twofau/i18n/react";
+import { LOCALE_NAMES, SUPPORTED_LOCALES } from "@twofau/i18n";
 import { HotkeyRecorder } from "@/components/hotkey-recorder";
 import { LogoMark } from "@/components/ui/logo";
 import { SettingsGroup, SettingsPage, SettingsRow } from "@/components/ui/settings-list";
@@ -24,15 +27,26 @@ import {
   DEFAULT_SUMMON,
   formatChord,
   toAccelerator,
+  parseAccelerator,
   type Chord,
-  type QuickCopyConfig, parseAccelerator,
+  type QuickCopyConfig,
 } from "@/lib/hotkeys";
 
-type Screen = "main" | "password" | "import" | "autolock" | "sync" | "about" | "hotkeys";
+type Screen =
+  | "main"
+  | "password"
+  | "import"
+  | "autolock"
+  | "sync"
+  | "about"
+  | "hotkeys"
+  | "language";
 
-function lockLabel(minutes: number): string {
-  if (minutes === 0) return "Never";
-  return minutes === 1 ? "1 minute" : `${minutes} minutes`;
+type Translator = ReturnType<typeof useT>;
+
+function lockLabel(minutes: number, tr: Translator): string {
+  if (minutes === 0) return tr.t("Never");
+  return tr.plural(minutes, { one: "1 minute", other: "{count} minutes" }, { count: minutes });
 }
 
 /** The shared iPhone-Settings-style screen: inset-grouped sections with drill-in
@@ -52,15 +66,19 @@ export function SettingsView({
    * can apply it to the open list immediately. */
   onQuickCopyChange?: (c: QuickCopyConfig) => void;
 }) {
+  const tr = useT();
+  const { t } = tr;
   const [screen, setScreen] = useState<Screen>("main");
   const [autoLock, setAutoLock] = useState<number | null>(null);
   const [autostart, setAutostart] = useState<boolean | null>(null);
   const [summon, setSummon] = useState<string | null>(null);
+  const [locale, setLocale] = useState<string | null>(null);
 
   useEffect(() => {
     void backend.autoLock.get().then(setAutoLock);
     void backend.autostart?.get().then(setAutostart);
     void backend.hotkeys.summon.get().then(setSummon);
+    void backend.locale.get().then(setLocale);
 
   }, [backend]);
 
@@ -84,7 +102,7 @@ export function SettingsView({
   }
   if (screen === "sync") {
     return (
-      <SettingsPage title="Sync" onBack={() => setScreen("main")}>
+      <SettingsPage title={t("Sync")} onBack={() => setScreen("main")}>
         {backend.sync.screen}
       </SettingsPage>
     );
@@ -101,58 +119,75 @@ export function SettingsView({
       />
     );
   }
+  if (screen === "language") {
+    return (
+      <LanguageScreen
+        backend={backend}
+        current={locale}
+        onBack={() => setScreen("main")}
+      />
+    );
+  }
 
   const footer = (
     <>
-      2FA<span style={{ color: "var(--primary)" }}>u</span> · Version {backend.version}
+      2FA<span style={{ color: "var(--primary)" }}>u</span> · {t("Version")} {backend.version}
     </>
   );
 
   return (
-    <SettingsPage title="Settings" onBack={onClose} backLabel="Done" footer={footer}>
-      <SettingsGroup header="Vault">
+    <SettingsPage title={t("Settings")} onBack={onClose} backLabel={t("Done")} footer={footer}>
+      <SettingsGroup header={t("Vault")}>
         <ExportRow backend={backend} />
         <SettingsRow
           icon={<Download />}
           iconBg="#0a84ff"
-          label="Import Vault"
+          label={t("Import Vault")}
           chevron
           onClick={() => setScreen("import")}
         />
         <SettingsRow
           icon={<KeyRound />}
           iconBg="#8e8e93"
-          label="Change Password"
+          label={t("Change Password")}
           chevron
           onClick={() => setScreen("password")}
         />
       </SettingsGroup>
 
-      <SettingsGroup header="Preferences">
+      <SettingsGroup header={t("Preferences")}>
         <SettingsRow
           icon={<Clock />}
           iconBg="#ff9f0a"
-          label="Auto-Lock"
-          value={autoLock == null ? "…" : lockLabel(autoLock)}
+          label={t("Auto-Lock")}
+          value={autoLock == null ? "…" : lockLabel(autoLock, tr)}
           chevron
           onClick={() => setScreen("autolock")}
         />
         <SettingsRow
           icon={<Keyboard />}
           iconBg="#5e5ce6"
-          label="Hotkeys"
+          label={t("Hotkeys")}
           value={formatChord(parseAccelerator(summon) ?? DEFAULT_SUMMON)}
           chevron
           onClick={() => setScreen("hotkeys")}
+        />
+        <SettingsRow
+          icon={<Globe />}
+          iconBg="#30b0c7"
+          label={t("Language")}
+          value={locale ? (LOCALE_NAMES[locale as keyof typeof LOCALE_NAMES] ?? locale) : "…"}
+          chevron
+          onClick={() => setScreen("language")}
         />
         {backend.autostart && (
           <SettingsRow
             icon={<Power />}
             iconBg="#34c759"
-            label="Open at Login"
+            label={t("Open at Login")}
             trailing={
               <Toggle
-                aria-label="Open at Login"
+                aria-label={t("Open at Login")}
                 pressed={autostart ?? false}
                 disabled={autostart == null}
                 onPressedChange={(on) => {
@@ -160,18 +195,18 @@ export function SettingsView({
                   void backend.autostart?.set(on).catch(() => backend.autostart?.get().then(setAutostart));
                 }}
               >
-                {autostart ? "On" : "Off"}
+                {autostart ? t("On") : t("Off")}
               </Toggle>
             }
           />
         )}
       </SettingsGroup>
 
-      <SettingsGroup header="Sync">
+      <SettingsGroup header={t("Sync")}>
         <SettingsRow
           icon={<RefreshCw />}
           iconBg="#30d158"
-          label="Sync"
+          label={t("Sync")}
           value={backend.sync.summary}
           chevron
           onClick={() => setScreen("sync")}
@@ -179,31 +214,31 @@ export function SettingsView({
       </SettingsGroup>
 
       <SettingsGroup>
-        <SettingsRow
-          icon={<MessageSquare />}
-          iconBg="#ff9f0a"
-          label="Feedback"
-          chevron
-          onClick={() => backend.openLink(backend.links.feedback)}
-        />
+        {/*<SettingsRow*/}
+        {/*  icon={<MessageSquare />}*/}
+        {/*  iconBg="#ff9f0a"*/}
+        {/*  label={t("Feedback")}*/}
+        {/*  chevron*/}
+        {/*  onClick={() => backend.openLink(backend.links.feedback)}*/}
+        {/*/>*/}
         <SettingsRow
           icon={<Languages />}
-          iconBg="#30b0c7"
-          label="Translate"
+          iconBg="#5856d6"
+          label={t("Help Translate")}
           chevron
           onClick={() => backend.openLink(backend.links.translate)}
         />
-        <SettingsRow
-          icon={<Code2 />}
-          iconBg="#af52de"
-          label="Source Code"
-          chevron
-          onClick={() => backend.openLink(backend.links.sourceCode)}
-        />
+        {/*<SettingsRow*/}
+        {/*  icon={<Code2 />}*/}
+        {/*  iconBg="#af52de"*/}
+        {/*  label={t("Source Code")}*/}
+        {/*  chevron*/}
+        {/*  onClick={() => backend.openLink(backend.links.sourceCode)}*/}
+        {/*/>*/}
         <SettingsRow
           icon={<Info />}
           iconBg="#8e8e93"
-          label="About"
+          label={t("About")}
           chevron
           onClick={() => setScreen("about")}
         />
@@ -220,12 +255,13 @@ function Status({ ok, error }: { ok?: string | null; error?: string | null }) {
 }
 
 function ExportRow({ backend }: { backend: SettingsBackend }) {
+  const { t } = useT();
   const [busy, setBusy] = useState(false);
   return (
     <SettingsRow
       icon={<Upload />}
       iconBg="#0a84ff"
-      label="Export Vault"
+      label={t("Export Vault")}
       disabled={busy}
       trailing={busy ? <span className="text-[11px]">…</span> : undefined}
       onClick={() => {
@@ -243,6 +279,7 @@ function ChangePasswordScreen({
   backend: SettingsBackend;
   onBack: () => void;
 }) {
+  const { t } = useT();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -263,7 +300,7 @@ function ChangePasswordScreen({
       setCurrent("");
       setNext("");
       setConfirm("");
-      setOk("Password changed.");
+      setOk(t("Password changed."));
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -272,25 +309,25 @@ function ChangePasswordScreen({
   }
 
   return (
-    <SettingsPage title="Change Password" onBack={onBack}>
-      <SettingsGroup footer="Your password encrypts the vault on this device and can't be recovered.">
+    <SettingsPage title={t("Change Password")} onBack={onBack}>
+      <SettingsGroup footer={t("Your password encrypts the vault on this device and can't be recovered.")}>
         <div className="flex flex-col gap-2 p-3">
           <Input
             type="password"
-            placeholder="Current password"
+            placeholder={t("Current password")}
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
           />
           <Input
             type="password"
-            placeholder="New password"
+            placeholder={t("New password")}
             aria-invalid={tooShort}
             value={next}
             onChange={(e) => setNext(e.target.value)}
           />
           <Input
             type="password"
-            placeholder="Confirm new password"
+            placeholder={t("Confirm new password")}
             aria-invalid={mismatch}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
@@ -298,11 +335,11 @@ function ChangePasswordScreen({
         </div>
       </SettingsGroup>
       {tooShort && (
-        <p className="-mt-3 px-1 text-[11px] text-muted-foreground">Use at least 8 characters.</p>
+        <p className="-mt-3 px-1 text-[11px] text-muted-foreground">{t("Use at least 8 characters.")}</p>
       )}
-      {mismatch && <p className="-mt-3 px-1 text-[11px] text-destructive">Passwords don't match.</p>}
+      {mismatch && <p className="-mt-3 px-1 text-[11px] text-destructive">{t("Passwords don't match.")}</p>}
       <Button disabled={!valid || busy} onClick={() => void submit()}>
-        {busy ? "Changing…" : "Change Password"}
+        {busy ? t("Changing…") : t("Change Password")}
       </Button>
       <Status ok={ok} error={error} />
     </SettingsPage>
@@ -310,6 +347,7 @@ function ChangePasswordScreen({
 }
 
 function ImportScreen({ backend, onBack }: { backend: SettingsBackend; onBack: () => void }) {
+  const { t, plural } = useT();
   const [passphrase, setPassphrase] = useState("");
   const [busy, setBusy] = useState(false);
   const [ok, setOk] = useState<string | null>(null);
@@ -323,7 +361,16 @@ function ImportScreen({ backend, onBack }: { backend: SettingsBackend; onBack: (
       const count = await work();
       if (count == null) return; // cancelled a native picker
       setPassphrase("");
-      setOk(`Imported. The vault now holds ${count} account${count === 1 ? "" : "s"}.`);
+      setOk(
+        plural(
+          count,
+          {
+            one: "Imported. The vault now holds 1 account.",
+            other: "Imported. The vault now holds {count} accounts.",
+          },
+          { count },
+        ),
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -334,12 +381,12 @@ function ImportScreen({ backend, onBack }: { backend: SettingsBackend; onBack: (
   const spec = backend.import;
 
   return (
-    <SettingsPage title="Import Vault" onBack={onBack}>
-      <SettingsGroup footer="Merges an exported .dat file into this vault. Enter the password the file was exported with.">
+    <SettingsPage title={t("Import Vault")} onBack={onBack}>
+      <SettingsGroup footer={t("Merges an exported .dat file into this vault. Enter the password the file was exported with.")}>
         <div className="flex flex-col gap-2 p-3">
           <Input
             type="password"
-            placeholder="Password of the file"
+            placeholder={t("Password of the file")}
             value={passphrase}
             onChange={(e) => setPassphrase(e.target.value)}
           />
@@ -348,7 +395,7 @@ function ImportScreen({ backend, onBack }: { backend: SettingsBackend; onBack: (
               disabled={passphrase.length === 0 || busy}
               onClick={() => void run(() => spec.run(passphrase))}
             >
-              {busy ? "Importing…" : "Choose File & Import"}
+              {busy ? t("Importing…") : t("Choose File & Import")}
             </Button>
           ) : (
             <input
@@ -379,13 +426,15 @@ function AutoLockScreen({
   onPick: (minutes: number) => void | Promise<void>;
   onBack: () => void;
 }) {
+  const tr = useT();
+  const { t } = tr;
   return (
-    <SettingsPage title="Auto-Lock" onBack={onBack}>
-      <SettingsGroup footer="How long the app can sit idle before it locks and asks for your password again.">
+    <SettingsPage title={t("Auto-Lock")} onBack={onBack}>
+      <SettingsGroup footer={t("How long the app can sit idle before it locks and asks for your password again.")}>
         {AUTO_LOCK_OPTIONS.map((m) => (
           <SettingsRow
             key={m}
-            label={lockLabel(m)}
+            label={lockLabel(m, tr)}
             trailing={value === m ? <Check className="size-4 text-primary" /> : undefined}
             onClick={() => void onPick(m)}
           />
@@ -404,6 +453,7 @@ function HotkeysScreen({
   onQuickCopyChange?: (c: QuickCopyConfig) => void;
   onBack: () => void;
 }) {
+  const { t } = useT();
   const [quickCopy, setQuickCopy] = useState<QuickCopyConfig | null>(null);
   const [summon, setSummon] = useState<string | null>(null);
   const [summonError, setSummonError] = useState<string | null>(null);
@@ -434,8 +484,8 @@ function HotkeysScreen({
   const summonCap = backend.hotkeys.summon;
 
   return (
-    <SettingsPage title="Hotkeys" onBack={onBack}>
-      <SettingsGroup header="Show 2FAU" footer="The shortcut that opens the 2FAU popup from anywhere.">
+    <SettingsPage title={t("Hotkeys")} onBack={onBack}>
+      <SettingsGroup header={t("Show 2FAU")} footer={t("The shortcut that opens the 2FAU popup from anywhere.")}>
         {summonCap.kind === "rebindable" ? (
           <div className="p-3">
             <HotkeyRecorder
@@ -447,21 +497,21 @@ function HotkeysScreen({
           </div>
         ) : (
           <>
-            <SettingsRow label="Current" value={summon ?? "Not set"} />
-            <SettingsRow label="Change in browser…" chevron onClick={() => summonCap.open()} />
+            <SettingsRow label={t("Current")} value={summon ?? t("Not set")} />
+            <SettingsRow label={t("Change in browser…")} chevron onClick={() => summonCap.open()} />
           </>
         )}
       </SettingsGroup>
 
       <SettingsGroup
-        header="Quick-copy codes"
-        footer="Copy an account's code with this modifier plus its number (1–5)."
+        header={t("Quick-copy codes")}
+        footer={t("Copy an account's code with this modifier plus its number (1–5).")}
       >
         <SettingsRow
-          label="Quick-copy 1–5"
+          label={t("Quick-copy 1–5")}
           trailing={
             <Toggle
-              aria-label="Quick-copy 1–5"
+              aria-label={t("Quick-copy 1–5")}
               pressed={quickCopy?.enabled ?? false}
               onPressedChange={(on) =>
                 void writeQuickCopy({
@@ -470,7 +520,7 @@ function HotkeysScreen({
                 })
               }
             >
-              {quickCopy?.enabled ? "On" : "Off"}
+              {quickCopy?.enabled ? t("On") : t("Off")}
             </Toggle>
           }
         />
@@ -497,26 +547,58 @@ function HotkeysScreen({
 }
 
 function AboutScreen({ backend, onBack }: { backend: SettingsBackend; onBack: () => void }) {
+  const { t } = useT();
   return (
-    <SettingsPage title="About" onBack={onBack}>
+    <SettingsPage title={t("About")} onBack={onBack}>
       <div className="flex flex-col items-center gap-2 py-2">
         <LogoMark size={54} />
         <span className="text-[17px] font-semibold tracking-[-0.02em]">
           2FA<span style={{ color: "var(--primary)" }}>u</span>
         </span>
-        <span className="text-[12px] text-muted-foreground">Version {backend.version}</span>
+        <span className="text-[12px] text-muted-foreground">{t("Version")} {backend.version}</span>
       </div>
-      <SettingsGroup footer="Your codes are generated on this device and never leave it.">
+      <SettingsGroup footer={t("Your codes are generated on this device and never leave it.")}>
         <SettingsRow
-          label="Source Code"
+          label={t("Source Code")}
           chevron
           onClick={() => backend.openLink(backend.links.sourceCode)}
         />
         <SettingsRow
-          label="Feedback"
+          label={t("Feedback")}
           chevron
           onClick={() => backend.openLink(backend.links.feedback)}
         />
+      </SettingsGroup>
+    </SettingsPage>
+  );
+}
+
+/** Pick the UI language. Persists via the host `locale` port, then reloads so the
+ * host re-bootstraps with the new catalog (both hosts re-read the locale on load). */
+function LanguageScreen({
+  backend,
+  current,
+  onBack,
+}: {
+  backend: SettingsBackend;
+  current: string | null;
+  onBack: () => void;
+}) {
+  const { t } = useT();
+  return (
+    <SettingsPage title={t("Language")} onBack={onBack}>
+      <SettingsGroup footer={t("Translations are community-contributed and may be incomplete.")}>
+        {SUPPORTED_LOCALES.map((l) => (
+          <SettingsRow
+            key={l}
+            label={LOCALE_NAMES[l]}
+            trailing={current === l ? <Check className="size-4 text-primary" /> : undefined}
+            onClick={async () => {
+              await backend.locale.set(l);
+              location.reload();
+            }}
+          />
+        ))}
       </SettingsGroup>
     </SettingsPage>
   );

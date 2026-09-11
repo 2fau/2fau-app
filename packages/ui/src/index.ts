@@ -21,6 +21,18 @@ export {
   type ImportSpec,
 } from "@/core/settings";
 
+export { I18nProvider, useT } from "@twofau/i18n/react";
+export {
+  loadMessages,
+  resolveLocale,
+  SUPPORTED_LOCALES,
+  DEFAULT_LOCALE,
+  LOCALE_NAMES,
+  type Locale,
+  type Messages,
+  type Namespace,
+} from "@twofau/i18n";
+
 export { VaultProvider, useVault } from "@/state/vault-provider";
 export { MockVaultService, type MockOptions } from "@/core/mock-vault-service";
 export type {

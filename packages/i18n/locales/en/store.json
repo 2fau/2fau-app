@@ -1,0 +1,5 @@
+{
+  "extName": "2FAu Authenticator",
+  "extDescription": "Store 2FA codes in an encrypted vault. Generate TOTP/HOTP locally and sync with the 2FAu desktop app for macOS, Windows and Linux.",
+  "cmdAutofill": "Autofill the 2FA code for the current site into the focused field"
+}
