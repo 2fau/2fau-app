@@ -1,6 +1,6 @@
 [package]
 name = "twofau-app"
-version = "0.1.0"
+version = "0.1.1"
 description = "2FAu — menu-bar TOTP/HOTP authenticator"
 authors = ["Nikolay Kostyurin"]
 edition = "2021"
