@@ -78,12 +78,12 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ## Docs
 
-| File                   | What's in it                                                 |
-| ---------------------- | ------------------------------------------------------------ |
-| `docs/ARCHITECTURE.md` | Module map, data flow, crypto/vault format, hard invariants  |
-| `docs/DEVELOPMENT.md`  | Every command, plus the traps that already cost hours        |
-| `docs/ROADMAP.md`      | Sub-projects SP0–SP5, what's done, what's next               |
-| `docs/specs/*.md`      | Per-sub-project design specs (written before each was built) |
+| File                   | What's in it                                                    |
+| ---------------------- | --------------------------------------------------------------- |
+| `docs/ARCHITECTURE.md` | Module map, data flow, crypto/vault format, hard invariants     |
+| `docs/DEVELOPMENT.md`  | Every command, plus the traps that already cost hours           |
+| `docs/ROADMAP.md`      | Sub-projects SP0–SP5, what's done, what's next                  |
+| `openspec/specs/`      | Capability specs — requirements and scenarios, the living truth |
 
 Read `docs/ARCHITECTURE.md` before touching crypto, the vault format, or the
 `VaultService` port. Read `docs/DEVELOPMENT.md` before running any build.
