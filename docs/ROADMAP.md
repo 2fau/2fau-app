@@ -1,21 +1,21 @@
 # Roadmap
 
-The rewrite is split into six sub-projects, built in order. Each shipped one behind a spec
-in `docs/superpowers/specs/`.
+The rewrite is split into six sub-projects, built in order. Each shipped one behind a design
+spec; those are now maintained as capability specs in `openspec/specs/`.
 
-| #   | Sub-project                                                               | Status   | Spec                                               |
-| --- | ------------------------------------------------------------------------- | -------- | -------------------------------------------------- |
-| SP0 | Monorepo scaffold + shared Rust core (OTP, base32, otpauth, model, merge) | **done** | `specs/2026-07-01-subproject0-shared-core.md`      |
-| SP1 | Crypto + storage (PBKDF2 → AES-GCM vault blob, `VaultStore`)              | **done** | `specs/2026-07-01-subproject1-crypto-storage.md`   |
-| SP2 | Shared React UI (`@twofau/ui`, `VaultService` port, Storybook)            | **done** | `specs/2026-07-02-subproject2-shared-ui.md`        |
-| SP3 | Tauri desktop app (tray, popup, keyring, setup/unlock)                    | **done** | `specs/2026-07-04-subproject3-tauri-desktop.md`    |
-| SP4 | Chrome extension (MV3), full parity, `chrome.storage` backend             | **done** | `specs/2026-07-22-subproject4-chrome-extension.md` |
-| SP5 | Desktop localhost bridge + sync (independent / client / sync modes)       | **done** | `specs/2026-07-23-subproject5-desktop-bridge.md`   |
+| #   | Sub-project                                                               | Status   | Spec                               |
+| --- | ------------------------------------------------------------------------- | -------- | ---------------------------------- |
+| SP0 | Monorepo scaffold + shared Rust core (OTP, base32, otpauth, model, merge) | **done** | `openspec/specs/otp-core/`         |
+| SP1 | Crypto + storage (PBKDF2 → AES-GCM vault blob, `VaultStore`)              | **done** | `openspec/specs/vault-crypto/`     |
+| SP2 | Shared React UI (`@twofau/ui`, `VaultService` port, Storybook)            | **done** | `openspec/specs/shared-ui/`        |
+| SP3 | Tauri desktop app (tray, popup, keyring, setup/unlock)                    | **done** | `openspec/specs/desktop-app/`      |
+| SP4 | Chrome extension (MV3), full parity, `chrome.storage` backend             | **done** | `openspec/specs/chrome-extension/` |
+| SP5 | Desktop localhost bridge + sync (independent / client / sync modes)       | **done** | `openspec/specs/desktop-bridge/`   |
 
 ## SP4 — Chrome extension (done)
 
 Standalone MV3 extension reusing `@twofau/ui` unchanged, with a third `VaultService` over the
-WASM core and `chrome.storage`. Full spec: `specs/2026-07-22-subproject4-chrome-extension.md`.
+WASM core and `chrome.storage`. Full spec: `openspec/specs/chrome-extension/spec.md`.
 
 Shape, in one paragraph: the vault is the same sealed blob format as `vault.dat`, chunked
 across `chrome.storage.sync` behind a manifest that acts as the commit point, with a revision

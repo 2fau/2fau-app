@@ -26,8 +26,22 @@ repo = "2fau-app"
 
 [[workflows]]
 name = "prepare-release"
+# The PR must come from a branch other than `base`: this workflow runs on a
+# push to main, so without the switch/commit/push below Knope asks GitHub for a
+# main -> main PR and gets 422 "No commits between main and main".
+[[workflows.steps]]
+type = "Command"
+command = "git switch -c release"
 [[workflows.steps]]
 type = "PrepareRelease"
+[[workflows.steps]]
+type = "Command"
+command = "git commit -m \"chore: Release $version\""
+variables = { "$version" = "Version" }
+# Force-push: the branch is disposable, rewritten on every push to main.
+[[workflows.steps]]
+type = "Command"
+command = "git push --force --set-upstream origin release"
 [[workflows.steps]]
 type = "CreatePullRequest"
 base = "main"

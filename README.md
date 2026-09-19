@@ -85,7 +85,7 @@ The same encrypted vault, in **Chrome, Edge, and Firefox** (Manifest V3).
 - **Desktop:** grab the installer for your OS from the
   [Releases page](https://github.com/2fau/2fau-app/releases)
   (`.dmg` / `.msi` / `.AppImage` / `.deb` / `.rpm`).
-- **Firefox:** install the add-on from addons.mozilla.org *(listed submission in review)*.
+- **Firefox:** install the add-on from addons.mozilla.org _(listed submission in review)_.
 - **Chrome / Edge:** load the unpacked `dist/` from a release, or install from the Web Store
   once published.
 
@@ -139,7 +139,7 @@ Full command list and the platform gotchas: [`docs/DEVELOPMENT.md`](docs/DEVELOP
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — module map, data flow, vault format
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — commands, verification, traps
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) — sub-projects and known debt
-- [`docs/superpowers/specs/`](docs/superpowers/specs) — per-sub-project design specs
+- [`openspec/specs/`](openspec/specs) — capability specs (requirements + scenarios)
 
 ## License
 
