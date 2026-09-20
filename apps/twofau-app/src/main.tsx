@@ -10,6 +10,7 @@ import { initAutoLock } from "./auto-lock";
 import { getQuickCopy } from "./hotkeys";
 import { getLocale } from "./locale";
 import { tauriSettingsBackend } from "./settings-backend";
+import { tauriSetupBackend } from "./setup-backend";
 import { TauriVaultService } from "./tauri-vault-service";
 import "./index.css";
 
@@ -29,6 +30,7 @@ function Root({
   const containerRef = useRef<HTMLDivElement>(null);
   const service = useRef(new TauriVaultService(startUnlocked, needsSetup)).current;
   const settingsBackend = useMemo(() => tauriSettingsBackend(version), [version]);
+  const setupBackend = useMemo(() => tauriSetupBackend(), []);
   const quickCopy = useMemo(() => getQuickCopy(), []);
 
   // Keep the OS window's height matched to the panel content (like the Swift
@@ -73,6 +75,7 @@ function Root({
         messages={messages}
         onQuit={() => void invoke("quit")}
         settingsBackend={settingsBackend}
+        setupBackend={setupBackend}
         parseMigration={(uri) => invoke<ParsedOtp[]>("parse_migration", { uri })}
         readClipboard={async () => (await readText()) ?? ""}
         writeClipboard={(text) => writeText(text)}

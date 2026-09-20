@@ -5,6 +5,7 @@ import { RootView } from "@/components/root-view";
 import type { Account, ParsedOtp } from "@/core/types";
 import type { VaultService } from "@/core/vault-service";
 import type { SettingsBackend } from "@/core/settings";
+import type { SetupBackend } from "@/core/setup";
 import { DEFAULT_QUICK_COPY, type QuickCopyConfig } from "@/lib/hotkeys";
 import { ClipboardProvider } from "@/state/clipboard";
 import { VaultProvider } from "@/state/vault-provider";
@@ -17,6 +18,7 @@ export function TwoFAUApp({
   onScan,
   onQuit,
   settingsBackend,
+  setupBackend,
   onOpenSettings,
   matchAccount,
   parseMigration,
@@ -40,6 +42,9 @@ export function TwoFAUApp({
   /** In-panel settings (desktop): the gear opens the shared SettingsView driven
    * by this backend. */
   settingsBackend?: SettingsBackend;
+  /** First-run starting points beyond "create a vault" (import a vault file,
+   * connect to the desktop). Omitted, the wizard is just the create step. */
+  setupBackend?: SetupBackend;
   /** External settings action (extension): the gear calls this instead — e.g.
    * opening the options page. Takes precedence over `settingsBackend`. */
   onOpenSettings?: () => void;
@@ -70,6 +75,7 @@ export function TwoFAUApp({
           onScan={onScan}
           onQuit={onQuit}
           settingsBackend={settingsBackend}
+          setupBackend={setupBackend}
           onOpenSettings={onOpenSettings}
           matchAccount={matchAccount}
           parseMigration={parseMigration}
