@@ -8,9 +8,10 @@ name: Changeset
 # The job keeps a single sticky comment on the PR (found by a hidden marker):
 #   - no changeset  -> "changeset required" + how to add one, and the check fails
 #   - changeset(s)  -> "changeset detected" + each file's contents in <pre>
-# Escape hatch: label the PR "skip-changeset" for chore/docs/ci work that
-# doesn't warrant a release entry. The labeled/unlabeled triggers re-run when
-# the label is toggled.
+# Escape hatches: label the PR "skip-changeset" for chore/docs/ci work that
+# doesn't warrant a release entry (the labeled/unlabeled triggers re-run when
+# the label is toggled), and Knope's own release PR — head branch `release` —
+# is exempt, since it consumes the change files instead of adding one.
 on:
   pull_request:
     branches: [main]
@@ -35,8 +36,14 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           set -euo pipefail
+
+          if [ "$HEAD_REF" = "release" ]; then
+            echo "::notice title=Changeset skipped::Knope release PR — it consumes change files rather than adding one."
+            exit 0
+          fi
 
           case ",$LABELS," in
             *,skip-changeset,*)

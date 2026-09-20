@@ -230,6 +230,33 @@ async fn import_vault(
     Ok(Some(count))
 }
 
+/// First run only: adopt a picked vault file as this device's vault, keeping
+/// the passphrase it was sealed with. Returns the account count, or None if the
+/// user cancels the picker. Errors are the codes `AppVault::adopt_blob` returns,
+/// which the setup wizard turns into its own messages.
+#[tauri::command]
+async fn adopt_vault(
+    app: AppHandle,
+    vault: State<'_, Arc<AppVault>>,
+    dialog_open: State<'_, DialogOpen>,
+    passphrase: String,
+) -> Result<Option<usize>, String> {
+    let _guard = DialogGuard::new(&dialog_open);
+    let Some(path) = app
+        .dialog()
+        .file()
+        .add_filter("2FAU vault", &["dat"])
+        .blocking_pick_file()
+    else {
+        return Ok(None);
+    };
+    let path = path.into_path().map_err(|e| e.to_string())?;
+    let blob = std::fs::read(&path).map_err(|_| "bad-file".to_string())?;
+    let count = vault.adopt_blob(&blob, &passphrase)?;
+    refresh_tray(&app);
+    Ok(Some(count))
+}
+
 #[tauri::command]
 async fn change_passphrase(
     vault: State<'_, Arc<AppVault>>,
@@ -576,6 +603,7 @@ pub fn run() {
             list_accounts,
             export_vault,
             import_vault,
+            adopt_vault,
             change_passphrase,
             parse_migration,
             code,
