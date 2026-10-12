@@ -334,6 +334,29 @@ impl AppVault {
         Ok(count)
     }
 
+    /// Adopt an exported blob as *this* device's vault, before one exists. The
+    /// file's own bytes are written verbatim, so its salt, nonce and KDF id
+    /// carry over and the passphrase that opens the file becomes this device's.
+    /// Unlike `import_blob` (which merges into an unlocked vault) this replaces,
+    /// so it refuses once a vault is there. Leaves the vault locked: the caller
+    /// unlocks through the ordinary path, which also caches the passphrase.
+    ///
+    /// Errors are machine-readable codes — the first-run UI tells "wrong
+    /// passphrase" (retry) from "not a vault file" (pick another).
+    pub fn adopt_blob(&self, blob: &[u8], passphrase: &str) -> Result<usize, String> {
+        if self.has_vault() {
+            return Err("vault-exists".to_string());
+        }
+        let doc = open_with_passphrase(blob, passphrase).map_err(|e| match e {
+            twofau_core::VaultError::DecryptFailed => "wrong-passphrase".to_string(),
+            _ => "bad-file".to_string(),
+        })?;
+        let count = doc.entries.len();
+        let mut rev = self.revision.lock().expect("revision mutex");
+        self.write_blob_locked(&mut rev, blob)?;
+        Ok(count)
+    }
+
     /// Re-seal the vault under a new passphrase after checking the current one.
     /// Also updates the remembered passphrase so silent auto-unlock keeps working.
     pub fn change_passphrase(&self, current: &str, next: &str) -> Result<(), String> {
@@ -552,6 +575,70 @@ mod tests {
             .unlock("a-different-passphrase".into(), false)
             .unwrap();
         assert_eq!(reopened.list().unwrap().len(), 2);
+    }
+
+    #[test]
+    fn adopt_takes_over_an_exported_vault_with_its_own_passphrase() {
+        let (a, _da) = fresh();
+        a.unlock(PASS.into(), false).unwrap();
+        a.add_uri("otpauth://totp/Acme:me?secret=JBSWY3DPEHPK3PXP&issuer=Acme")
+            .unwrap();
+        a.add_uri("otpauth://totp/Beta:you?secret=JBSWY3DPEHPK3PXP&issuer=Beta")
+            .unwrap();
+        let blob = a.export_blob().unwrap();
+
+        // A device with no vault of its own adopts the file, then unlocks with
+        // the passphrase the file was sealed under.
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("vault.dat");
+        let b = AppVault::new(path.clone());
+        assert_eq!(b.adopt_blob(&blob, PASS).unwrap(), 2);
+        assert!(b.is_locked(), "adopting does not unlock");
+        b.unlock(PASS.into(), false).unwrap();
+        assert_eq!(b.list().unwrap().len(), 2);
+
+        // And it survives a restart under that same passphrase.
+        let reopened = AppVault::new(path);
+        reopened.unlock(PASS.into(), false).unwrap();
+        assert_eq!(reopened.list().unwrap().len(), 2);
+    }
+
+    #[test]
+    fn adopt_reports_a_wrong_passphrase_apart_from_a_foreign_file() {
+        let (a, _da) = fresh();
+        a.unlock(PASS.into(), false).unwrap();
+        let blob = a.export_blob().unwrap();
+
+        let dir = tempdir().unwrap();
+        let b = AppVault::new(dir.path().join("vault.dat"));
+        assert_eq!(
+            b.adopt_blob(&blob, "not-the-passphrase"),
+            Err("wrong-passphrase".into())
+        );
+        assert_eq!(
+            b.adopt_blob(b"not a vault at all", PASS),
+            Err("bad-file".into())
+        );
+        assert!(!b.has_vault(), "a failed adopt writes nothing");
+    }
+
+    #[test]
+    fn adopt_refuses_once_a_vault_exists() {
+        let (a, _da) = fresh();
+        a.unlock(PASS.into(), false).unwrap();
+        a.add_uri("otpauth://totp/Acme:me?secret=JBSWY3DPEHPK3PXP&issuer=Acme")
+            .unwrap();
+        let blob = a.export_blob().unwrap();
+
+        // B already has its own vault: adopting is refused and B is untouched.
+        let (b, _db) = fresh();
+        b.unlock("a-different-passphrase".into(), false).unwrap();
+        b.add_uri("otpauth://totp/Beta:you?secret=JBSWY3DPEHPK3PXP&issuer=Beta")
+            .unwrap();
+        assert_eq!(b.adopt_blob(&blob, PASS), Err("vault-exists".into()));
+        let accounts = b.list().unwrap();
+        assert_eq!(accounts.len(), 1);
+        assert_eq!(accounts[0].issuer, "Beta");
     }
 
     #[test]

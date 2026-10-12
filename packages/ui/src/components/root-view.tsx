@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddView } from "@/components/add-view";
 import { EditView } from "@/components/edit-view";
 import { ImportView } from "@/components/import-view";
 import { MenuBarView } from "@/components/menu-bar-view";
-import { SetupView } from "@/components/setup-view";
+import { SetupWizard } from "@/components/setup-wizard";
 import { UnlockView } from "@/components/unlock-view";
 import { prefillFromClipboardText } from "@/lib/prefill";
 import { useClipboard } from "@/state/clipboard";
@@ -14,6 +14,7 @@ import type { ReactNode } from "react";
 import type { AddPrefill } from "@/lib/prefill";
 import type { Account, ParsedOtp } from "@/core/types";
 import type { SettingsBackend } from "@/core/settings";
+import type { SetupBackend } from "@/core/setup";
 import type { QuickCopyConfig } from "@/lib/hotkeys";
 
 type Screen =
@@ -30,6 +31,7 @@ export function RootView({
   onScan,
   onQuit,
   settingsBackend,
+  setupBackend,
   onOpenSettings,
   matchAccount,
   parseMigration,
@@ -41,6 +43,7 @@ export function RootView({
   onScan?: () => void;
   onQuit?: () => void;
   settingsBackend?: SettingsBackend;
+  setupBackend?: SetupBackend;
   onOpenSettings?: () => void;
   matchAccount?: (a: Account) => boolean;
   parseMigration?: (uri: string) => Promise<ParsedOtp[]>;
@@ -52,6 +55,13 @@ export function RootView({
   const { locked, needsSetup } = useVault();
   const { readText } = useClipboard();
   const [screen, setScreen] = useState<Screen>({ name: "list" });
+  // The wizard outlives the moment the vault appears: its last step (connect a
+  // browser) runs after creating or importing one, so it closes when the wizard
+  // says it is done, not when `needsSetup` flips.
+  const [setupOpen, setSetupOpen] = useState(false);
+  useEffect(() => {
+    if (locked && needsSetup) setSetupOpen(true);
+  }, [locked, needsSetup]);
 
   // Open the Add screen seeded from the clipboard, but only when it holds a
   // valid otpauth:// URI or Base32 secret. Returns false (so the caller can
@@ -83,8 +93,12 @@ export function RootView({
     // overflow, exactly like the account list.
     <div className="dark flex h-[458px] w-[320px] flex-col overflow-hidden bg-background text-foreground">
       {(() => {
+        if (setupOpen) {
+          return fill(<SetupWizard backend={setupBackend} onDone={() => setSetupOpen(false)} />);
+        }
+
         if (locked) {
-          return fill(needsSetup ? <SetupView /> : <UnlockView />);
+          return fill(<UnlockView />);
         }
 
         if (screen.name === "add") {

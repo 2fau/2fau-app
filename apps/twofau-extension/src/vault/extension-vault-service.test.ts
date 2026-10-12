@@ -37,6 +37,57 @@ describe("ExtensionVaultService", () => {
     expect(reopened.needsSetup()).toBe(false);
   });
 
+  it("adopts an exported vault as this browser's, keeping its passphrase", async () => {
+    // A vault that came from somewhere else (another browser, the desktop).
+    const source = await freshService();
+    await source.unlock("the-other-devices-passphrase");
+    await source.addUri(URI);
+    const blob = await source.exportBlob();
+
+    // A browser with nothing of its own takes it over.
+    installFakeChrome();
+    await clearSessionKey();
+    const fresh = await freshService();
+    expect(fresh.needsSetup()).toBe(true);
+    expect(await fresh.adoptBlob(blob, "the-other-devices-passphrase")).toBe(1);
+
+    expect(fresh.needsSetup()).toBe(false);
+    expect((await fresh.list())[0].issuer).toBe("Acme");
+
+    // And that same passphrase unlocks it from now on.
+    await clearSessionKey();
+    const reopened = await freshService();
+    await reopened.unlock("the-other-devices-passphrase");
+    expect(await reopened.list()).toHaveLength(1);
+  });
+
+  it("refuses to adopt with the wrong passphrase or a foreign file, writing nothing", async () => {
+    const source = await freshService();
+    await source.unlock(PASSPHRASE);
+    const blob = await source.exportBlob();
+
+    installFakeChrome();
+    await clearSessionKey();
+    const fresh = await freshService();
+
+    await expect(fresh.adoptBlob(blob, "not-the-passphrase")).rejects.toMatchObject({
+      code: "wrong-passphrase",
+    });
+    await expect(fresh.adoptBlob(new Uint8Array([1, 2, 3]), PASSPHRASE)).rejects.toMatchObject({
+      code: "bad-file",
+    });
+    expect(fresh.needsSetup()).toBe(true);
+    expect((await freshService()).needsSetup()).toBe(true);
+  });
+
+  it("refuses to adopt over an existing vault", async () => {
+    const source = await freshService();
+    await source.unlock(PASSPHRASE);
+    const blob = await source.exportBlob();
+
+    await expect(source.adoptBlob(blob, PASSPHRASE)).rejects.toThrow(/already has a vault/i);
+  });
+
   it("rejects the wrong passphrase and stays locked", async () => {
     await (await freshService()).unlock(PASSPHRASE);
     await clearSessionKey();

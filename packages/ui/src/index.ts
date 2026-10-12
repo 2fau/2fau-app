@@ -7,6 +7,7 @@ export { EditView } from "@/components/edit-view";
 export { ImportView } from "@/components/import-view";
 export { UnlockView } from "@/components/unlock-view";
 export { SetupView } from "@/components/setup-view";
+export { SetupWizard } from "@/components/setup-wizard";
 export { StatusScreen } from "@/components/status-screen";
 export { SettingsView } from "@/components/settings-view";
 export {
@@ -20,9 +21,18 @@ export {
   type SettingsLinks,
   type ImportSpec,
 } from "@/core/settings";
+export {
+  adoptFailure,
+  type AdoptError,
+  type AdoptFailure,
+  type ConnectStep,
+  type SetupBackend,
+} from "@/core/setup";
 
 export { I18nProvider, useT } from "@twofau/i18n/react";
 export {
+  createTranslator,
+  type Translator,
   loadMessages,
   resolveLocale,
   SUPPORTED_LOCALES,

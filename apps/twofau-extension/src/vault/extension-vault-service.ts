@@ -15,6 +15,8 @@ import {
 import type {
   Account,
   AddManualFields,
+  AdoptError,
+  AdoptFailure,
   Capabilities,
   StoredAccount,
   VaultDocument,
@@ -24,6 +26,13 @@ import { algorithmArg, buildOtpauthUri } from "@twofau/ui";
 import { clearSessionKey, getSessionKey, setSessionKey, touchSessionKey } from "./session-key";
 import { getTimeOffsetMs } from "./time-sync";
 import { VaultRepo, type VaultManifest, type VaultRepoPort } from "./vault-repo";
+
+/** Tag a first-run adopt failure so the setup wizard can tell them apart. */
+function adoptError(code: AdoptFailure, message: string, cause?: unknown): AdoptError {
+  const err: AdoptError = new Error(message, cause === undefined ? undefined : { cause });
+  err.code = code;
+  return err;
+}
 
 /** PBKDF2-HMAC-SHA256; the only KDF the blob format defines today. */
 export const KDF_ID = 1;
@@ -285,6 +294,43 @@ export class ExtensionVaultService implements VaultService {
     const merged = await merge(doc, imported);
     await this.commit(merged, manifest, key);
     return merged.entries.length;
+  }
+
+  /**
+   * First run only: adopt an exported blob as this browser's vault, keeping the
+   * passphrase it was sealed with. The bytes are stored verbatim — salt, nonce
+   * and kdf id included — so the same file opens identically on every host.
+   * Unlike `importBlob` (which merges into an unlocked vault) this replaces, so
+   * it refuses once a vault exists. Rejections carry an `AdoptError` code.
+   */
+  async adoptBlob(blob: Uint8Array, passphrase: string): Promise<number> {
+    // Not an AdoptError code: the wizard only runs before a vault exists, so
+    // reaching this is a bug rather than something to explain to the user.
+    if (this.vaultExists) throw new Error("This browser already has a vault.");
+
+    let salt: string;
+    try {
+      salt = await vaultSalt(blob);
+    } catch (cause) {
+      throw adoptError("bad-file", "That file is not a 2FAU vault.", cause);
+    }
+
+    const key = await deriveKey(passphrase, salt);
+    let doc: VaultDocument;
+    try {
+      doc = await openWithKey(blob, key);
+    } catch (cause) {
+      throw adoptError("wrong-passphrase", "That passphrase does not open this file.", cause);
+    }
+
+    // kdfId travels in the blob's own header (byte 5); the manifest only mirrors it.
+    const saved = await this.repo.save(blob, salt, blob[5] ?? KDF_ID, 0);
+    if (!saved.ok) throw new Error("Another vault appeared while importing.");
+    await setSessionKey(key);
+    this.cached = { revision: saved.manifest.revision, doc };
+    this.vaultExists = true;
+    this.unlocked = true;
+    return doc.entries.length;
   }
 
   // MARK: internals

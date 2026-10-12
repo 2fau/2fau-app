@@ -1,5 +1,6 @@
 import type { VaultService } from "@twofau/ui";
 import {
+  createTranslator,
   I18nProvider,
   loadMessages,
   modsFromToken,
@@ -15,6 +16,8 @@ import ReactDOM from "react-dom/client";
 import { BridgeUnreachableError } from "../bridge/connection";
 import { SCAN_MESSAGE } from "../shared/messages";
 import { createVaultService } from "../vault/backend";
+import { extensionSetupBackend } from "./setup-backend";
+import type { ExtensionVaultService } from "../vault/extension-vault-service";
 import { readSettings } from "../vault/settings";
 import { accountMatchesSite, hostOf } from "../vault/site-match";
 import { initWasm } from "../wasm";
@@ -93,9 +96,17 @@ async function bootstrap() {
     mods: modsFromToken(settings?.quickCopyMods ?? "mod"),
   };
 
+  // First run offers more than "create a passphrase": adopt an exported vault,
+  // or hand the whole thing to the desktop app. The service is the local one
+  // either way until a mode is chosen — only `client` mode needs a reload.
+  const setupBackend = service.needsSetup()
+    ? extensionSetupBackend(service as ExtensionVaultService, createTranslator(locale, messages))
+    : undefined;
+
   root.render(
     <TwoFAUApp
       service={service}
+      setupBackend={setupBackend}
       locale={locale}
       messages={messages}
       quickCopy={quickCopy}

@@ -7,9 +7,11 @@ import { useVault } from "@/state/vault-provider";
 
 const MIN_LENGTH = 8;
 
-/** First-run screen: create the passphrase that encrypts the vault on this
- * device. Distinct from UnlockView, which enters an existing passphrase. */
-export function SetupView() {
+/** The wizard's create step: the passphrase that encrypts a new, empty vault on
+ * this device. Distinct from UnlockView, which enters an existing passphrase.
+ * `onDone` lets the wizard keep the panel for a following step; without it the
+ * unlocked vault simply replaces this screen. */
+export function SetupView({ onDone, onBack }: { onDone?: () => void; onBack?: () => void } = {}) {
   const { t } = useT();
   const { unlock } = useVault();
   const [passphrase, setPassphrase] = useState("");
@@ -28,6 +30,7 @@ export function SetupView() {
     setError(null);
     try {
       await unlock(passphrase);
+      onDone?.();
     } catch (err) {
       setError(
         t("Could not create vault: {error}", {
@@ -74,6 +77,12 @@ export function SetupView() {
       <Button type="submit" className="w-full" disabled={busy || !valid}>
         {t("Create vault")}
       </Button>
+
+      {onBack && (
+        <Button type="button" variant="ghost" className="w-full" disabled={busy} onClick={onBack}>
+          {t("Back")}
+        </Button>
+      )}
     </form>
   );
 }
