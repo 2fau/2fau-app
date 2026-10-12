@@ -2,7 +2,7 @@ import type { Account } from "@twofau/ui";
 import { beforeEach, describe, expect, it } from "vitest";
 import { installFakeChrome } from "../test/fake-chrome";
 import { ExtensionVaultService } from "./extension-vault-service";
-import { clearSessionKey } from "./session-key";
+import { clearSessionKey, getSessionKey } from "./session-key";
 import { type SaveResult, VaultRepo } from "./vault-repo";
 
 const PASSPHRASE = "correct-horse-battery";
@@ -86,6 +86,60 @@ describe("ExtensionVaultService", () => {
     const blob = await source.exportBlob();
 
     await expect(source.adoptBlob(blob, PASSPHRASE)).rejects.toThrow(/already has a vault/i);
+  });
+
+  it("deletes the vault, its mirror, and the session key", async () => {
+    const service = await freshService();
+    await service.unlock(PASSPHRASE);
+    await service.addUri(URI);
+
+    await service.deleteVault(PASSPHRASE);
+
+    expect(service.needsSetup()).toBe(true);
+    expect(service.isLocked()).toBe(true);
+    expect(await getSessionKey()).toBeNull();
+
+    // Nothing left in either area that a read could resurrect: no manifest, no
+    // chunks, no mirror.
+    const local = await chrome.storage.local.get(null);
+    const sync = await chrome.storage.sync.get(null);
+    for (const area of [local, sync]) {
+      expect(area["vault.manifest"]).toBeUndefined();
+      expect(area["vault.mirror"]).toBeUndefined();
+      expect(Object.keys(area).filter((k) => k.includes(".chunk."))).toEqual([]);
+    }
+
+    const reopened = await freshService();
+    expect(reopened.needsSetup()).toBe(true);
+    expect(await reopened.exportBlob().catch((e: Error) => e.message)).toMatch(/no vault/i);
+  });
+
+  it("refuses to delete with the wrong passphrase, keeping every copy", async () => {
+    const service = await freshService();
+    await service.unlock(PASSPHRASE);
+    await service.addUri(URI);
+
+    await expect(service.deleteVault("not-the-passphrase")).rejects.toThrow(/wrong password/i);
+
+    expect(service.needsSetup()).toBe(false);
+    expect(await service.list()).toHaveLength(1);
+    const reopened = await freshService();
+    await reopened.unlock(PASSPHRASE);
+    expect(await reopened.list()).toHaveLength(1);
+  });
+
+  it("runs the caller's hook after the wipe, before dropping local state", async () => {
+    const service = await freshService();
+    await service.unlock(PASSPHRASE);
+
+    const seen: boolean[] = [];
+    await service.deleteVault(PASSPHRASE, async () => {
+      // The vault is already gone when the hook runs — that is what lets the
+      // options page leave Sync mode before anything can reconcile.
+      seen.push((await new VaultRepo().hasVault()) === false);
+    });
+
+    expect(seen).toEqual([true]);
   });
 
   it("rejects the wrong passphrase and stays locked", async () => {

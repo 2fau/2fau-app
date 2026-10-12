@@ -63,6 +63,7 @@ pub struct MergeResult {
 
 pub struct AppVault {
     store: FileVaultStore,
+    path: PathBuf,
     rev_path: PathBuf,
     revision: Mutex<u64>,
     inner: Mutex<Option<Unlocked>>,
@@ -76,7 +77,8 @@ impl AppVault {
             .and_then(|s| s.trim().parse::<u64>().ok())
             .unwrap_or(0);
         AppVault {
-            store: FileVaultStore::new(path),
+            store: FileVaultStore::new(path.clone()),
+            path,
             rev_path,
             revision: Mutex::new(revision),
             inner: Mutex::new(None),
@@ -355,6 +357,37 @@ impl AppVault {
         let mut rev = self.revision.lock().expect("revision mutex");
         self.write_blob_locked(&mut rev, blob)?;
         Ok(count)
+    }
+
+    /// Destroy this device's vault: the blob, its revision marker, the decrypted
+    /// copy in memory, and the remembered passphrase. `passphrase` must open the
+    /// stored blob — being unlocked is not enough — and a wrong one deletes
+    /// nothing.
+    ///
+    /// The keyring goes last on purpose. Interrupted after the file but before
+    /// the credential, the worst state is a remembered passphrase with no vault,
+    /// which `unlock` overwrites on first run; the other order could forget the
+    /// passphrase of a vault that still exists.
+    pub fn delete_vault(&self, passphrase: &str) -> Result<(), String> {
+        let blob = self
+            .store
+            .load()
+            .map_err(str_err)?
+            .ok_or("There is no vault to delete.")?;
+        open_with_passphrase(&blob, passphrase).map_err(|_| "Wrong password.".to_string())?;
+
+        let mut rev = self.revision.lock().expect("revision mutex");
+        std::fs::remove_file(&self.path).map_err(str_err)?;
+        // A missing .rev is what a fresh install looks like, so ignore NotFound.
+        match std::fs::remove_file(&self.rev_path) {
+            Ok(()) => {}
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+            Err(e) => return Err(e.to_string()),
+        }
+        *rev = 0;
+        *self.inner.lock().expect("vault mutex") = None;
+        let _ = keyring_delete();
+        Ok(())
     }
 
     /// Re-seal the vault under a new passphrase after checking the current one.
@@ -639,6 +672,82 @@ mod tests {
         let accounts = b.list().unwrap();
         assert_eq!(accounts.len(), 1);
         assert_eq!(accounts[0].issuer, "Beta");
+    }
+
+    #[test]
+    fn delete_removes_the_vault_and_restarts_the_revision() {
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("vault.dat");
+        let vault = AppVault::new(path.clone());
+        vault.unlock(PASS.into(), false).unwrap();
+        vault
+            .add_uri("otpauth://totp/Acme:me?secret=JBSWY3DPEHPK3PXP&issuer=Acme")
+            .unwrap();
+        assert!(vault.has_vault());
+
+        vault.delete_vault(PASS).unwrap();
+        assert!(!vault.has_vault(), "the blob is gone");
+        assert!(vault.is_locked(), "the decrypted copy is dropped");
+        assert!(
+            !path.with_extension("rev").exists(),
+            "the revision marker is gone"
+        );
+        assert_eq!(vault.revision(), 0);
+
+        // A reopened vault is a first run, and the next vault starts its own
+        // revision line rather than resuming the deleted one's.
+        let reopened = AppVault::new(path);
+        assert!(!reopened.has_vault());
+        reopened.unlock("a-new-passphrase".into(), false).unwrap();
+        assert_eq!(reopened.revision(), 1);
+        assert!(reopened.list().unwrap().is_empty());
+    }
+
+    #[test]
+    fn delete_refuses_a_wrong_passphrase_and_keeps_everything() {
+        let (vault, dir) = fresh();
+        vault.unlock(PASS.into(), false).unwrap();
+        vault
+            .add_uri("otpauth://totp/Acme:me?secret=JBSWY3DPEHPK3PXP&issuer=Acme")
+            .unwrap();
+        let revision = vault.revision();
+
+        assert_eq!(
+            vault.delete_vault("not-the-passphrase"),
+            Err("Wrong password.".into())
+        );
+        assert!(vault.has_vault());
+        assert!(dir.path().join("vault.dat.rev").exists() || dir.path().join("vault.rev").exists());
+        assert_eq!(vault.revision(), revision);
+        assert_eq!(vault.list().unwrap().len(), 1);
+    }
+
+    #[test]
+    fn delete_works_from_a_locked_vault() {
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("vault.dat");
+        {
+            let vault = AppVault::new(path.clone());
+            vault.unlock(PASS.into(), false).unwrap();
+            vault
+                .add_uri("otpauth://totp/Acme:me?secret=JBSWY3DPEHPK3PXP&issuer=Acme")
+                .unwrap();
+        }
+        // A fresh handle on the same file: locked, but the passphrase authorizes.
+        let locked = AppVault::new(path);
+        assert!(locked.is_locked());
+        assert_eq!(locked.delete_vault("nope"), Err("Wrong password.".into()));
+        locked.delete_vault(PASS).unwrap();
+        assert!(!locked.has_vault());
+    }
+
+    #[test]
+    fn delete_reports_when_there_is_no_vault() {
+        let (vault, _dir) = fresh();
+        assert_eq!(
+            vault.delete_vault(PASS),
+            Err("There is no vault to delete.".into())
+        );
     }
 
     #[test]

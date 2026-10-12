@@ -42,6 +42,9 @@ export interface VaultRepoPort {
     kdfId: number,
     baseRevision: number,
   ): Promise<SaveResult>;
+  /** Erase the stored vault and anything that could restore it. Absent on a
+   * repo whose vault isn't this browser's to delete (the desktop bridge). */
+  wipe?(): Promise<void>;
 }
 
 /** The vault no longer fits in chrome.storage.sync. */
@@ -162,6 +165,26 @@ export class VaultRepo implements VaultRepoPort {
     }
     await this.writeMirror({ blob, manifest });
     return { ok: true, manifest };
+  }
+
+  /**
+   * Erase every trace of the vault from this browser: the local mirror first,
+   * then every chunk of every generation, then the manifest.
+   *
+   * That order is the point. The manifest is the commit point a read starts
+   * from, and a read whose chunks are missing falls back to the mirror — so a
+   * wipe interrupted half-way must never leave a manifest with a live mirror
+   * behind it. Mirror-first means the worst case reads as an absent vault
+   * rather than a restored one.
+   */
+  async wipe(): Promise<void> {
+    await chrome.storage.local.remove(MIRROR_KEY);
+
+    const all = await this.area.get(null);
+    const chunks = Object.keys(all).filter((key) => CHUNK_KEY.test(key));
+    if (chunks.length > 0) await this.area.remove(chunks);
+
+    await this.area.remove(MANIFEST_KEY);
   }
 
   /** Rough size of what this write will occupy, including the manifest. */

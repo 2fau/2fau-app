@@ -11,6 +11,7 @@ import {
   // MessageSquare,
   Power,
   RefreshCw,
+  Trash2,
   Upload,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -34,6 +35,7 @@ import {
 
 type Screen =
   | "main"
+  | "delete"
   | "password"
   | "import"
   | "autolock"
@@ -87,6 +89,14 @@ export function SettingsView({
   }
   if (screen === "import") {
     return <ImportScreen backend={backend} onBack={() => setScreen("main")} />;
+  }
+  if (screen === "delete" && backend.deleteVault) {
+    return (
+      <DeleteVaultScreen
+        deleteVault={backend.deleteVault}
+        onBack={() => setScreen("main")}
+      />
+    );
   }
   if (screen === "autolock") {
     return (
@@ -243,6 +253,74 @@ export function SettingsView({
           onClick={() => setScreen("about")}
         />
       </SettingsGroup>
+
+      {/* Kept in its own group, away from the rows people use daily. */}
+      {backend.deleteVault && (
+        <SettingsGroup footer={t("Erases this device’s vault. There is no undo — export first if you might want it back.")}>
+          <SettingsRow
+            icon={<Trash2 />}
+            iconBg="#ff3b30"
+            label={t("Delete Vault")}
+            destructive
+            chevron
+            onClick={() => setScreen("delete")}
+          />
+        </SettingsGroup>
+      )}
+    </SettingsPage>
+  );
+}
+
+/** Deleting is gated on the passphrase, not on the app being unlocked: an
+ * unlocked panel left on a desk should not be wipeable by whoever walks past. */
+function DeleteVaultScreen({
+  deleteVault,
+  onBack,
+}: {
+  deleteVault: (passphrase: string) => Promise<void>;
+  onBack: () => void;
+}) {
+  const { t } = useT();
+  const [passphrase, setPassphrase] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit() {
+    setBusy(true);
+    setError(null);
+    try {
+      await deleteVault(passphrase);
+      // The host reports no vault from here on; it reloads into the first-run
+      // wizard. Leave the confirmation either way so nothing dangerous lingers.
+      onBack();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <SettingsPage title={t("Delete Vault")} onBack={onBack}>
+      <SettingsGroup footer={t("Every account in this vault is erased from this device, along with the saved password that unlocks it. This cannot be undone.")}>
+        <div className="flex flex-col gap-2 p-3">
+          <Input
+            type="password"
+            autoFocus
+            placeholder={t("Current password")}
+            value={passphrase}
+            onChange={(e) => setPassphrase(e.target.value)}
+          />
+          <Button
+            variant="destructive"
+            disabled={busy || passphrase.length === 0}
+            onClick={() => void submit()}
+          >
+            {busy ? t("Deleting…") : t("Delete Vault")}
+          </Button>
+        </div>
+      </SettingsGroup>
+      <Status error={error} />
     </SettingsPage>
   );
 }

@@ -73,6 +73,17 @@ export function OptionsView() {
       changePassphrase: async (current, next) => {
         await (await vaultService()).changePassphrase(current, next);
       },
+      // Not offered in Desktop-vault mode: what the popup shows there is the
+      // desktop's vault, which isn't this browser's to delete.
+      deleteVault:
+        mode === "client"
+          ? undefined
+          : async (passphrase) => {
+              const { deleteLocalVault } = await import("../vault/delete-vault");
+              await deleteLocalVault(passphrase, vaultService);
+              // The vault is gone; come back up on the first-run wizard.
+              window.location.reload();
+            },
       autoLock: {
         get: async () => (await readSettings()).autoLockMinutes,
         set: async (minutes) => {

@@ -333,6 +333,37 @@ export class ExtensionVaultService implements VaultService {
     return doc.entries.length;
   }
 
+  /**
+   * Destroy this browser's vault, authorized by the passphrase rather than by
+   * being unlocked. Verifies against the stored blob, wipes every copy through
+   * the repo, and drops the session key and the decrypted cache. A wrong
+   * passphrase deletes nothing.
+   *
+   * `onWiped` runs after the wipe and before the local state is dropped — the
+   * options page uses it to leave Sync mode, so a reconcile pass cannot pull the
+   * deleted vault straight back.
+   */
+  async deleteVault(passphrase: string, onWiped?: () => Promise<void>): Promise<void> {
+    const wipe = this.repo.wipe?.bind(this.repo);
+    if (!wipe) throw new Error("This vault lives in the desktop app.");
+
+    const loaded = await this.repo.load();
+    if (!loaded) throw new Error("There is no vault to delete.");
+    const key = await deriveKey(passphrase, await vaultSalt(loaded.blob));
+    try {
+      await openWithKey(loaded.blob, key);
+    } catch (cause) {
+      throw new Error("Wrong password.", { cause });
+    }
+
+    await wipe();
+    await onWiped?.();
+    await clearSessionKey();
+    this.cached = null;
+    this.vaultExists = false;
+    this.unlocked = false;
+  }
+
   // MARK: internals
 
   private async requireKey(): Promise<string> {
