@@ -257,6 +257,22 @@ async fn adopt_vault(
     Ok(Some(count))
 }
 
+/// Destroy this device's vault, authorized by the current passphrase. Runs on
+/// the blocking pool: verifying the passphrase is a full PBKDF2 derivation.
+#[tauri::command]
+async fn delete_vault(
+    app: AppHandle,
+    vault: State<'_, Arc<AppVault>>,
+    passphrase: String,
+) -> Result<(), String> {
+    let v = vault.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || v.delete_vault(&passphrase))
+        .await
+        .map_err(|e| e.to_string())??;
+    refresh_tray(&app);
+    Ok(())
+}
+
 #[tauri::command]
 async fn change_passphrase(
     vault: State<'_, Arc<AppVault>>,
@@ -604,6 +620,7 @@ pub fn run() {
             export_vault,
             import_vault,
             adopt_vault,
+            delete_vault,
             change_passphrase,
             parse_migration,
             code,

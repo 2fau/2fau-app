@@ -31,6 +31,12 @@ export interface SettingsBackend {
   exportVault: () => Promise<boolean>;
   import: ImportSpec;
   changePassphrase: (current: string, next: string) => Promise<void>;
+  /** Destroy this device's vault and the secrets that unlock it, after checking
+   * `passphrase` against the stored blob. Rejects — deleting nothing — when it
+   * doesn't open the vault. Optional: a host omits it where the vault on screen
+   * isn't its own to delete (the extension in Desktop-vault mode), and the row
+   * then isn't rendered at all. */
+  deleteVault?: (passphrase: string) => Promise<void>;
   autoLock: {
     get: () => Promise<number>;
     set: (minutes: number) => Promise<void>;

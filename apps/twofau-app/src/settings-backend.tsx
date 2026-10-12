@@ -26,6 +26,12 @@ export function tauriSettingsBackend(version: string): SettingsBackend {
     },
     changePassphrase: (current, next) =>
       invoke("change_passphrase", { current, next }),
+    deleteVault: async (passphrase) => {
+      await invoke("delete_vault", { passphrase });
+      // Rust now reports no vault; reload so the webview re-bootstraps into the
+      // first-run wizard instead of showing a settings screen over nothing.
+      window.location.reload();
+    },
     autoLock: {
       get: async () => getAutoLockMinutes(),
       set: async (minutes) => setAutoLockMinutes(minutes),

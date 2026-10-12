@@ -67,3 +67,51 @@ describe("SettingsView hotkeys", () => {
     expect(open).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("SettingsView delete vault", () => {
+  it("renders no delete row when the host cannot delete", () => {
+    render(<SettingsView backend={backend()} />);
+    expect(screen.queryByText(/delete vault/i)).not.toBeInTheDocument();
+    // The rest of the screen is untouched.
+    expect(screen.getByText(/export vault/i)).toBeInTheDocument();
+  });
+
+  it("deletes with the entered passphrase and leaves the confirmation", async () => {
+    const deleteVault = vi.fn().mockResolvedValue(undefined);
+    render(<SettingsView backend={backend({ deleteVault })} />);
+
+    fireEvent.click(screen.getByText("Delete Vault"));
+    fireEvent.change(await screen.findByPlaceholderText(/current password/i), {
+      target: { value: "correct-horse" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^delete vault$/i }));
+
+    await waitFor(() => expect(deleteVault).toHaveBeenCalledWith("correct-horse"));
+    await waitFor(() => expect(screen.getByText(/export vault/i)).toBeInTheDocument());
+  });
+
+  it("shows the error and stays put when the passphrase is refused", async () => {
+    const deleteVault = vi.fn().mockRejectedValue(new Error("Wrong password."));
+    render(<SettingsView backend={backend({ deleteVault })} />);
+
+    fireEvent.click(screen.getByText("Delete Vault"));
+    fireEvent.change(await screen.findByPlaceholderText(/current password/i), {
+      target: { value: "nope" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^delete vault$/i }));
+
+    expect(await screen.findByText(/wrong password/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/current password/i)).toBeInTheDocument();
+  });
+
+  it("deletes nothing when the user backs out", async () => {
+    const deleteVault = vi.fn();
+    render(<SettingsView backend={backend({ deleteVault })} />);
+
+    fireEvent.click(screen.getByText("Delete Vault"));
+    // The sub-screen's back button is labelled with the parent screen's name.
+    fireEvent.click(await screen.findByRole("button", { name: /settings/i }));
+
+    expect(deleteVault).not.toHaveBeenCalled();
+  });
+});
