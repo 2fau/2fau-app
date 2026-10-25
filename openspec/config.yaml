@@ -1,32 +1,48 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  2FAU: TOTP authenticator. Desktop app (Tauri 2), Chrome extension (MV3), marketing site.
+  Rust workspace: twofau-core (pure logic), twofau-wasm (wasm-bindgen), apps/twofau-app/src-tauri.
+  pnpm workspace: @twofau/core-wasm, @twofau/ui (shared React), @twofau/i18n, @twofau/app,
+  @twofau/extension, @twofau/site. React 19, shadcn/ui, Tailwind v4, Vite, Vitest, Storybook.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Hard invariants (CLAUDE.md, docs/ARCHITECTURE.md) — a change that breaks one must say so explicitly:
+  - twofau-core is pure: no clock, RNG, filesystem or network; callers pass them in.
+  - Secrets never reach `Account` (UI model); only `StoredAccount` inside the encrypted blob.
+  - Vault blob layout is versioned (magic | version | kdf_id | salt | nonce | ciphertext, header as AAD);
+    any layout change bumps version/kdf_id and keeps reading the old one.
+  - UI never imports Tauri APIs; all I/O goes through the `VaultService` / `SettingsBackend` ports,
+    and every host implementation (desktop IPC, WASM, extension) must be updated together.
+  - Desktop codes are computed in Rust; the frontend never sees a secret.
+  - Every user-facing string goes through `t()` and the i18n catalogs.
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+  Releases use Knope: user-visible changes need a changeset. Commits are conventional (feat:, fix:, chore:, ci:).
+
+rules:
+  proposal:
+    - Sections are "Why" and "What Changes"; Why describes the user-visible problem, not the implementation.
+    - Name every host affected (desktop, extension, site, core) and every port (`VaultService`, `SettingsBackend`) that changes.
+    - Call out any data-loss, secret-handling or vault-format implication explicitly.
+  design:
+    - Only write design.md when the change crosses hosts, touches crypto/vault format, or orders destructive steps.
+    - For destructive or multi-store operations, state the ordering and what a crash midway leaves behind.
+  specs:
+    - Requirements use SHALL; each has at least one Scenario in WHEN/THEN form.
+    - Specs describe behaviour, not file names or functions.
+  tasks:
+    - Group tasks by layer (core, shared UI, desktop, extension, site), then a final "Verification" section.
+    - Every task ends with a concrete "Verify ..." clause naming the test or command that proves it.
+    - "The Verification section runs the full gate: `cargo fmt --check && cargo clippy --all-targets -D warnings && cargo test && pnpm -r test && pnpm -r typecheck`."
+    - New strings get a task to wrap them in `t()`, re-extract the catalog, and pass `node scripts/check-i18n.mjs`.
+    - Tray/popup/GUI behaviour cannot be verified headlessly; make it an explicit hand-verification task.
+
+operations:
+  apply:
+    guidance:
+      - Read docs/DEVELOPMENT.md before building and docs/ARCHITECTURE.md before touching crypto, vault format or ports.
+      - Tick a task only after its Verify clause actually passed; leave hand-verification tasks unticked and report them.
+      - Report pre-existing lint/toolchain drift separately from failures caused by the change.
+  archive:
+    guidance:
+      - Do not archive while hand-verification tasks are still open; list them instead.
+      - Ensure a Knope changeset exists for user-visible changes before archiving.
