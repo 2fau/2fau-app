@@ -120,6 +120,12 @@ jobs:
 
       - uses: jetli/wasm-pack-action@0d096b08b4e5a7de8c28de67e11e945404e9eefa # v0.4.0
 
+        # os.tmpdir() can sit on another fs than ~/.cargo/bin; the action renames across them (EXDEV)
+
+        env:
+
+          TMPDIR: ${{ runner.temp }}
+
       - name: Install Linux bundling deps
         if: matrix.platform == 'ubuntu-22.04'
         run: |
