@@ -68,12 +68,14 @@ export function ImportView({
         return;
       }
       let added = 0;
+      const failed: string[] = [];
       for (const uri of uris) {
         try {
           await addUri(uri);
           added += 1;
         } catch {
           // skip a bad entry rather than abort the whole batch
+          failed.push(uri);
         }
       }
       setStatus(
@@ -86,7 +88,16 @@ export function ImportView({
           { added, count: uris.length },
         ),
       );
-      if (added > 0) setText("");
+      // Leave only what failed in the box, so the user can see and fix it.
+      if (added > 0) setText(failed.join("\n"));
+      if (failed.length > 0) {
+        setError(
+          plural(failed.length, {
+            one: "1 link couldn't be added and is left above.",
+            other: "{count} links couldn't be added and are left above.",
+          }, { count: failed.length }),
+        );
+      }
     } catch (e) {
       setError(msg(e));
     } finally {
@@ -107,7 +118,7 @@ export function ImportView({
   return (
     <div className="flex flex-col gap-3 p-4">
       <div className="flex items-center gap-1">
-        <Button size="icon-sm" variant="ghost" onClick={onDone}>
+        <Button size="icon-sm" variant="ghost" aria-label={t("Back")} onClick={onDone}>
           <ChevronLeft />
         </Button>
         <span className="text-[15px] font-semibold">{t("Import accounts")}</span>
@@ -116,13 +127,12 @@ export function ImportView({
       <div className="border-t" />
 
       <p className="text-[12px] text-muted-foreground">
-        {t("Paste")} <code>otpauth://</code>{" "}
-        {t("links (one per line) or a Google Authenticator export")} (
-        <code>otpauth-migration://</code>).
+        {t("Paste otpauth:// links, one per line, or a Google Authenticator export.")}
       </p>
 
       <textarea
-        className="macos-scroll h-28 w-full resize-none rounded-md border bg-transparent p-2 font-mono text-[11px] outline-none placeholder:text-muted-foreground"
+        aria-label={t("Links to import")}
+        className="macos-scroll h-28 w-full resize-none rounded-md border bg-transparent p-2 font-mono text-[11px] outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/60"
         placeholder={"otpauth://totp/...\notpauth://totp/...\notpauth-migration://offline?data=..."}
         value={text}
         onChange={(e) => setText(e.target.value)}

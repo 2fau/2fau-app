@@ -81,7 +81,7 @@ describe("SettingsView delete vault", () => {
     render(<SettingsView backend={backend({ deleteVault })} />);
 
     fireEvent.click(screen.getByText("Delete Vault"));
-    fireEvent.change(await screen.findByPlaceholderText(/current password/i), {
+    fireEvent.change(await screen.findByPlaceholderText(/current passphrase/i), {
       target: { value: "correct-horse" },
     });
     fireEvent.click(screen.getByRole("button", { name: /^delete vault$/i }));
@@ -91,17 +91,17 @@ describe("SettingsView delete vault", () => {
   });
 
   it("shows the error and stays put when the passphrase is refused", async () => {
-    const deleteVault = vi.fn().mockRejectedValue(new Error("Wrong password."));
+    const deleteVault = vi.fn().mockRejectedValue(new Error("Wrong passphrase."));
     render(<SettingsView backend={backend({ deleteVault })} />);
 
     fireEvent.click(screen.getByText("Delete Vault"));
-    fireEvent.change(await screen.findByPlaceholderText(/current password/i), {
+    fireEvent.change(await screen.findByPlaceholderText(/current passphrase/i), {
       target: { value: "nope" },
     });
     fireEvent.click(screen.getByRole("button", { name: /^delete vault$/i }));
 
-    expect(await screen.findByText(/wrong password/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/current password/i)).toBeInTheDocument();
+    expect(await screen.findByText(/wrong passphrase/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/current passphrase/i)).toBeInTheDocument();
   });
 
   it("deletes nothing when the user backs out", async () => {

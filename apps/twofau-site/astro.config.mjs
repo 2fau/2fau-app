@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite'
+import { fileURLToPath } from 'node:url';
 
 // https://astro.build/config
 export default defineConfig({
@@ -26,5 +27,11 @@ export default defineConfig({
       plugins: [
           tailwindcss(),
       ],
+      // The homepage demo renders @twofau/ui from source, which imports through
+      // its own "@/" alias.
+      resolve: {
+          alias: { '@': fileURLToPath(new URL('../../packages/ui/src', import.meta.url)) },
+          dedupe: ['react', 'react-dom'],
+      },
   }
 });

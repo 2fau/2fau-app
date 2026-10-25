@@ -1,0 +1,27 @@
+---
+import "../demo/demo.css";
+import LiveDemo from "../demo/LiveDemo";
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>2FAu demo</title>
+  </head>
+  <body>
+    <LiveDemo client:only="react" />
+    <!-- The site is always dark, but the popup theme only switches on
+         prefers-color-scheme (an iframe can't be told otherwise), so apply its
+         dark rules unconditionally. Inline scripts wait for the stylesheets above. -->
+    <script is:inline>
+      (function force(rules) {
+        for (const r of rules) {
+          if (r instanceof CSSMediaRule && r.media.mediaText.includes("prefers-color-scheme: dark")) r.media.mediaText = "all";
+          else if (r.cssRules) force(r.cssRules);
+        }
+      })([...document.styleSheets].flatMap((s) => [...s.cssRules]));
+    </script>
+  </body>
+</html>

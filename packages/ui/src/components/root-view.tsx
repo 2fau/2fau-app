@@ -91,7 +91,7 @@ export function RootView({
     // window tracks this (its ResizeObserver now reads a constant height); the
     // extension popup takes it directly. Each view fills it and scrolls its own
     // overflow, exactly like the account list.
-    <div className="dark flex h-[458px] w-[320px] flex-col overflow-hidden bg-background text-foreground">
+    <div className="flex h-[458px] w-[320px] flex-col overflow-hidden bg-background text-foreground">
       {(() => {
         if (setupOpen) {
           return fill(<SetupWizard backend={setupBackend} onDone={() => setSetupOpen(false)} />);

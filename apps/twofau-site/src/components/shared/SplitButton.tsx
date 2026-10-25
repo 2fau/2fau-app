@@ -31,7 +31,7 @@ export interface SplitButtonProps {
 
 const SHELL = {
   primary:
-    "box-border w-fit shrink-0 h-[42px] [box-shadow:0px_8px_28px_0px_#0A84FF3D] flex flex-row gap-0 justify-start items-center bg-[#0A84FF] rounded-[10px] overflow-hidden",
+    "box-border w-fit shrink-0 h-[42px] [box-shadow:0px_8px_28px_0px_#0A84FF3D] flex flex-row gap-0 justify-start items-center bg-[#0066CC] rounded-[10px] overflow-hidden",
   secondary:
     "box-border w-fit shrink-0 h-[42px] flex flex-row gap-0 justify-start items-center bg-[#232326] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[10px] overflow-hidden",
 } as const;
@@ -212,7 +212,7 @@ export function SplitButton({
                   </span>
                 </span>
                 {item.meta ? (
-                  <span className="text-[11.5px]/[normal] text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal [white-space:nowrap]">
+                  <span className="text-[11.5px]/[normal] text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal [white-space:nowrap]">
                     {item.meta}
                   </span>
                 ) : null}

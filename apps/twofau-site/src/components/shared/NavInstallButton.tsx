@@ -40,7 +40,7 @@ export function NavInstallButton({ labels = DEFAULT_LABELS }: { labels?: Install
       target="_blank"
       rel="noreferrer noopener"
       data-pencil-name="Nav Download"
-      className="box-border w-fit shrink-0 h-fit flex flex-row gap-0 p-[8px_15px] justify-start items-center bg-[#0A84FF] [outline:1px_solid_#0A84FF00] [outline-offset:-0.5px] rounded-[999px] no-underline transition-[filter] hover:brightness-110"
+      className="box-border w-fit shrink-0 h-fit flex flex-row gap-0 p-[8px_15px] justify-start items-center bg-[#0066CC] [outline:1px_solid_#0A84FF00] [outline-offset:-0.5px] rounded-[999px] no-underline transition-[filter] hover:brightness-110"
     >
       <span
         data-pencil-name="Label"

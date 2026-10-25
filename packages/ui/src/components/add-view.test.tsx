@@ -53,3 +53,22 @@ describe("AddView prefill", () => {
     });
   });
 });
+
+describe("AddView manual entry", () => {
+  it("keeps Save disabled until a secret is entered", async () => {
+    const user = userEvent.setup();
+    renderWithVault(<AddView onDone={() => {}} />, fakeService([]));
+    const save = screen.getByRole("button", { name: /^save$/i });
+    expect(save).toBeDisabled();
+    await user.type(screen.getByPlaceholderText(/Secret/i), "GEZDGNBVGY3TQOJQ");
+    expect(save).toBeEnabled();
+  });
+
+  it("tucks the code type and colour behind More options", async () => {
+    const user = userEvent.setup();
+    renderWithVault(<AddView onDone={() => {}} />, fakeService([]));
+    expect(screen.queryByText("HOTP")).toBeNull();
+    await user.click(screen.getByRole("button", { name: /more options/i }));
+    expect(screen.getByText("HOTP")).toBeInTheDocument();
+  });
+});

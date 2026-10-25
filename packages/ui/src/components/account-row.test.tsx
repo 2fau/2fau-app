@@ -78,4 +78,20 @@ describe("AccountRow", () => {
     await screen.findByText("492 810");
     expect(screen.getByText("⌘1")).toBeInTheDocument();
   });
+
+  it("offers a new code only on counter-based accounts, and no countdown there", async () => {
+    const totp = account();
+    const hotp = account({ id: "h", issuer: "Bank", otp_type: "Hotp" });
+    renderWithVault(
+      <>
+        <AccountRow account={totp} onEdit={() => {}} />
+        <AccountRow account={hotp} onEdit={() => {}} />
+      </>,
+      fakeService([totp, hotp], { a: "492810", h: "111222" }),
+    );
+    await screen.findByText("111 222");
+    expect(screen.queryByRole("button", { name: /new google code/i })).toBeNull();
+    expect(screen.getByRole("button", { name: /new bank code/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/^\d+s$/)).toHaveLength(1); // the TOTP row only
+  });
 });

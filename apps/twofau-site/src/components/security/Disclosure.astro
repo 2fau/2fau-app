@@ -6,11 +6,11 @@ const t = getT(Astro.currentLocale).t;
 
     <div
             data-pencil-name="Disclosure"
-            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px_104px_40px] justify-center items-start bg-[#0B0B0D]"
+            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px_104px_40px] justify-center items-start bg-[#0B0B0D] max-md:px-5 max-md:py-16"
           >
             <div
               data-pencil-name="Disclosure Inner"
-              class="box-border w-[1200px] shrink-0 h-fit flex flex-row gap-[24px] justify-start items-start"
+              class="box-border w-full max-w-[1200px] shrink-0 h-fit flex flex-row gap-[24px] justify-start items-start max-md:flex-wrap"
             >
               <div
                 data-pencil-name="Disclosure Copy"
@@ -26,12 +26,12 @@ const t = getT(Astro.currentLocale).t;
                   data-pencil-name="Title Wrap"
                   class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[14px_0px_0px_0px] justify-start items-start"
                 >
-                  <div
+                  <h2
                     data-pencil-name="Title"
-                    class="text-[36px]/[41px] box-border w-[520px] shrink-0 text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
+                    class="text-[36px]/[41px] box-border w-full max-w-[520px] shrink-0 text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left max-md:text-[28px]/[1.12]"
                   >
                     {t("Found something? Tell us before you tell the internet.")}
-                  </div>
+                  </h2>
                 </div>
                 <div
                   data-pencil-name="Body Wrap"
@@ -39,18 +39,18 @@ const t = getT(Astro.currentLocale).t;
                 >
                   <div
                     data-pencil-name="Body"
-                    class="text-[15.5px]/[26px] box-border w-[520px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
+                    class="text-[15.5px]/[26px] box-border w-full max-w-[520px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                   >
                     {t("Report vulnerabilities privately through a GitHub security advisory. We aim to acknowledge within 72 hours and to ship a fix before any public disclosure. The code is MIT licensed — read it, audit it, and open an issue if the implementation disagrees with this page.")}
                   </div>
                 </div>
                 <div
                   data-pencil-name="CTA Wrap"
-                  class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] p-[32px_0px_0px_0px] justify-start items-center"
+                  class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] p-[32px_0px_0px_0px] justify-start items-center max-md:flex-wrap"
                 >
                   <a href={LINKS.securityAdvisory} target="_blank" rel="noreferrer noopener"
                     data-pencil-name="Primary CTA"
-                    class="box-border w-fit shrink-0 h-fit flex flex-row gap-[8px] p-[13px_20px] justify-start items-center bg-[#0A84FF] rounded-[8px] no-underline"
+                    class="box-border w-fit shrink-0 h-fit flex flex-row gap-[8px] p-[13px_20px] justify-start items-center bg-[#0066CC] rounded-[8px] no-underline max-md:flex-wrap max-w-full"
                   >
                     <svg
                       data-pencil-name="Icon"
@@ -75,7 +75,7 @@ const t = getT(Astro.currentLocale).t;
                   </a>
                   <a href={LINKS.sourceCode} target="_blank" rel="noreferrer noopener"
                     data-pencil-name="Secondary CTA"
-                    class="box-border w-fit shrink-0 h-fit flex flex-row gap-[8px] p-[13px_18px] justify-start items-center [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px] no-underline"
+                    class="box-border w-fit shrink-0 h-fit flex flex-row gap-[8px] p-[13px_18px] justify-start items-center [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px] no-underline max-md:flex-wrap max-w-full"
                   >
                     <svg
                       data-pencil-name="Icon"
@@ -102,11 +102,11 @@ const t = getT(Astro.currentLocale).t;
               </div>
               <div
                 data-pencil-name="Scope Card"
-                class="box-border w-[460px] shrink-0 h-fit flex flex-col gap-0 p-[24px_24px_26px_24px] justify-start items-start bg-[#1B1B1E] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[12px]"
+                class="box-border w-full max-w-[460px] shrink-0 h-fit flex flex-col gap-0 p-[24px_24px_26px_24px] justify-start items-start bg-[#1B1B1E] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[12px]"
               >
                 <div
                   data-pencil-name="Scope Label"
-                  class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
+                  class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
                 >
                   {t("IN SCOPE")}
                 </div>
@@ -116,7 +116,7 @@ const t = getT(Astro.currentLocale).t;
                 >
                   <div
                     data-pencil-name="Scope Item"
-                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-start"
+                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-start max-md:flex-wrap"
                   >
                     <svg
                       data-pencil-name="Dot"
@@ -141,7 +141,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Scope Item"
-                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-start"
+                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-start max-md:flex-wrap"
                   >
                     <svg
                       data-pencil-name="Dot"
@@ -166,7 +166,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Scope Item"
-                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-start"
+                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-start max-md:flex-wrap"
                   >
                     <svg
                       data-pencil-name="Dot"
@@ -191,7 +191,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Scope Item"
-                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-start"
+                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-start max-md:flex-wrap"
                   >
                     <svg
                       data-pencil-name="Dot"
@@ -221,7 +221,7 @@ const t = getT(Astro.currentLocale).t;
                 >
                   <div
                     data-pencil-name="Scope Note"
-                    class="text-[13px]/[21px] box-border [flex:1_1_0] text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
+                    class="text-[13px]/[21px] box-border [flex:1_1_0] text-[#8E8E93] font-[Inter,system-ui,sans-serif] font-normal text-left"
                   >
                     {t("Out of scope: attacks that require an already-compromised device, and the absence of code signing, which is tracked openly.")}
                   </div>

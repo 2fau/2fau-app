@@ -1,16 +1,17 @@
 ---
-import { DOWNLOAD } from "../../config/links";
+import { getRelease } from "../../config/release";
 import { getT } from "../../i18n/t";
 const t = getT(Astro.currentLocale).t;
+const { downloads: DOWNLOAD } = await getRelease();
 ---
 
     <div
             data-pencil-name="Page Header"
-            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[92px_40px_76px_40px] justify-center items-start"
+            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[92px_40px_76px_40px] justify-center items-start max-md:px-5 max-md:py-16"
           >
             <div
               data-pencil-name="Header Inner"
-              class="box-border w-[1200px] shrink-0 h-fit flex flex-col gap-0 justify-start items-start"
+              class="box-border w-full max-w-[1200px] shrink-0 h-fit flex flex-col gap-0 justify-start items-start"
             >
               <div
                 data-pencil-name="Eyebrow"
@@ -20,18 +21,18 @@ const t = getT(Astro.currentLocale).t;
               </div>
               <div
                 data-pencil-name="Title Wrap"
-                class="box-border w-[780px] h-fit shrink-0 flex flex-row gap-0 p-[20px_0px_0px_0px] justify-start items-start"
+                class="box-border w-full max-w-[780px] h-fit shrink-0 flex flex-row gap-0 p-[20px_0px_0px_0px] justify-start items-start"
               >
-                <div
+                <h1
                   data-pencil-name="Title"
-                  class="text-[52px]/[56px] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.8px] text-left"
+                  class="text-[52px]/[56px] box-border [flex:1_1_0] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.8px] text-left max-md:text-[32px]/[1.12]"
                 >
                   {t("It lives in the menu bar and gets out of the way.")}
-                </div>
+                </h1>
               </div>
               <div
                 data-pencil-name="Subhead Wrap"
-                class="box-border w-[680px] h-fit shrink-0 flex flex-row gap-0 p-[24px_0px_0px_0px] justify-start items-start"
+                class="box-border w-full max-w-[680px] h-fit shrink-0 flex flex-row gap-0 p-[24px_0px_0px_0px] justify-start items-start"
               >
                 <div
                   data-pencil-name="Subhead"
@@ -42,11 +43,11 @@ const t = getT(Astro.currentLocale).t;
               </div>
               <div
                 data-pencil-name="Download Row"
-                class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] p-[36px_0px_0px_0px] justify-start items-center"
+                class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] p-[36px_0px_0px_0px] justify-start items-center max-md:flex-wrap"
               >
-                <a href={DOWNLOAD.macArm}
+                <a href={DOWNLOAD.macArm} data-pick-os="mac"
                   data-pencil-name="Btn Download for macOS"
-                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] p-[13px_20px] justify-start items-center bg-[#0A84FF] [outline:1px_solid_#00000000] [outline-offset:-0.5px] rounded-[8px] no-underline"
+                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] p-[13px_20px] justify-start items-center bg-[#0066CC] [outline:1px_solid_#00000000] [outline-offset:-0.5px] rounded-[8px] no-underline max-md:flex-wrap max-w-full"
                 >
                   <div
                     data-pencil-name="Logo"
@@ -71,9 +72,9 @@ const t = getT(Astro.currentLocale).t;
                     {t("Download for macOS")}
                   </div>
                 </a>
-                <a href={DOWNLOAD.windows}
+                <a href={DOWNLOAD.windows} data-pick-os="windows"
                   data-pencil-name="Btn Windows"
-                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] p-[13px_20px] justify-start items-center bg-[#1B1B1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px] no-underline"
+                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] p-[13px_20px] justify-start items-center bg-[#1B1B1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px] no-underline max-md:flex-wrap max-w-full"
                 >
                   <div
                     data-pencil-name="Logo"
@@ -96,12 +97,12 @@ const t = getT(Astro.currentLocale).t;
                     data-pencil-name="Label"
                     class="text-[14.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
                   >
-                    {t("Windows")}
+                    {t("Download for Windows")}
                   </div>
                 </a>
-                <a href={DOWNLOAD.linuxAppImage}
+                <a href={DOWNLOAD.linuxAppImage} data-pick-os="linux"
                   data-pencil-name="Btn Linux"
-                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] p-[13px_20px] justify-start items-center bg-[#1B1B1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px] no-underline"
+                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] p-[13px_20px] justify-start items-center bg-[#1B1B1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px] no-underline max-md:flex-wrap max-w-full"
                 >
                   <div
                     data-pencil-name="Logo"
@@ -134,17 +135,17 @@ const t = getT(Astro.currentLocale).t;
                     data-pencil-name="Label"
                     class="text-[14.5px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
                   >
-                    {t("Linux")}
+                    {t("Download for Linux")}
                   </div>
                 </a>
               </div>
               <div
                 data-pencil-name="Meta Row"
-                class="box-border w-full h-fit shrink-0 flex flex-row gap-[8px] p-[22px_0px_0px_0px] justify-start items-center"
+                class="box-border w-full h-fit shrink-0 flex flex-row gap-[8px] p-[22px_0px_0px_0px] justify-start items-center max-md:flex-wrap"
               >
                 <div
                   data-pencil-name="Meta"
-                  class="text-[12px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                  class="text-[12px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap] max-md:[white-space:normal]"
                 >
                   {t("v0.1.0 · Tauri 2 · free and MIT licensed · no account required")}
                 </div>

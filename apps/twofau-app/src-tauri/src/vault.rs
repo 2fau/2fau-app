@@ -374,7 +374,7 @@ impl AppVault {
             .load()
             .map_err(str_err)?
             .ok_or("There is no vault to delete.")?;
-        open_with_passphrase(&blob, passphrase).map_err(|_| "Wrong password.".to_string())?;
+        open_with_passphrase(&blob, passphrase).map_err(|_| "Wrong passphrase.".to_string())?;
 
         let mut rev = self.revision.lock().expect("revision mutex");
         std::fs::remove_file(&self.path).map_err(str_err)?;
@@ -714,7 +714,7 @@ mod tests {
 
         assert_eq!(
             vault.delete_vault("not-the-passphrase"),
-            Err("Wrong password.".into())
+            Err("Wrong passphrase.".into())
         );
         assert!(vault.has_vault());
         assert!(dir.path().join("vault.dat.rev").exists() || dir.path().join("vault.rev").exists());
@@ -736,7 +736,7 @@ mod tests {
         // A fresh handle on the same file: locked, but the passphrase authorizes.
         let locked = AppVault::new(path);
         assert!(locked.is_locked());
-        assert_eq!(locked.delete_vault("nope"), Err("Wrong password.".into()));
+        assert_eq!(locked.delete_vault("nope"), Err("Wrong passphrase.".into()));
         locked.delete_vault(PASS).unwrap();
         assert!(!locked.has_vault());
     }

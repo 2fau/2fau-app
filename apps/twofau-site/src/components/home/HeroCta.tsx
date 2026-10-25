@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { SplitButton, type SplitButtonItem } from "../shared/SplitButton";
 import { DownloadIcon, PuzzleIcon } from "../shared/icons";
-import { DOWNLOAD, STORE } from "../../config/links";
+import { STORE } from "../../config/links";
+import type { Downloads } from "../../config/release";
 
 /**
  * Hero split buttons.
@@ -52,13 +53,14 @@ const DEFAULT_DICT: HeroCtaDict = {
   chooseBrowser: "Choose a browser",
 };
 
-function downloads(d: HeroCtaDict): SplitButtonItem[] {
+function downloadItems(d: HeroCtaDict, dl: Downloads): SplitButtonItem[] {
   return [
-    { id: "mac-arm", label: d.macApple, meta: ".dmg", button: d.downloadMac, href: DOWNLOAD.macArm },
-    { id: "mac-intel", label: d.macIntel, meta: ".dmg", button: d.downloadMac, href: DOWNLOAD.macIntel },
-    { id: "windows", label: d.windows, meta: ".msi", button: d.downloadWindows, href: DOWNLOAD.windows },
-    { id: "linux-appimage", label: d.linux, meta: ".AppImage", button: d.downloadLinux, href: DOWNLOAD.linuxAppImage },
-    { id: "linux-deb", label: d.linux, meta: ".deb", button: d.downloadLinux, href: DOWNLOAD.linuxDeb },
+    { id: "mac-arm", label: d.macApple, meta: ".dmg", button: d.downloadMac, href: dl.macArm },
+    { id: "mac-intel", label: d.macIntel, meta: ".dmg", button: d.downloadMac, href: dl.macIntel },
+    { id: "windows", label: d.windows, meta: ".exe", button: d.downloadWindows, href: dl.windows },
+    { id: "linux-appimage", label: d.linux, meta: ".AppImage", button: d.downloadLinux, href: dl.linuxAppImage },
+    { id: "linux-deb", label: d.linux, meta: ".deb", button: d.downloadLinux, href: dl.linuxDeb },
+    { id: "linux-rpm", label: d.linux, meta: ".rpm", button: d.downloadLinux, href: dl.linuxRpm },
   ];
 }
 
@@ -69,16 +71,20 @@ function extensions(d: HeroCtaDict): SplitButtonItem[] {
   ];
 }
 
-export function detectOs(ua: string, platform: string): string | null {
-  const s = `${ua} ${platform}`.toLowerCase();
-  if (/android/.test(s)) return null;
-  if (/iphone|ipad|ipod/.test(s)) return null;
+function osFrom(s: string): string | null | undefined {
+  if (/android|iphone|ipad|ipod/.test(s)) return null;
+  if (/windows|win32|win64/.test(s)) return "windows";
   // Apple silicon is not exposed in the UA string, so macOS defaults to the
   // arm64 build; the menu is there for anyone still on Intel.
   if (/mac/.test(s)) return "mac-arm";
-  if (/win/.test(s)) return "windows";
   if (/linux|x11|cros/.test(s)) return "linux-appimage";
-  return null;
+  return undefined;
+}
+
+/** The UA first, the platform string only when the UA says nothing (matches
+ * the head script in Layout.astro). */
+export function detectOs(ua: string, platform: string): string | null {
+  return osFrom(ua.toLowerCase()) ?? osFrom(platform.toLowerCase()) ?? null;
 }
 
 export function detectBrowser(ua: string): string | null {
@@ -89,13 +95,22 @@ export function detectBrowser(ua: string): string | null {
   return null;
 }
 
-export function HeroCta({ dict = DEFAULT_DICT }: { dict?: HeroCtaDict }) {
+export function HeroCta({
+  dict = DEFAULT_DICT,
+  downloads,
+  pages = { desktop: "/desktop", extension: "/extension" },
+}: {
+  dict?: HeroCtaDict;
+  downloads: Downloads;
+  /** Locale-prefixed page URLs, used when nothing is detected. */
+  pages?: { desktop: string; extension: string };
+}) {
   // Server render matches the design's default state; detection corrects it on
   // mount, and an explicit pick from the menu overrides both.
   const [os, setOs] = useState<string | null>("mac-arm");
   const [browser, setBrowser] = useState<string | null>("chromium");
   const [picked, setPicked] = useState({ os: false, browser: false });
-  const DOWNLOADS = downloads(dict);
+  const DOWNLOADS = downloadItems(dict, downloads);
   const EXTENSIONS = extensions(dict);
 
   useEffect(() => {
@@ -109,7 +124,7 @@ export function HeroCta({ dict = DEFAULT_DICT }: { dict?: HeroCtaDict }) {
   return (
     <div
       data-pencil-name="CTA Row"
-      className="box-border w-fit h-fit shrink-0 flex flex-row gap-[12px] justify-start items-center relative [z-index:99]"
+      className="box-border w-fit h-fit shrink-0 flex flex-row max-sm:flex-col gap-[12px] justify-start items-center relative [z-index:99]"
     >
       <SplitButton
         variant="primary"
@@ -121,7 +136,7 @@ export function HeroCta({ dict = DEFAULT_DICT }: { dict?: HeroCtaDict }) {
           setPicked((p) => ({ ...p, os: true }));
         }}
         fallbackLabel={dict.download}
-        fallbackHref="#download"
+        fallbackHref={pages.desktop}
         menuLabel={dict.choosePlatform}
       />
       <SplitButton
@@ -134,7 +149,7 @@ export function HeroCta({ dict = DEFAULT_DICT }: { dict?: HeroCtaDict }) {
           setPicked((p) => ({ ...p, browser: true }));
         }}
         fallbackLabel={dict.getExtension}
-        fallbackHref="/extension"
+        fallbackHref={pages.extension}
         menuLabel={dict.chooseBrowser}
       />
     </div>

@@ -9,7 +9,7 @@ import {useClipboard} from "@/state/clipboard";
 import {useVault} from "@/state/vault-provider";
 
 /** Seconds before a TOTP code rolls over that it starts blinking. */
-const EXPIRY_WARNING_S = 5;
+export const EXPIRY_WARNING_S = 5;
 
 /** A single account as a shadcn Item: a colour-tinted card with an avatar,
  * the code, and hover actions (copy / HOTP refresh / edit / delete-confirm).
@@ -97,18 +97,18 @@ export function AccountRow({
             style={
                 {
                     "--row-accent": accountColorVar(account.color),
-                    '--surface': `linear-gradient(160deg, color-mix(in srgb, ${accent} 15%, #16161b) 0%, color-mix(in srgb, ${accent} 6%, #131317) 55%, #121216 100%)`,
-                    '--surface-hover': `linear-gradient(160deg, color-mix(in srgb, ${accent} 24%, #16161b) 0%, color-mix(in srgb, ${accent} 10%, #131317) 55%, #141418 100%)`,
-                    '--edge': `color-mix(in srgb, ${accent} 24%, #23232b)`,
-                    '--edge-hover': `color-mix(in srgb, ${accent} 44%, #23232b)`,
-                    '--label': `color-mix(in srgb, ${accent} 55%, white)`,
-                    '--chip-edge': `color-mix(in srgb, ${accent} 40%, #23232b)`,
+                    '--surface': `linear-gradient(160deg, color-mix(in srgb, ${accent} 15%, var(--row-base)) 0%, color-mix(in srgb, ${accent} 6%, var(--row-base-mid)) 55%, var(--row-base-end) 100%)`,
+                    '--surface-hover': `linear-gradient(160deg, color-mix(in srgb, ${accent} 24%, var(--row-base)) 0%, color-mix(in srgb, ${accent} 10%, var(--row-base-mid)) 55%, var(--row-base-end) 100%)`,
+                    '--edge': `color-mix(in srgb, ${accent} 24%, var(--row-edge-base))`,
+                    '--edge-hover': `color-mix(in srgb, ${accent} 44%, var(--row-edge-base))`,
+                    '--label': `color-mix(in srgb, ${accent} 55%, var(--row-ink))`,
+                    '--chip-edge': `color-mix(in srgb, ${accent} 40%, var(--row-edge-base))`,
                 } as React.CSSProperties
             }
             className={[
                 'group relative overflow-hidden rounded-xl min-h-22',
                 '[background-image:var(--surface)]',
-                'shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.4)]',
+                'shadow-[inset_0_1px_0_var(--row-sheen),0_1px_2px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_0_var(--row-sheen),0_1px_2px_rgba(0,0,0,0.4)]',
                 'transition-[background-image,border-color] duration-150 ease-out',
                 'pt-2 pb-2 px-3',
                 confirmingDelete
@@ -123,8 +123,10 @@ export function AccountRow({
                         e.stopPropagation();
                         void copy();
                     }}
-                    aria-label={t("Copy {issuer} code for {label}. {seconds} seconds remaining", {issuer, label, seconds})}
-                    className="absolute inset-0 z-0 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/30"
+                    aria-label={timeBased
+                        ? t("Copy {issuer} code for {label}. {seconds} seconds remaining", {issuer, label, seconds})
+                        : t("Copy {issuer} code for {label}", {issuer, label})}
+                    className="absolute inset-0 z-0 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                 />
             )}
 
@@ -145,13 +147,13 @@ export function AccountRow({
                   style={{
                       borderColor: 'var(--chip-edge)',
                       color: 'var(--label)',
-                      backgroundColor: 'rgba(255,255,255,0.03)',
+                      backgroundColor: 'var(--row-hairline)',
                   }}
               >
                 {issuer.charAt(0)}
               </span>
                         <span
-                            className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.08em]"
+                            className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-[0.08em]"
                             style={{color: 'var(--label)'}}
                         >{issuer}</span>
                     </div>
@@ -165,7 +167,7 @@ export function AccountRow({
                                 exit={{opacity: 0, y: -8}}
                                 transition={{duration: 0.22, ease: [0.23, 1, 0.32, 1]}}
                                 className={[
-                                    'block font-mono font-medium tabular-nums text-white',
+                                    'block font-mono font-medium tabular-nums text-[var(--row-code)]',
                                     compact ? 'text-[21px] leading-7' : 'text-[25px] leading-8',
                                 ].join(' ')}
                                 style={{letterSpacing: '0.04em'}}
@@ -175,7 +177,7 @@ export function AccountRow({
                         </AnimatePresence>
                     </div>
 
-                    {!actionError && <p className="mt-0.5 truncate text-[11.5px] text-zinc-500">{label}</p>}
+                    {!actionError && <p className="mt-0.5 truncate text-[11.5px] text-[var(--row-secondary)]">{label}</p>}
                     {actionError && <p className="basis-full text-[10px] text-destructive">{actionError}</p>}
                 </div>
 
@@ -191,7 +193,7 @@ export function AccountRow({
                             <button
                                 type="button"
                                 onClick={() => setConfirmingDelete(false)}
-                                className="rounded-md border border-line px-2 py-[3px] text-[11px] font-medium text-zinc-300 transition-colors duration-150 ease-out hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+                                className="rounded-md border border-[var(--edge)] px-2 py-[3px] text-[11px] font-medium text-[var(--row-icon)] transition-colors duration-150 ease-out hover:bg-[var(--row-hover)] hover:text-[var(--row-icon-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
                                 {t("Cancel")}
                             </button>
@@ -206,7 +208,7 @@ export function AccountRow({
                             </button>
                         </div>
                     ) : copiedShown ? (
-                        <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-emerald-400">
+                        <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-[var(--copied)]">
                 <CheckIcon className="h-3.5 w-3.5" strokeWidth={2.5}/>
                 {t("Copied")}
               </span>
@@ -214,20 +216,23 @@ export function AccountRow({
                         <>
                             <div
                                 className="pointer-events-auto flex items-center gap-0.5 opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100 group-focus-within:opacity-100">
-                                <IconAction
-                                    label={t("Generate a new {issuer} code", {issuer: account.issuer})}
-                                    onClick={advance}
-                                >
-                                    <motion.span
-                                        key={code}
-                                        initial={{rotate: -180}}
-                                        animate={{rotate: 0}}
-                                        transition={{duration: 0.28, ease: [0.23, 1, 0.32, 1]}}
-                                        className="grid place-items-center"
+                                {/* Only counter-based codes can be advanced; a TOTP code rolls on its own. */}
+                                {!timeBased && (
+                                    <IconAction
+                                        label={t("Generate a new {issuer} code", {issuer: account.issuer})}
+                                        onClick={advance}
                                     >
-                                        <RotateCwIcon className="h-[13px] w-[13px]"/>
-                                    </motion.span>
-                                </IconAction>
+                                        <motion.span
+                                            key={code}
+                                            initial={{rotate: -180}}
+                                            animate={{rotate: 0}}
+                                            transition={{duration: 0.28, ease: [0.23, 1, 0.32, 1]}}
+                                            className="grid place-items-center"
+                                        >
+                                            <RotateCwIcon className="h-[13px] w-[13px]"/>
+                                        </motion.span>
+                                    </IconAction>
+                                )}
                                 <IconAction
                                     label={t("Edit {issuer} account", {issuer: account.issuer})}
                                     onClick={onEdit}
@@ -244,7 +249,7 @@ export function AccountRow({
                             </div>
                             {hotkeyLabel && (
                                 <kbd
-                                    className="absolute right-1 top-1 rounded-[5px] border bg-white/[0.04] px-1.5 py-[2px] font-mono text-[10.5px] transition-opacity duration-150 ease-out group-hover:opacity-0 group-focus-within:opacity-0"
+                                    className="absolute right-1 top-1 rounded-[5px] border bg-[var(--row-hairline)] px-1.5 py-[2px] font-mono text-[10.5px] transition-opacity duration-150 ease-out group-hover:opacity-0 group-focus-within:opacity-0"
                                     style={{borderColor: 'var(--edge)', color: 'var(--label)'}}
                                 >
                                     {hotkeyLabel}
@@ -253,27 +258,32 @@ export function AccountRow({
                         </>
                     )}
 
-                    <span
-                        className="font-mono text-[11px] tabular-nums"
-                        style={{color: urgent ? '#f5a524' : 'rgba(161,161,170,0.65)'}}
-                    >
-              {seconds}s
-            </span>
+                    {timeBased && (
+                        <span
+                            className="font-mono text-[11px] tabular-nums"
+                            style={{color: urgent ? 'var(--warning)' : 'var(--row-secondary)'}}
+                        >
+                            {seconds}s
+                        </span>
+                    )}
                 </div>
             </div>
 
-            <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[2px] bg-white/[0.06]">
+            {/* Announces the copy to screen readers; it must exist before the text changes. */}
+            <span role="status" aria-live="polite" className="sr-only">{copiedShown ? t("{issuer} code copied", {issuer}) : ""}</span>
+
+            {timeBased && <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[2px] bg-[var(--row-hairline)]">
           <span
               className="block h-full"
               style={{
                   width: `${progress * 100}%`,
                   backgroundImage: urgent
-                      ? 'linear-gradient(to right, rgba(245,165,36,0.35), #f5a524)'
+                      ? 'linear-gradient(to right, color-mix(in srgb, var(--warning) 35%, transparent), var(--warning))'
                       : `linear-gradient(to right, color-mix(in srgb, ${accent} 45%, transparent), ${accent})`,
                   transition: 'width 200ms linear',
               }}
           />
-        </span>
+        </span>}
         </div>
     )
 }
@@ -293,10 +303,10 @@ function IconAction({label, danger = false, onClick, children}: IconActionProps)
             aria-label={label}
             title={label}
             className={[
-                'grid h-6 w-6 place-items-center rounded-md text-zinc-400',
+                'grid h-6 w-6 place-items-center rounded-md text-[var(--row-icon)]',
                 'transition-colors duration-150 ease-out',
-                danger ? 'hover:bg-red-500/15 hover:text-red-400' : 'hover:bg-white/10 hover:text-white',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30',
+                danger ? 'hover:bg-destructive/15 hover:text-destructive' : 'hover:bg-[var(--row-hover)] hover:text-[var(--row-icon-hover)]',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
             ].join(' ')}
         >
             {children}

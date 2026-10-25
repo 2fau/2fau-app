@@ -130,6 +130,9 @@ importers:
       '@twofau/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@twofau/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       astro:
         specifier: 7.2.6
         version: 7.2.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@22.20.0)(jiti@2.7.0)(yaml@2.9.0)
@@ -149,6 +152,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.6
         version: 19.2.3(@types/react@19.2.17)
+      vitest:
+        specifier: ^2.1.9
+        version: 2.1.9(@types/node@22.20.0)(jsdom@25.0.1)(lightningcss@1.32.0)
 
   packages/core-wasm:
     devDependencies:

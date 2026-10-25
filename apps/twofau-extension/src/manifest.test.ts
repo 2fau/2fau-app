@@ -1,7 +1,7 @@
 // @vitest-environment node
 // Guards the manifest invariants the spec pins down: MV3, the exact permission
 // set, the wasm CSP, no host access, and no dangling file references.
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import { describe, expect, it } from "vitest";
 import manifest from "../manifest.json";
@@ -41,6 +41,15 @@ describe("manifest.json", () => {
     for (const path of Object.values(manifest.icons)) expect(existsSync(root(path))).toBe(true);
     expect(existsSync(root(manifest.action.default_popup))).toBe(true);
     expect(existsSync(root(manifest.options_page))).toBe(true);
+  });
+
+  // Browsers only match underscore folders (zh_CN, not zh-CN); anything else is
+  // ignored and those users fall back to English.
+  it("generates _locales folders with browser-valid names", () => {
+    if (!existsSync(root("_locales"))) return; // not generated yet
+    const dirs = readdirSync(root("_locales"));
+    expect(dirs).toContain(manifest.default_locale);
+    for (const dir of dirs) expect(dir).toMatch(/^[a-z]{2,3}(_[A-Z]{2})?$/);
   });
 
   it("registers the service worker as a module", () => {

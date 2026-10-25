@@ -2,10 +2,12 @@
 import HomePage from '../components/HomePage.astro';
 import { HeroCta } from '../components/home/HeroCta';
 import Layout from '../layouts/Layout.astro';
-import { getT } from '../i18n/t';
+import { getT, localeUrl } from '../i18n/t';
 import { heroDict } from '../i18n/hero-dict';
+import { getRelease } from '../config/release';
 
 const t = getT(Astro.currentLocale).t;
+const { downloads } = await getRelease();
 ---
 
 <Layout
@@ -13,6 +15,6 @@ const t = getT(Astro.currentLocale).t;
 	description={t("Generate your TOTP/HOTP two-factor codes in an encrypted local vault — no account, no server. A native menu-bar app for macOS, Windows and Linux, plus a Chrome & Firefox extension, from one Rust core.")}
 >
 	<HomePage>
-		<HeroCta slot="heroCta" client:load dict={heroDict(Astro.currentLocale)} />
+		<HeroCta slot="heroCta" client:load downloads={downloads} pages={{ desktop: localeUrl(Astro.currentLocale, 'desktop'), extension: localeUrl(Astro.currentLocale, 'extension') }} dict={heroDict(Astro.currentLocale)} />
 	</HomePage>
 </Layout>
