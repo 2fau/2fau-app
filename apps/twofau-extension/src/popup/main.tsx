@@ -63,7 +63,7 @@ function DesktopUnavailable({ unreachable }: { unreachable: boolean }) {
 async function bootstrap() {
   const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
   const settings = await readSettings().catch(() => null);
-  const locale = settings?.locale || resolveLocale(navigator.language);
+  const locale = settings?.locale || resolveLocale(chrome.i18n.getUILanguage());
   const messages = await loadMessages(locale, "ui");
   const withI18n = (node: ReactNode) => (
     <I18nProvider locale={locale} messages={messages}>

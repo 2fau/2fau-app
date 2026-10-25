@@ -93,7 +93,7 @@ export function OptionsView() {
       locale: {
         get: async () => {
           const s = await readSettings();
-          return s.locale || resolveLocale(navigator.language);
+          return s.locale || resolveLocale(chrome.i18n.getUILanguage());
         },
         set: async (l) => {
           await writeSettings({ locale: l });
