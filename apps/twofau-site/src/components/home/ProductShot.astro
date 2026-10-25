@@ -12,10 +12,18 @@ const t = getT(Astro.currentLocale).t;
             >
               <div
                 data-pencil-name="App Popup"
-                role="img"
-                aria-label={t("2FAu menu-bar window listing accounts with their current codes")}
-                class="box-border w-full max-w-[440px] shrink-0 h-[608px] bg-[url('/app-list.png')] bg-no-repeat bg-cover bg-center"
-              ></div>
+                class="box-border w-full max-w-[440px] shrink-0 h-[608px] flex justify-center items-center max-md:h-fit"
+              >
+                <!-- The real popup UI over an in-memory demo vault; an iframe so its
+                     theme CSS stays out of the site. color-scheme makes it pick dark. -->
+                <iframe
+                  src={`/demo-popup?lang=${Astro.currentLocale ?? "en"}`}
+                  title={t("2FAu menu-bar window listing accounts with their current codes")}
+                  allow="clipboard-read; clipboard-write"
+                  loading="lazy"
+                  class="box-border w-[416px] h-[596px] shrink-0 border-0 rounded-[16px] [color-scheme:dark] bg-[#1e1e1e] [outline:1px_solid_#38383A] shadow-[0_24px_64px_#00000099] max-md:w-[320px] max-md:h-[458px] max-md:rounded-[12px]"
+                ></iframe>
+              </div>
               <div
                 data-pencil-name="Product Copy"
                 class="box-border [flex:1_1_0] h-fit flex flex-col gap-[22px] justify-start items-start max-lg:w-full max-lg:flex-none"

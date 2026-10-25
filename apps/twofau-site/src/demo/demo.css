@@ -1,0 +1,16 @@
+/* The popup's own theme, scoped to the demo iframe so it can't touch the site. */
+@import "@twofau/ui/src/styles/globals.css";
+@source "../../../../packages/ui/src";
+
+html,
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Fill the homepage's product-shot slot; narrow frames show it at 1:1. */
+@media (min-width: 400px) {
+  html {
+    zoom: 1.3;
+  }
+}
