@@ -57,7 +57,7 @@ function downloadItems(d: HeroCtaDict, dl: Downloads): SplitButtonItem[] {
   return [
     { id: "mac-arm", label: d.macApple, meta: ".dmg", button: d.downloadMac, href: dl.macArm },
     { id: "mac-intel", label: d.macIntel, meta: ".dmg", button: d.downloadMac, href: dl.macIntel },
-    { id: "windows", label: d.windows, meta: ".msi", button: d.downloadWindows, href: dl.windows },
+    { id: "windows", label: d.windows, meta: ".exe", button: d.downloadWindows, href: dl.windows },
     { id: "linux-appimage", label: d.linux, meta: ".AppImage", button: d.downloadLinux, href: dl.linuxAppImage },
     { id: "linux-deb", label: d.linux, meta: ".deb", button: d.downloadLinux, href: dl.linuxDeb },
     { id: "linux-rpm", label: d.linux, meta: ".rpm", button: d.downloadLinux, href: dl.linuxRpm },

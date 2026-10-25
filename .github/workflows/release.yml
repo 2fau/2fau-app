@@ -146,6 +146,10 @@ jobs:
       - uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+          # Tauri passes --skip-jenkins to bundle_dmg.sh only when CI=true; without
+          # it the Finder-layout AppleScript times out (-1712) on the headless
+          # self-hosted Mac and no .dmg is produced.
+          CI: "true"
         with:
           projectPath: apps/twofau-app
           # tip path: manage the rolling "tip" prerelease as before.

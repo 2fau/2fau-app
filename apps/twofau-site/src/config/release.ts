@@ -35,7 +35,7 @@ export function pickDownloads(assets: ReleaseAsset[], page: string): Downloads {
   return {
     macArm: find(/(aarch64|arm64|universal).*\.dmg$/i),
     macIntel: find(/(x64|x86_64|intel|universal).*\.dmg$/i),
-    windows: find(/\.msi$/i),
+    windows: find(/-setup\.exe$/i),
     linuxAppImage: find(/\.AppImage$/i),
     linuxDeb: find(/\.deb$/i),
     linuxRpm: find(/\.rpm$/i),

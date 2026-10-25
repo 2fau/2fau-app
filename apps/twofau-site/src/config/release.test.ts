@@ -19,7 +19,7 @@ describe("pickDownloads", () => {
       ].map(asset),
       PAGE,
     );
-    expect(dl.windows).toBe(url("2FAu_0.1.0_x64_en-US.msi"));
+    expect(dl.windows).toBe(url("2FAu_0.1.0_x64-setup.exe"));
     expect(dl.linuxAppImage).toBe(url("2FAu_0.1.0_amd64.AppImage"));
     expect(dl.linuxDeb).toBe(url("2FAu_0.1.0_amd64.deb"));
     expect(dl.linuxRpm).toBe(url("2FAu-0.1.0-1.x86_64.rpm"));
