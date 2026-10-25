@@ -16,9 +16,11 @@ const RULE = "box-border w-full h-[1px] shrink-0 bg-[#262628]";
   data-pencil-name={name}
   class="box-border h-fit flex flex-col gap-0 justify-start items-start bg-[#0B0B0D] overflow-hidden"
 >
-  <SiteNav active={active} />
+  <header class="w-full"><SiteNav active={active} /></header>
   <div data-pencil-name="Nav Divider" class={RULE}></div>
-  <slot />
+  <main id="main" class="w-full flex flex-col">
+    <slot />
+  </main>
   <div data-pencil-name="Footer Divider Top" class={RULE}></div>
-  <SiteFooter />
+  <footer class="w-full"><SiteFooter /></footer>
 </div>

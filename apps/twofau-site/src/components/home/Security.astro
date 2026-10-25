@@ -1,18 +1,20 @@
 ---
-import { getT } from "../../i18n/t";
+import { getT, localeUrl } from "../../i18n/t";
+import { REPO } from "../../config/links";
 const t = getT(Astro.currentLocale).t;
+const url = (path: string) => localeUrl(Astro.currentLocale, path);
 ---
     <div
       data-pencil-name="Security"
-      class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[100px_40px] justify-center items-start bg-[#111113]"
+      class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[100px_40px] justify-center items-start bg-[#111113] max-md:px-5 max-md:py-16"
     >
       <div
         data-pencil-name="Security Inner"
-        class="box-border w-[1200px] shrink-0 h-fit flex flex-row gap-[100px] justify-start items-start"
+        class="box-border w-full max-w-[1200px] shrink-0 h-fit flex flex-row gap-[100px] justify-start items-start max-lg:flex-col max-lg:gap-10"
       >
         <div
           data-pencil-name="Security Copy"
-          class="box-border w-[520px] shrink-0 h-fit flex flex-col gap-[20px] justify-start items-start"
+          class="box-border w-full max-w-[520px] shrink-0 h-fit flex flex-col gap-[20px] justify-start items-start"
         >
           <div
             data-pencil-name="Eyebrow"
@@ -20,12 +22,12 @@ const t = getT(Astro.currentLocale).t;
           >
             {t("SECURITY")}
           </div>
-          <div
+          <h2
             data-pencil-name="Title"
-            class="text-[40px]/[44px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.2px] text-left"
+            class="text-[40px]/[44px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.2px] text-left max-md:text-[28px]/[1.12]"
           >
             {t("Your secrets never leave the device.")}
-          </div>
+          </h2>
           <div
             data-pencil-name="Body"
             class="text-[15.5px]/[26px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
@@ -38,7 +40,7 @@ const t = getT(Astro.currentLocale).t;
           >
             <div
               data-pencil-name="Bullet"
-              class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center"
+              class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center max-md:flex-wrap"
             >
               <svg
                 data-pencil-name="Check"
@@ -58,12 +60,12 @@ const t = getT(Astro.currentLocale).t;
                 data-pencil-name="Text"
                 class="text-[14.5px]/[normal] box-border [flex:1_1_0] text-[#B6B3C0] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                {t("AES-256-GCM with Argon2id key derivation")}
+                {t("AES-256-GCM with a PBKDF2-derived key")}
               </div>
             </div>
             <div
               data-pencil-name="Bullet"
-              class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center"
+              class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center max-md:flex-wrap"
             >
               <svg
                 data-pencil-name="Check"
@@ -83,12 +85,12 @@ const t = getT(Astro.currentLocale).t;
                 data-pencil-name="Text"
                 class="text-[14.5px]/[normal] box-border [flex:1_1_0] text-[#B6B3C0] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                {t("Auto-lock on sleep, on blur, on a timer you set")}
+                {t("Auto-lock after the idle time you choose")}
               </div>
             </div>
             <div
               data-pencil-name="Bullet"
-              class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center"
+              class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center max-md:flex-wrap"
             >
               <svg
                 data-pencil-name="Check"
@@ -108,12 +110,12 @@ const t = getT(Astro.currentLocale).t;
                 data-pencil-name="Text"
                 class="text-[14.5px]/[normal] box-border [flex:1_1_0] text-[#B6B3C0] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                {t("Optional device-to-device sync over your own network")}
+                {t("Optional sync with the browser extension over localhost")}
               </div>
             </div>
             <div
               data-pencil-name="Bullet"
-              class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center"
+              class="box-border w-full h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center max-md:flex-wrap"
             >
               <svg
                 data-pencil-name="Check"
@@ -133,13 +135,13 @@ const t = getT(Astro.currentLocale).t;
                 data-pencil-name="Text"
                 class="text-[14.5px]/[normal] box-border [flex:1_1_0] text-[#B6B3C0] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                {t("Reproducible builds, MIT licence, audited dependencies")}
+                {t("MIT licensed, so you can read every line")}
               </div>
             </div>
           </div>
-          <div
+          <a href={url("security")}
             data-pencil-name="Link"
-            class="box-border w-fit h-fit shrink-0 flex flex-row gap-[7px] justify-start items-center"
+            class="transition-[filter] duration-150 hover:brightness-110 box-border w-fit h-fit shrink-0 flex flex-row gap-[7px] justify-start items-center max-md:flex-wrap max-w-full"
           >
             <div
               data-pencil-name="Link Label"
@@ -161,11 +163,11 @@ const t = getT(Astro.currentLocale).t;
                 fill="#F5F5F7"
               ></path>
             </svg>
-          </div>
+          </a>
         </div>
         <div
           data-pencil-name="Vault Card"
-          class="box-border [flex:1_1_0] h-fit flex flex-col gap-[20px] p-[24px] justify-start items-start bg-[#0B0A0F] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[14px]"
+          class="box-border [flex:1_1_0] h-fit flex flex-col gap-[20px] p-[24px] justify-start items-start bg-[#0B0A0F] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[14px] max-lg:w-full max-lg:flex-none"
         >
           <div
             data-pencil-name="Card Head"
@@ -173,7 +175,7 @@ const t = getT(Astro.currentLocale).t;
           >
             <div
               data-pencil-name="Head Left"
-              class="box-border w-fit shrink-0 h-fit flex flex-row gap-[8px] justify-start items-center"
+              class="box-border w-fit shrink-0 h-fit flex flex-row gap-[8px] justify-start items-center max-md:flex-wrap max-w-full"
             >
               <svg
                 data-pencil-name="File Icon"
@@ -210,13 +212,13 @@ const t = getT(Astro.currentLocale).t;
           </div>
           <div
             data-pencil-name="Layout Label"
-            class="text-[10.5px]/[normal] box-border text-[#4A4854] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.2px] text-left [white-space:nowrap]"
+            class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1.2px] text-left [white-space:nowrap]"
           >
             {t("BLOB LAYOUT")}
           </div>
           <div
             data-pencil-name="Byte Layout"
-            class="box-border w-full h-fit shrink-0 flex flex-row gap-[6px] justify-start items-start"
+            class="box-border w-full h-fit shrink-0 flex flex-row flex-wrap gap-[6px] justify-start items-start max-md:flex-wrap"
           >
             <div
               data-pencil-name="Chip 2FAU"
@@ -230,7 +232,7 @@ const t = getT(Astro.currentLocale).t;
               </div>
               <div
                 data-pencil-name="Chip Sub"
-                class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
                 magic
               </div>
@@ -247,7 +249,7 @@ const t = getT(Astro.currentLocale).t;
               </div>
               <div
                 data-pencil-name="Chip Sub"
-                class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
                 ver
               </div>
@@ -260,11 +262,11 @@ const t = getT(Astro.currentLocale).t;
                 data-pencil-name="Chip Value"
                 class="text-[12px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
               >
-                02
+                01
               </div>
               <div
                 data-pencil-name="Chip Sub"
-                class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
                 kdf
               </div>
@@ -281,7 +283,7 @@ const t = getT(Astro.currentLocale).t;
               </div>
               <div
                 data-pencil-name="Chip Sub"
-                class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
                 16 bytes
               </div>
@@ -298,14 +300,14 @@ const t = getT(Astro.currentLocale).t;
               </div>
               <div
                 data-pencil-name="Chip Sub"
-                class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
                 12 bytes
               </div>
             </div>
             <div
               data-pencil-name="Chip ciphertext"
-              class="box-border [flex:1_1_0] h-fit flex flex-col gap-[5px] p-[10px] justify-start items-center bg-[#232326] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px]"
+              class="box-border [flex:1_1_0] min-w-[96px] h-fit flex flex-col gap-[5px] p-[10px] justify-start items-center bg-[#232326] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[8px]"
             >
               <div
                 data-pencil-name="Chip Value"
@@ -315,7 +317,7 @@ const t = getT(Astro.currentLocale).t;
               </div>
               <div
                 data-pencil-name="Chip Sub"
-                class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
                 n bytes
               </div>
@@ -323,9 +325,9 @@ const t = getT(Astro.currentLocale).t;
           </div>
           <div
             data-pencil-name="Card Note"
-            class="text-[13px]/[21px] box-border w-full text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
+            class="text-[13px]/[21px] box-border w-full text-[#8E8E93] font-[Inter,system-ui,sans-serif] font-normal text-left"
           >
-            {t("The 6-byte header is self-describing and bound as associated data, so a tampered version or KDF id fails the tag check before anything is decrypted.")}
+            {t("The 34-byte header is self-describing and bound as associated data, so a tampered version, KDF id, salt or nonce fails the tag check before anything is decrypted.")}
           </div>
           <div
             data-pencil-name="Card Divider"
@@ -333,7 +335,7 @@ const t = getT(Astro.currentLocale).t;
           ></div>
           <div
             data-pencil-name="KDF Row"
-            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 justify-between items-start"
+            class="box-border w-full h-fit shrink-0 flex flex-row flex-wrap gap-x-6 gap-y-4 justify-between items-start"
           >
             <div
               data-pencil-name="KDF KDF"
@@ -341,7 +343,7 @@ const t = getT(Astro.currentLocale).t;
             >
               <div
                 data-pencil-name="Key"
-                class="text-[10px]/[normal] box-border text-[#4A4854] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
+                class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
               >
                 KDF
               </div>
@@ -349,7 +351,7 @@ const t = getT(Astro.currentLocale).t;
                 data-pencil-name="Value"
                 class="text-[13px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                Argon2id
+                PBKDF2
               </div>
             </div>
             <div
@@ -358,15 +360,15 @@ const t = getT(Astro.currentLocale).t;
             >
               <div
                 data-pencil-name="Key"
-                class="text-[10px]/[normal] box-border text-[#4A4854] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
+                class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
               >
-                MEMORY
+                HASH
               </div>
               <div
                 data-pencil-name="Value"
                 class="text-[13px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                64 MiB
+                SHA-256
               </div>
             </div>
             <div
@@ -375,7 +377,7 @@ const t = getT(Astro.currentLocale).t;
             >
               <div
                 data-pencil-name="Key"
-                class="text-[10px]/[normal] box-border text-[#4A4854] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
+                class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
               >
                 ITERATIONS
               </div>
@@ -383,7 +385,7 @@ const t = getT(Astro.currentLocale).t;
                 data-pencil-name="Value"
                 class="text-[13px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                3
+                600,000
               </div>
             </div>
             <div
@@ -392,15 +394,15 @@ const t = getT(Astro.currentLocale).t;
             >
               <div
                 data-pencil-name="Key"
-                class="text-[10px]/[normal] box-border text-[#4A4854] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
+                class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.8px] text-left [white-space:nowrap]"
               >
-                PARALLELISM
+                KEY
               </div>
               <div
                 data-pencil-name="Value"
                 class="text-[13px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
               >
-                4
+                256-bit
               </div>
             </div>
           </div>

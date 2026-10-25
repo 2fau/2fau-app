@@ -1,6 +1,6 @@
 ---
 import { SUPPORTED_LOCALES } from "@twofau/i18n";
-import { localeUrl } from "../i18n/t";
+import { getT, localeUrl } from "../i18n/t";
 
 interface Props {
   title?: string;
@@ -19,6 +19,7 @@ const canonical = new URL(Astro.url.pathname, site);
 const ogImage = new URL("/og.png", site);
 
 const locale = Astro.currentLocale ?? "en";
+const t = getT(locale).t;
 
 // The current path stripped of its locale prefix, so each hreflang alternate
 // points at the same page in another language.
@@ -76,11 +77,80 @@ const ogLocale = locale.replace("-", "_");
 			rel="stylesheet"
 		/>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<!-- Runs before paint so the visitor's platform button is promoted without
+		     a flash. Same rules as HeroCta's detectOs/detectBrowser. -->
+		<script is:inline>
+			(() => {
+				const ua = navigator.userAgent.toLowerCase();
+				const d = document.documentElement.dataset;
+				// The UA first, the platform string only when the UA says nothing.
+				const os = (s) =>
+					/android|iphone|ipad|ipod/.test(s) ? "" :
+					/windows|win32|win64/.test(s) ? "windows" :
+					/mac/.test(s) ? "mac" :
+					/linux|x11|cros/.test(s) ? "linux" : undefined;
+				const found = os(ua) ?? os((navigator.platform || "").toLowerCase());
+				if (found) d.os = found;
+				if (/firefox\/|fxios/.test(ua)) d.browser = "firefox";
+				else if (/edg\//.test(ua)) d.browser = "edge";
+				else if (/chrome\/|chromium\/|crios/.test(ua)) d.browser = "chrome";
+			})();
+		</script>
 	</head>
 	<body>
+		<a href="#main" class="skip-link">{t("Skip to content")}</a>
 		<slot />
 	</body>
 </html>
+
+<style is:global>
+	/* Pencil exports put every style in utilities; these are the browser
+	   surfaces it never drew. */
+	/* In the base layer so Tailwind utilities on the element still win. */
+	@layer base {
+		a { color: inherit; text-decoration: none; }
+		h1, h2, h3 { margin: 0; font: inherit; }
+		h1, h2 { text-wrap: balance; }
+	}
+	::selection { background: #0a84ff59; color: #f5f5f7; }
+	:focus-visible { outline: 2px solid #0a84ff; outline-offset: 3px; border-radius: 6px; }
+	html { scroll-padding-top: 16px; }
+	.skip-link {
+		position: absolute; left: 16px; top: -48px; z-index: 1000;
+		padding: 8px 14px; border-radius: 8px;
+		background: #0066cc; color: #fff; font: 600 14px/1 Inter, system-ui, sans-serif;
+	}
+	.skip-link:focus { top: 16px; }
+
+	/* Platform buttons: once the head script has detected the visitor, every
+	   [data-pick-*] button drops to the secondary look and the match is promoted
+	   to the front as the primary one. Without detection the design default stays. */
+	html[data-os] [data-pick-os],
+	html[data-browser] [data-pick-browser] {
+		order: 1; background-color: #1b1b1e; outline-color: #38383a;
+	}
+	html[data-os="mac"] [data-pick-os="mac"],
+	html[data-os="windows"] [data-pick-os="windows"],
+	html[data-os="linux"] [data-pick-os="linux"],
+	html[data-browser="chrome"] [data-pick-browser="chrome"],
+	html[data-browser="edge"] [data-pick-browser="edge"],
+	html[data-browser="firefox"] [data-pick-browser="firefox"] {
+		order: 0; background-color: #0066cc; outline-color: transparent;
+	}
+	html[data-os="mac"] [data-pick-os="mac"] *,
+	html[data-os="windows"] [data-pick-os="windows"] *,
+	html[data-os="linux"] [data-pick-os="linux"] *,
+	html[data-browser="chrome"] [data-pick-browser="chrome"] *,
+	html[data-browser="edge"] [data-pick-browser="edge"] *,
+	html[data-browser="firefox"] [data-pick-browser="firefox"] * {
+		color: #fff;
+	}
+	/* The Windows logo is drawn in blue; keep it visible on the blue button. */
+	html[data-os="windows"] [data-pick-os="windows"] [class*="bg-[#0089E0]"] { background-color: #fff; }
+	@media (prefers-reduced-motion: reduce) {
+		*, ::before, ::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
+	}
+</style>
 
 <style>
 @import "tailwindcss";

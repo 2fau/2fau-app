@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@twofau/i18n/react";
-import { AccountRow } from "@/components/account-row";
+import { AccountRow, EXPIRY_WARNING_S } from "@/components/account-row";
 import { ItemGroup } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
 import { useClipboard } from "@/state/clipboard";
@@ -54,16 +54,13 @@ import type { Account } from "@/core/types";
 
 const MAX_VISIBLE_ROWS = 5;
 
-/** Seconds before a TOTP code rolls over that it starts blinking. */
-const EXPIRY_WARNING_S = 5;
-
 function EmptyState() {
   const { t } = useT();
   return (
       <div className="flex flex-col items-center gap-1.5 py-9">
         <ShieldCheck className="size-8 text-muted-foreground" />
         <p className="text-[13px] text-muted-foreground">{t("No accounts yet")}</p>
-        <p className="text-[11px] text-tertiary-foreground">{t("Tap + to add one")}</p>
+        <p className="text-[11px] text-tertiary-foreground">{t("Click + to add one")}</p>
       </div>
   );
 }
@@ -364,6 +361,7 @@ export function MenuBarView({
               size="icon-xs"
               variant="ghost"
               title={t("Scan QR from screen")}
+              aria-label={t("Scan QR from screen")}
               onClick={onScan}
             >
               <ScanLine />
@@ -374,6 +372,7 @@ export function MenuBarView({
               size="icon-xs"
               variant="ghost"
               title={t("Add from clipboard")}
+              aria-label={t("Add from clipboard")}
               className={pasteFailed ? "text-destructive" : undefined}
               onClick={handleQuickAdd}
             >
@@ -397,6 +396,7 @@ export function MenuBarView({
               size="icon-xs"
               variant="ghost"
               title={t("Add account")}
+              aria-label={t("Add account")}
               onClick={onAdd}
             >
               <Plus />

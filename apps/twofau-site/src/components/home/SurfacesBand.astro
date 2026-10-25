@@ -4,15 +4,15 @@ const t = getT(Astro.currentLocale).t;
 ---
     <div
       data-pencil-name="Surfaces Band"
-      class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[0px_40px] justify-center items-start bg-[#0B0B0D]"
+      class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[0px_40px] justify-center items-start bg-[#0B0B0D] max-md:px-5"
     >
       <div
         data-pencil-name="Band Inner"
-        class="box-border w-[1200px] shrink-0 h-fit flex flex-row gap-0 justify-start items-start"
+        class="box-border w-full max-w-[1200px] shrink-0 h-fit flex flex-row gap-0 justify-start items-start max-lg:flex-col"
       >
         <div
           data-pencil-name="Col Menu bar app"
-          class="box-border [flex:1_1_0] h-fit flex flex-col gap-[14px] p-[46px_40px_52px_0px] justify-start items-start"
+          class="box-border [flex:1_1_0] h-fit flex flex-col gap-[14px] p-[46px_40px_52px_0px] max-lg:p-[32px_0px] justify-start items-start max-lg:w-full max-lg:flex-none"
         >
           <svg
             data-pencil-name="Icon"
@@ -28,12 +28,12 @@ const t = getT(Astro.currentLocale).t;
               fill="#0A84FF"
             ></path>
           </svg>
-          <div
+          <h3
             data-pencil-name="Title"
             class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
           >
             {t("Menu bar app")}
-          </div>
+          </h3>
           <div
             data-pencil-name="Body"
             class="text-[14.5px]/[23px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
@@ -42,18 +42,18 @@ const t = getT(Astro.currentLocale).t;
           </div>
           <div
             data-pencil-name="Tag"
-            class="text-[11.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.4px] text-left [white-space:nowrap]"
+            class="text-[11.5px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.4px] text-left [white-space:nowrap]"
           >
             Tauri 2 · 12 MB
           </div>
         </div>
         <div
           data-pencil-name="Col Divider 1"
-          class="box-border w-[1px] shrink-0 h-[242px] bg-[#262628]"
+          class="max-lg:hidden box-border w-[1px] shrink-0 h-[242px] bg-[#262628]"
         ></div>
         <div
           data-pencil-name="Col Browser extension"
-          class="box-border [flex:1_1_0] h-fit flex flex-col gap-[14px] p-[46px_40px_52px_40px] justify-start items-start"
+          class="box-border [flex:1_1_0] h-fit flex flex-col gap-[14px] p-[46px_40px_52px_40px] justify-start items-start max-lg:p-[32px_0px] max-lg:w-full max-lg:flex-none"
         >
           <svg
             data-pencil-name="Icon"
@@ -69,32 +69,32 @@ const t = getT(Astro.currentLocale).t;
               fill="#0A84FF"
             ></path>
           </svg>
-          <div
+          <h3
             data-pencil-name="Title"
             class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
           >
             {t("Browser extension")}
-          </div>
+          </h3>
           <div
             data-pencil-name="Body"
             class="text-[14.5px]/[23px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
           >
-            {t("The same vault inside Chrome and Firefox. Detects the 2FA field, fills the code, submits.")}
+            {t("The same vault inside Chrome and Firefox. Detects the 2FA field and fills the code.")}
           </div>
           <div
             data-pencil-name="Tag"
-            class="text-[11.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.4px] text-left [white-space:nowrap]"
+            class="text-[11.5px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.4px] text-left [white-space:nowrap]"
           >
             WASM core
           </div>
         </div>
         <div
           data-pencil-name="Col Divider 2"
-          class="box-border w-[1px] shrink-0 h-[242px] bg-[#262628]"
+          class="max-lg:hidden box-border w-[1px] shrink-0 h-[242px] bg-[#262628]"
         ></div>
         <div
           data-pencil-name="Col Rust core"
-          class="box-border [flex:1_1_0] h-fit flex flex-col gap-[14px] p-[46px_40px_52px_40px] justify-start items-start"
+          class="box-border [flex:1_1_0] h-fit flex flex-col gap-[14px] p-[46px_40px_52px_40px] justify-start items-start max-lg:p-[32px_0px] max-lg:w-full max-lg:flex-none"
         >
           <svg
             data-pencil-name="Icon"
@@ -110,12 +110,12 @@ const t = getT(Astro.currentLocale).t;
               fill="#0A84FF"
             ></path>
           </svg>
-          <div
+          <h3
             data-pencil-name="Title"
             class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
           >
             {t("Rust core")}
-          </div>
+          </h3>
           <div
             data-pencil-name="Body"
             class="text-[14.5px]/[23px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
@@ -124,7 +124,7 @@ const t = getT(Astro.currentLocale).t;
           </div>
           <div
             data-pencil-name="Tag"
-            class="text-[11.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.4px] text-left [white-space:nowrap]"
+            class="text-[11.5px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[0.4px] text-left [white-space:nowrap]"
           >
             {t("One implementation")}
           </div>

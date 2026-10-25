@@ -4,19 +4,19 @@ const t = getT(Astro.currentLocale).t;
 ---
     <div
             data-pencil-name="Vault Format"
-            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#111113]"
+            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#111113] max-md:px-5 max-md:py-16"
           >
             <div
               data-pencil-name="Vault Inner"
-              class="box-border w-[1200px] shrink-0 h-fit flex flex-col gap-0 justify-start items-start"
+              class="box-border w-full max-w-[1200px] shrink-0 h-fit flex flex-col gap-0 justify-start items-start"
             >
               <div
                 data-pencil-name="Vault Header"
-                class="box-border w-full h-fit shrink-0 flex flex-row gap-[60px] justify-between items-end"
+                class="box-border w-full h-fit shrink-0 flex flex-row gap-[60px] justify-between items-end max-lg:flex-col max-lg:gap-10"
               >
                 <div
                   data-pencil-name="Vault Heading"
-                  class="box-border w-[640px] shrink-0 h-fit flex flex-col gap-[14px] justify-start items-start"
+                  class="box-border w-full max-w-[640px] shrink-0 h-fit flex flex-col gap-[14px] justify-start items-start"
                 >
                   <div
                     data-pencil-name="Eyebrow"
@@ -24,16 +24,16 @@ const t = getT(Astro.currentLocale).t;
                   >
                     {t("VAULT FORMAT")}
                   </div>
-                  <div
+                  <h2
                     data-pencil-name="Title"
-                    class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
+                    class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left max-md:text-[28px]/[1.12]"
                   >
                     {t("One sealed blob on disk.")}
-                  </div>
+                  </h2>
                 </div>
                 <div
                   data-pencil-name="Vault Note"
-                  class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
+                  class="text-[14.5px]/[24px] box-border w-full max-w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
                   {t("The whole vault — accounts, tombstones and revision metadata — is a single JSON document, sealed as one AES-256-GCM ciphertext and rewritten on every mutation.")}
                 </div>
@@ -44,15 +44,15 @@ const t = getT(Astro.currentLocale).t;
               ></div>
               <div
                 data-pencil-name="Blob Diagram"
-                class="box-border w-full h-fit shrink-0 flex flex-row gap-[12px] justify-start items-start"
+                class="box-border w-full h-fit shrink-0 flex flex-row gap-[12px] justify-start items-start max-md:flex-wrap"
               >
                 <div
                   data-pencil-name="Header Group"
-                  class="box-border w-[464px] shrink-0 h-fit flex flex-col gap-0 justify-start items-start"
+                  class="box-border w-full max-w-[464px] shrink-0 h-fit flex flex-col gap-0 justify-start items-start"
                 >
                   <div
                     data-pencil-name="Header Chips"
-                    class="box-border w-fit h-fit shrink-0 flex flex-row gap-[6px] justify-start items-start"
+                    class="box-border w-fit h-fit shrink-0 flex flex-row gap-[6px] justify-start items-start max-md:flex-wrap max-w-full"
                   >
                     <div
                       data-pencil-name="Chip magic · 4 B"
@@ -66,7 +66,7 @@ const t = getT(Astro.currentLocale).t;
                       </div>
                       <div
                         data-pencil-name="Chip Sub"
-                        class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                        class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
                         magic · 4 B
                       </div>
@@ -83,7 +83,7 @@ const t = getT(Astro.currentLocale).t;
                       </div>
                       <div
                         data-pencil-name="Chip Sub"
-                        class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                        class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
                         ver · 1 B
                       </div>
@@ -100,7 +100,7 @@ const t = getT(Astro.currentLocale).t;
                       </div>
                       <div
                         data-pencil-name="Chip Sub"
-                        class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                        class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
                         kdf · 1 B
                       </div>
@@ -117,7 +117,7 @@ const t = getT(Astro.currentLocale).t;
                       </div>
                       <div
                         data-pencil-name="Chip Sub"
-                        class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                        class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
                         16 B
                       </div>
@@ -134,7 +134,7 @@ const t = getT(Astro.currentLocale).t;
                       </div>
                       <div
                         data-pencil-name="Chip Sub"
-                        class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                        class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                       >
                         12 B
                       </div>
@@ -146,11 +146,11 @@ const t = getT(Astro.currentLocale).t;
                   >
                     <div
                       data-pencil-name="AAD Rule"
-                      class="box-border w-full h-[1px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#0A84FF]"
+                      class="box-border w-full h-[1px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#0066CC]"
                     ></div>
                     <div
                       data-pencil-name="AAD Label"
-                      class="text-[10.5px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                      class="text-[11px]/[normal] box-border text-[#0A84FF] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
                       {t("34-byte header · bound as associated data")}
                     </div>
@@ -172,7 +172,7 @@ const t = getT(Astro.currentLocale).t;
                     </div>
                     <div
                       data-pencil-name="Chip Sub"
-                      class="text-[10px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                      class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
                       n B + 16 B GCM tag
                     </div>
@@ -187,7 +187,7 @@ const t = getT(Astro.currentLocale).t;
                     ></div>
                     <div
                       data-pencil-name="Cipher Label"
-                      class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                      class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
                       {t("JSON VaultDocument · encrypted")}
                     </div>
@@ -200,7 +200,7 @@ const t = getT(Astro.currentLocale).t;
               ></div>
               <div
                 data-pencil-name="Params Row"
-                class="box-border w-full h-fit shrink-0 flex flex-row gap-[28px] justify-start items-start"
+                class="box-border w-full h-fit shrink-0 flex flex-row gap-[28px] justify-start items-start max-md:flex-wrap"
               >
                 <div
                   data-pencil-name="Params Table"
@@ -208,7 +208,7 @@ const t = getT(Astro.currentLocale).t;
                 >
                   <div
                     data-pencil-name="Param Key derivation"
-                    class="[box-sizing:content-box] w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                    class="[box-sizing:content-box] w-full max-w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:[box-sizing:border-box] max-md:h-auto"
                   >
                     <div
                       data-pencil-name="Cell Key"
@@ -235,7 +235,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Param Iterations"
-                    class="[box-sizing:content-box] w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                    class="[box-sizing:content-box] w-full max-w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:[box-sizing:border-box] max-md:h-auto"
                   >
                     <div
                       data-pencil-name="Cell Key"
@@ -262,7 +262,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Param Derived key"
-                    class="[box-sizing:content-box] w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                    class="[box-sizing:content-box] w-full max-w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:[box-sizing:border-box] max-md:h-auto"
                   >
                     <div
                       data-pencil-name="Cell Key"
@@ -289,7 +289,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Param Cipher"
-                    class="[box-sizing:content-box] w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                    class="[box-sizing:content-box] w-full max-w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:[box-sizing:border-box] max-md:h-auto"
                   >
                     <div
                       data-pencil-name="Cell Key"
@@ -316,7 +316,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Param Salt"
-                    class="[box-sizing:content-box] w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                    class="[box-sizing:content-box] w-full max-w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:[box-sizing:border-box] max-md:h-auto"
                   >
                     <div
                       data-pencil-name="Cell Key"
@@ -343,7 +343,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Param Nonce"
-                    class="[box-sizing:content-box] w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                    class="[box-sizing:content-box] w-full max-w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:[box-sizing:border-box] max-md:h-auto"
                   >
                     <div
                       data-pencil-name="Cell Key"
@@ -370,7 +370,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Param Authenticated data"
-                    class="[box-sizing:content-box] w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                    class="[box-sizing:content-box] w-full max-w-[742px] h-[42.5px] shrink-0 flex flex-row gap-0 p-[13px_18px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:[box-sizing:border-box] max-md:h-auto"
                   >
                     <div
                       data-pencil-name="Cell Key"
@@ -425,11 +425,11 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Rationale Card"
-                  class="box-border w-[430px] shrink-0 h-fit flex flex-col gap-0 p-[22px_22px_24px_22px] justify-start items-start bg-[#1B1B1E] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[12px]"
+                  class="box-border w-full max-w-[430px] shrink-0 h-fit flex flex-col gap-0 p-[22px_22px_24px_22px] justify-start items-start bg-[#1B1B1E] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[12px]"
                 >
                   <div
                     data-pencil-name="Card Head"
-                    class="box-border w-fit h-fit shrink-0 flex flex-row gap-[9px] justify-start items-center"
+                    class="box-border w-fit h-fit shrink-0 flex flex-row gap-[9px] justify-start items-center max-md:flex-wrap max-w-full"
                   >
                     <svg
                       data-pencil-name="Icon"
@@ -445,12 +445,12 @@ const t = getT(Astro.currentLocale).t;
                         fill="#7C6CFF"
                       ></path>
                     </svg>
-                    <div
+                    <h3
                       data-pencil-name="Card Title"
                       class="text-[15px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
                     >
                       {t("Why PBKDF2 and not Argon2id?")}
-                    </div>
+                    </h3>
                   </div>
                   <div
                     data-pencil-name="Card Body Wrap"
@@ -469,7 +469,7 @@ const t = getT(Astro.currentLocale).t;
                   >
                     <div
                       data-pencil-name="Card Note"
-                      class="text-[13.5px]/[22px] box-border [flex:1_1_0] text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
+                      class="text-[13.5px]/[22px] box-border [flex:1_1_0] text-[#8E8E93] font-[Inter,system-ui,sans-serif] font-normal text-left"
                     >
                       {t("The kdf_id byte is versioned, so Argon2id can be added later without invalidating a single existing vault.")}
                     </div>

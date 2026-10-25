@@ -60,7 +60,7 @@ export function SetupWizard({
       <div className="flex flex-col items-center gap-2">
         <ShieldPlus className="size-9 text-primary" />
         <p className="text-[15px] font-semibold">{t("Set up 2FAU")}</p>
-        <p className="text-center text-[11px] text-muted-foreground">
+        <p className="text-center text-[12px] text-muted-foreground">
           {t("Start a new vault, bring one you already have, or use the one in your desktop app.")}
         </p>
       </div>
@@ -111,7 +111,7 @@ function Choice({
       <span className="text-primary">{icon}</span>
       <span className="min-w-0 flex-1">
         <span className="block text-[13px] font-medium">{title}</span>
-        <span className="block text-[11px] text-muted-foreground">{description}</span>
+        <span className="block text-[12px] text-muted-foreground">{description}</span>
       </span>
       <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
     </button>
@@ -165,7 +165,7 @@ function AdoptStep({
     <div className="flex flex-col items-center gap-3 px-6 py-8">
       <DownloadCloud className="size-9 text-primary" />
       <p className="text-[15px] font-semibold">{t("Import a vault file")}</p>
-      <p className="text-center text-[11px] text-muted-foreground">
+      <p className="text-center text-[12px] text-muted-foreground">
         {t("Its accounts become this device’s vault, and its passphrase unlocks it from now on.")}
       </p>
 

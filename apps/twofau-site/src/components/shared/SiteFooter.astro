@@ -1,18 +1,20 @@
 ---
-import { getT } from "../../i18n/t";
+import { getT, localeUrl } from "../../i18n/t";
+import { REPO } from "../../config/links";
 const t = getT(Astro.currentLocale).t;
+const url = (path: string) => localeUrl(Astro.currentLocale, path);
 ---
     <div
             data-pencil-name="Footer"
-            class="box-border w-full h-fit shrink-0 flex flex-col gap-0 p-[26px_40px] justify-start items-center bg-[#111113]"
+            class="box-border w-full h-fit shrink-0 flex flex-col gap-0 p-[26px_40px] justify-start items-center bg-[#111113] max-md:px-5"
           >
             <div
               data-pencil-name="Footer Bottom"
-              class="box-border w-[1200px] h-fit shrink-0 flex flex-row gap-0 justify-between items-center"
+              class="box-border w-full max-w-[1200px] h-fit shrink-0 flex flex-row gap-0 justify-between items-center max-md:flex-col max-md:items-start max-md:gap-4"
             >
               <div
                 data-pencil-name="Footer Left"
-                class="box-border w-fit shrink-0 h-fit flex flex-row gap-[10px] justify-start items-center"
+                class="box-border w-fit shrink-0 h-fit flex flex-row gap-[10px] justify-start items-center max-md:flex-wrap max-w-full"
               >
                 <div
                   data-pencil-name="Logo Mark"
@@ -46,42 +48,42 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Copyright"
-                  class="text-[12px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                  class="text-[12px]/[normal] box-border text-[#8E8E93] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                 >
                   {t("© 2026 2FAu · MIT licensed")}
                 </div>
               </div>
               <div
                 data-pencil-name="Footer Bottom Right"
-                class="box-border w-fit shrink-0 h-fit flex flex-row gap-[22px] justify-start items-center"
+                class="box-border w-fit shrink-0 h-fit flex flex-row flex-wrap gap-x-[22px] gap-y-3 justify-start items-center"
               >
-                <div
-                  data-pencil-name="GitHub"
-                  class="text-[12px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                <a href={url("desktop")}
+                  data-pencil-name="How it works"
+                  class="transition-colors duration-150 hover:text-[#F5F5F7] text-[12px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                 >
                   {t("How it works")}
-                </div>
-                <div
-                  data-pencil-name="Discussions"
-                  class="text-[12px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                </a>
+                <a href={url("security")}
+                  data-pencil-name="Security"
+                  class="transition-colors duration-150 hover:text-[#F5F5F7] text-[12px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                 >
                   {t("Security")}
-                </div>
-                <div
-                  data-pencil-name="Mastodon"
-                  class="text-[12px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                </a>
+                <a href={`${REPO}#readme`}
+                  data-pencil-name="Docs"
+                  class="transition-colors duration-150 hover:text-[#F5F5F7] text-[12px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                 >
                   {t("Docs")}
-                </div>
-                <div
-                  data-pencil-name="X"
-                  class="text-[12px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                </a>
+                <a href={REPO}
+                  data-pencil-name="GitHub"
+                  class="transition-colors duration-150 hover:text-[#F5F5F7] text-[12px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                 >
                   {t("GitHub")}
-                </div>
+                </a>
                 <div
                   data-pencil-name="Built With"
-                  class="text-[11px]/[normal] box-border text-[#413F4B] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                  class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                 >
                   {t("Built with Rust and Tauri 2")}
                 </div>

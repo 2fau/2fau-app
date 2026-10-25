@@ -12,7 +12,8 @@ type MarkProps = {
 }
 
 const TONES: Record<LogoTone, { ring: string; track: string; u: string }> = {
-    color: { ring: '#0A84FF', track: 'rgba(10,132,255,0.22)', u: '#FFFFFF' },
+    // The colour tone's "u" inherits the text colour so it reads on light and dark.
+    color: { ring: '#0A84FF', track: 'rgba(10,132,255,0.22)', u: 'currentColor' },
     'mono-light': { ring: '#FFFFFF', track: 'rgba(255,255,255,0.22)', u: '#FFFFFF' },
     'mono-dark': { ring: '#101216', track: 'rgba(16,18,22,0.18)', u: '#101216' },
 }
@@ -75,7 +76,7 @@ type WordmarkProps = {
 }
 
 export function Wordmark({ size = 28, tone = 'color', className }: WordmarkProps) {
-    const base = tone === 'mono-dark' ? 'text-[#101216]' : 'text-white'
+    const base = tone === 'mono-dark' ? 'text-[#101216]' : tone === 'color' ? 'text-foreground' : 'text-white'
     const accent =
         tone === 'color' ? 'text-[#0A84FF]' : tone === 'mono-dark' ? 'text-[#101216]' : 'text-white'
     return (
@@ -122,12 +123,11 @@ type AppIconProps = {
 export function AppIcon({ size = 128, className }: AppIconProps) {
     return (
         <div
-            className={`relative flex items-center justify-center bg-[#16181D] ring-1 ring-white/10 ${className ?? ''}`}
+            className={`relative flex items-center justify-center bg-[#16181D] text-white ring-1 ring-white/10 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.25)] dark:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.65)] ${className ?? ''}`}
             style={{
                 width: size,
                 height: size,
                 borderRadius: size * 0.2237,
-                boxShadow: '0 18px 40px -12px rgba(0,0,0,0.65)',
             }}
         >
             <LogoMark size={size * 0.62} tone="color" />

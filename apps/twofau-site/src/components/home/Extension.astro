@@ -4,23 +4,23 @@ const t = getT(Astro.currentLocale).t;
 ---
     <div
       data-pencil-name="Extension"
-      class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[100px_40px] justify-center items-start bg-[#0B0B0D]"
+      class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[100px_40px] justify-center items-start bg-[#0B0B0D] max-md:px-5 max-md:py-16"
     >
       <div
         data-pencil-name="Extension Inner"
-        class="box-border w-[1200px] shrink-0 h-fit flex flex-row gap-[90px] justify-start items-center"
+        class="box-border w-full max-w-[1200px] shrink-0 h-fit flex flex-row gap-[90px] justify-start items-center max-lg:flex-col max-lg:gap-10"
       >
         <div
           data-pencil-name="Browser Mock"
-          class="box-border w-[650px] shrink-0 h-fit [box-shadow:0px_24px_60px_0px_#000000AA] flex flex-col gap-0 justify-start items-start bg-[#0F0E13] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[12px] overflow-hidden"
+          class="box-border w-full max-w-[650px] shrink-0 h-fit [box-shadow:0px_24px_60px_0px_#000000AA] flex flex-col gap-0 justify-start items-start bg-[#0F0E13] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[12px] overflow-hidden"
         >
           <div
             data-pencil-name="Browser Bar"
-            class="box-border w-full h-fit shrink-0 flex flex-row gap-[12px] p-[12px_14px] justify-start items-center bg-[#141319]"
+            class="box-border w-full h-fit shrink-0 flex flex-row gap-[12px] p-[12px_14px] justify-start items-center bg-[#141319] max-md:flex-wrap"
           >
             <div
               data-pencil-name="Dots"
-              class="box-border w-fit shrink-0 h-fit flex flex-row gap-[6px] justify-start items-center"
+              class="box-border w-fit shrink-0 h-fit flex flex-row gap-[6px] justify-start items-center max-md:flex-wrap max-w-full"
             >
               <div
                 data-pencil-name="Dot"
@@ -37,7 +37,7 @@ const t = getT(Astro.currentLocale).t;
             </div>
             <div
               data-pencil-name="URL Pill"
-              class="box-border [flex:1_1_0] h-fit flex flex-row gap-[7px] p-[6px_10px] justify-start items-center bg-[#0C0B10] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[7px]"
+              class="box-border [flex:1_1_0] h-fit flex flex-row gap-[7px] p-[6px_10px] justify-start items-center bg-[#0C0B10] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[7px] max-md:flex-wrap"
             >
               <svg
                 data-pencil-name="Lock"
@@ -108,13 +108,13 @@ const t = getT(Astro.currentLocale).t;
             </div>
             <div
               data-pencil-name="Form Sub"
-              class="text-[13.5px]/[normal] box-border text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap] relative [z-index:1]"
+              class="text-[13.5px]/[normal] box-border text-[#8E8E93] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap] max-md:[white-space:normal] relative [z-index:1]"
             >
               {t("Open your authenticator app and enter the 6-digit code.")}
             </div>
             <div
               data-pencil-name="Digits"
-              class="box-border w-fit h-fit shrink-0 flex flex-row gap-[8px] justify-start items-start relative [z-index:2]"
+              class="box-border w-fit h-fit shrink-0 flex flex-row gap-[8px] justify-start items-start relative [z-index:2] max-md:flex-wrap max-w-full"
             >
               <div
                 data-pencil-name="Digit 7"
@@ -185,15 +185,15 @@ const t = getT(Astro.currentLocale).t;
             </div>
             <div
               data-pencil-name="Extension Popup"
-              class="box-border w-[310px] h-fit [box-shadow:0px_20px_56px_0px_#000000CC] absolute left-[296px] top-[-16px] flex flex-col gap-0 justify-start items-start bg-[#1E1E1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[12px] overflow-hidden [z-index:3]"
+              class="box-border w-[310px] h-fit [box-shadow:0px_20px_56px_0px_#000000CC] absolute left-[296px] top-[-16px] flex flex-col gap-0 justify-start items-start bg-[#1E1E1E] [outline:1px_solid_#38383A] [outline-offset:-0.5px] rounded-[12px] overflow-hidden [z-index:3] max-md:left-1/2 max-md:-translate-x-1/2"
             >
               <div
                 data-pencil-name="Header"
-                class="box-border w-full h-fit shrink-0 flex flex-row gap-[9px] p-[11px_14px] justify-between items-center"
+                class="box-border w-full h-fit shrink-0 flex flex-row gap-[9px] p-[11px_14px] justify-between items-center max-md:flex-wrap"
               >
                 <div
                   data-pencil-name="Header Left"
-                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] justify-start items-center"
+                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] justify-start items-center max-md:flex-wrap max-w-full"
                 >
                   <div
                     data-pencil-name="Logo Mark"
@@ -245,7 +245,7 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Header Actions"
-                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[14px] justify-start items-center"
+                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[14px] justify-start items-center max-md:flex-wrap max-w-full"
                 >
                   <svg
                     data-pencil-name="Action arrow-up-down"
@@ -295,7 +295,7 @@ const t = getT(Astro.currentLocale).t;
                   >
                     <div
                       data-pencil-name="Title Row"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[8px] justify-between items-center"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[8px] justify-between items-center max-md:flex-wrap"
                     >
                       <div
                         data-pencil-name="Issuer"
@@ -309,7 +309,7 @@ const t = getT(Astro.currentLocale).t;
                       >
                         <div
                           data-pencil-name="Label"
-                          class="text-[10px]/[normal] box-border text-[#8FC2FF] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
+                          class="text-[11px]/[normal] box-border text-[#8FC2FF] font-[Inter,system-ui,sans-serif] font-medium text-left [white-space:nowrap]"
                         >
                           {t("this site")}
                         </div>
@@ -334,7 +334,7 @@ const t = getT(Astro.currentLocale).t;
                   >
                     <div
                       data-pencil-name="Progress Fill"
-                      class="box-border w-[180px] shrink-0 h-[3px] bg-[#0A84FF]"
+                      class="box-border w-[180px] shrink-0 h-[3px] bg-[#0066CC]"
                     ></div>
                   </div>
                 </div>
@@ -348,7 +348,7 @@ const t = getT(Astro.currentLocale).t;
                   >
                     <div
                       data-pencil-name="Title Row"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[8px] justify-between items-center"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[8px] justify-between items-center max-md:flex-wrap"
                     >
                       <div
                         data-pencil-name="Issuer"
@@ -391,7 +391,7 @@ const t = getT(Astro.currentLocale).t;
               >
                 <div
                   data-pencil-name="Footer Left"
-                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[8px] justify-start items-center"
+                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[8px] justify-start items-center max-md:flex-wrap max-w-full"
                 >
                   <svg
                     data-pencil-name="Lock"
@@ -416,7 +416,7 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Fill Hint"
-                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] justify-start items-center"
+                  class="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] justify-start items-center max-md:flex-wrap max-w-full"
                 >
                   <div
                     data-pencil-name="Label"
@@ -442,7 +442,7 @@ const t = getT(Astro.currentLocale).t;
         </div>
         <div
           data-pencil-name="Extension Copy"
-          class="box-border w-[460px] shrink-0 h-fit flex flex-col gap-[20px] justify-start items-start"
+          class="box-border w-full max-w-[460px] shrink-0 h-fit flex flex-col gap-[20px] justify-start items-start"
         >
           <div
             data-pencil-name="Eyebrow"
@@ -450,21 +450,21 @@ const t = getT(Astro.currentLocale).t;
           >
             {t("BROWSER")}
           </div>
-          <div
+          <h2
             data-pencil-name="Title"
-            class="text-[40px]/[44px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.2px] text-left"
+            class="text-[40px]/[44px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.2px] text-left max-md:text-[28px]/[1.12]"
           >
             {t("Full parity in the tab you're already in.")}
-          </div>
+          </h2>
           <div
             data-pencil-name="Body"
             class="text-[15.5px]/[26px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
           >
-            {t("The extension runs the same Rust core compiled to WebAssembly. It recognises the 2FA field, offers the matching account, and fills the code — without a background service, a login, or a copy-paste round trip.")}
+            {t("The extension runs the same Rust core compiled to WebAssembly. It recognises the 2FA field, offers the matching account, and fills the code — without a login or a copy-paste round trip.")}
           </div>
           <div
             data-pencil-name="Ext Stats"
-            class="box-border w-fit h-fit shrink-0 flex flex-row gap-[36px] justify-start items-start"
+            class="box-border w-fit h-fit shrink-0 flex flex-row gap-[36px] max-md:gap-5 justify-start items-start max-md:flex-wrap max-w-full"
           >
             <div
               data-pencil-name="Stat servers contacted"
@@ -478,9 +478,9 @@ const t = getT(Astro.currentLocale).t;
               </div>
               <div
                 data-pencil-name="Label"
-                class="text-[12px]/[17px] box-border w-[110px] text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
+                class="text-[12px]/[17px] box-border w-[110px] max-md:w-[92px] text-[#8E8E93] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                {t("servers contacted")}
+                {t("accounts to create")}
               </div>
             </div>
             <div
@@ -495,7 +495,7 @@ const t = getT(Astro.currentLocale).t;
               </div>
               <div
                 data-pencil-name="Label"
-                class="text-[12px]/[17px] box-border w-[110px] text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
+                class="text-[12px]/[17px] box-border w-[110px] max-md:w-[92px] text-[#8E8E93] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
                 {t("Rust core, two targets")}
               </div>
@@ -508,13 +508,13 @@ const t = getT(Astro.currentLocale).t;
                 data-pencil-name="Value"
                 class="text-[24px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.8px] text-left [white-space:nowrap]"
               >
-                &lt;40ms
+                2
               </div>
               <div
                 data-pencil-name="Label"
-                class="text-[12px]/[17px] box-border w-[110px] text-[#6E6E73] font-[Inter,system-ui,sans-serif] font-normal text-left"
+                class="text-[12px]/[17px] box-border w-[110px] max-md:w-[92px] text-[#8E8E93] font-[Inter,system-ui,sans-serif] font-normal text-left"
               >
-                {t("from field focus to fill")}
+                {t("browsers, one manifest")}
               </div>
             </div>
           </div>

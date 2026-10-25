@@ -4,19 +4,21 @@ const t = getT(Astro.currentLocale).t;
 ---
     <div
             data-pencil-name="Product Shot"
-            class="box-border w-full h-fit shrink-0 flex flex-col gap-0 p-[96px_40px_104px_40px] justify-center items-center bg-[#0B0B0D]"
+            class="box-border w-full h-fit shrink-0 flex flex-col gap-0 p-[96px_40px_104px_40px] justify-center items-center bg-[#0B0B0D] max-md:px-5 max-md:py-16"
           >
             <div
               data-pencil-name="Product Inner"
-              class="box-border w-[1200px] h-fit shrink-0 flex flex-row gap-[96px] justify-start items-center"
+              class="box-border w-full max-w-[1200px] h-fit shrink-0 flex flex-row gap-[96px] justify-start items-center max-lg:flex-col max-lg:gap-10"
             >
               <div
                 data-pencil-name="App Popup"
-                class="box-border w-[440px] shrink-0 h-[608px] bg-[url('/app-list.png')] bg-no-repeat bg-cover bg-center"
+                role="img"
+                aria-label={t("2FAu menu-bar window listing accounts with their current codes")}
+                class="box-border w-full max-w-[440px] shrink-0 h-[608px] bg-[url('/app-list.png')] bg-no-repeat bg-cover bg-center"
               ></div>
               <div
                 data-pencil-name="Product Copy"
-                class="box-border [flex:1_1_0] h-fit flex flex-col gap-[22px] justify-start items-start"
+                class="box-border [flex:1_1_0] h-fit flex flex-col gap-[22px] justify-start items-start max-lg:w-full max-lg:flex-none"
               >
                 <div
                   data-pencil-name="Eyebrow"
@@ -24,15 +26,15 @@ const t = getT(Astro.currentLocale).t;
                 >
                   {t("DESKTOP APP")}
                 </div>
-                <div
+                <h2
                   data-pencil-name="Title"
-                  class="text-[38px]/[42px] box-border w-[560px] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.1px] text-left"
+                  class="text-[38px]/[42px] box-border w-full max-w-[560px] text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-1.1px] text-left max-md:text-[28px]/[1.12]"
                 >
                   {t("Lives in the menu bar, never in your way.")}
-                </div>
+                </h2>
                 <div
                   data-pencil-name="Body"
-                  class="text-[15.5px]/[26px] box-border w-[560px] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
+                  class="text-[15.5px]/[26px] box-border w-full max-w-[560px] text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
                   {t("A window that opens on a hotkey and closes the moment it has done its job. No dock icon, no window management, no hunting for a phone.")}
                 </div>
@@ -42,7 +44,7 @@ const t = getT(Astro.currentLocale).t;
                 >
                   <div
                     data-pencil-name="Step 1"
-                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[14px] p-[14px_0px] justify-start items-center"
+                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[14px] p-[14px_0px] justify-start items-center max-md:flex-wrap"
                   >
                     <div
                       data-pencil-name="Keys"
@@ -95,7 +97,7 @@ const t = getT(Astro.currentLocale).t;
                   ></div>
                   <div
                     data-pencil-name="Step 2"
-                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[14px] p-[14px_0px] justify-start items-center"
+                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[14px] p-[14px_0px] justify-start items-center max-md:flex-wrap"
                   >
                     <div
                       data-pencil-name="Keys"
@@ -126,7 +128,7 @@ const t = getT(Astro.currentLocale).t;
                   ></div>
                   <div
                     data-pencil-name="Step 3"
-                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[14px] p-[14px_0px] justify-start items-center"
+                    class="box-border w-full h-fit shrink-0 flex flex-row gap-[14px] p-[14px_0px] justify-start items-center max-md:flex-wrap"
                   >
                     <div
                       data-pencil-name="Keys"
@@ -154,11 +156,11 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Platforms"
-                  class="box-border w-fit h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center"
+                  class="box-border w-fit max-w-full h-fit shrink-0 flex flex-row flex-wrap gap-[10px] justify-start items-center max-md:flex-wrap"
                 >
                   <div
                     data-pencil-name="Platform macOS 12+"
-                    class="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] p-[6px_11px] justify-start items-center bg-[#FFFFFF08] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[999px]"
+                    class="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] p-[6px_11px] justify-start items-center bg-[#FFFFFF08] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[999px] max-md:flex-wrap max-w-full"
                   >
                     <svg
                       data-pencil-name="Icon"
@@ -178,12 +180,12 @@ const t = getT(Astro.currentLocale).t;
                       data-pencil-name="Label"
                       class="text-[12.5px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                     >
-                      {t("macOS 12+")}
+                      {t("macOS · Apple silicon")}
                     </div>
                   </div>
                   <div
                     data-pencil-name="Platform Windows 10+"
-                    class="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] p-[6px_11px] justify-start items-center bg-[#FFFFFF08] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[999px]"
+                    class="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] p-[6px_11px] justify-start items-center bg-[#FFFFFF08] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[999px] max-md:flex-wrap max-w-full"
                   >
                     <svg
                       data-pencil-name="Icon"
@@ -208,7 +210,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Platform Linux"
-                    class="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] p-[6px_11px] justify-start items-center bg-[#FFFFFF08] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[999px]"
+                    class="box-border w-fit shrink-0 h-fit flex flex-row gap-[7px] p-[6px_11px] justify-start items-center bg-[#FFFFFF08] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[999px] max-md:flex-wrap max-w-full"
                   >
                     <svg
                       data-pencil-name="Icon"
@@ -233,7 +235,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Size"
-                    class="text-[11.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
+                    class="text-[11.5px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]"
                   >
                     12 MB · Tauri 2
                   </div>

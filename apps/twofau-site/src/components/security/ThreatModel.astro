@@ -4,19 +4,19 @@ const t = getT(Astro.currentLocale).t;
 ---
     <div
             data-pencil-name="Threat Model"
-            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#0B0B0D]"
+            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#0B0B0D] max-md:px-5 max-md:py-16"
           >
             <div
               data-pencil-name="Threat Inner"
-              class="box-border w-[1200px] shrink-0 h-fit flex flex-col gap-0 justify-start items-start"
+              class="box-border w-full max-w-[1200px] shrink-0 h-fit flex flex-col gap-0 justify-start items-start"
             >
               <div
                 data-pencil-name="Threat Header"
-                class="box-border w-full h-fit shrink-0 flex flex-row gap-[60px] justify-between items-end"
+                class="box-border w-full h-fit shrink-0 flex flex-row gap-[60px] justify-between items-end max-lg:flex-col max-lg:gap-10"
               >
                 <div
                   data-pencil-name="Threat Heading"
-                  class="box-border w-[640px] shrink-0 h-fit flex flex-col gap-[14px] justify-start items-start"
+                  class="box-border w-full max-w-[640px] shrink-0 h-fit flex flex-col gap-[14px] justify-start items-start"
                 >
                   <div
                     data-pencil-name="Eyebrow"
@@ -24,16 +24,16 @@ const t = getT(Astro.currentLocale).t;
                   >
                     {t("THREAT MODEL")}
                   </div>
-                  <div
+                  <h2
                     data-pencil-name="Title"
-                    class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
+                    class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left max-md:text-[28px]/[1.12]"
                   >
                     {t("Local-first moves the risk. It doesn't delete it.")}
-                  </div>
+                  </h2>
                 </div>
                 <div
                   data-pencil-name="Threat Note"
-                  class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
+                  class="text-[14.5px]/[24px] box-border w-full max-w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
                   {t("Removing the server removes a whole class of attack and hands you a different one: your device is now the only thing standing between an attacker and your secrets.")}
                 </div>
@@ -44,15 +44,15 @@ const t = getT(Astro.currentLocale).t;
               ></div>
               <div
                 data-pencil-name="Threat Columns"
-                class="box-border w-full h-fit shrink-0 flex flex-row gap-[24px] justify-start items-start"
+                class="box-border w-full h-fit shrink-0 flex flex-row gap-[24px] justify-start items-start max-md:flex-col"
               >
                 <div
                   data-pencil-name="Col Protected against"
-                  class="box-border [flex:1_1_0] h-fit flex flex-col gap-0 p-[24px_26px_28px_26px] justify-start items-start bg-[#1B1B1E] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[12px]"
+                  class="box-border [flex:1_1_0] h-fit flex flex-col gap-0 p-[24px_26px_28px_26px] justify-start items-start bg-[#1B1B1E] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[12px] max-md:w-full max-md:flex-none"
                 >
                   <div
                     data-pencil-name="Col Head"
-                    class="box-border w-fit h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center"
+                    class="box-border w-fit h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center max-md:flex-wrap max-w-full"
                   >
                     <svg
                       data-pencil-name="Col Icon"
@@ -68,12 +68,12 @@ const t = getT(Astro.currentLocale).t;
                         fill="#30D158"
                       ></path>
                     </svg>
-                    <div
+                    <h3
                       data-pencil-name="Col Title"
                       class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
                     >
                       {t("Protected against")}
-                    </div>
+                    </h3>
                   </div>
                   <div
                     data-pencil-name="Col List"
@@ -81,7 +81,7 @@ const t = getT(Astro.currentLocale).t;
                   >
                     <div
                       data-pencil-name="Item A stolen vault file"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start max-md:flex-wrap"
                     >
                       <svg
                         data-pencil-name="Item Icon"
@@ -117,7 +117,7 @@ const t = getT(Astro.currentLocale).t;
                     </div>
                     <div
                       data-pencil-name="Item A server breach"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start max-md:flex-wrap"
                     >
                       <svg
                         data-pencil-name="Item Icon"
@@ -147,13 +147,13 @@ const t = getT(Astro.currentLocale).t;
                           data-pencil-name="Item Body"
                           class="text-[13.5px]/[22px] box-border w-full text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                         >
-                          {t("There is no server, no account and no cloud copy. There is nothing to breach on our side because there is no our side.")}
+                          {t("There is no 2FAu server and no account, so there is nothing to breach on our side. The extension's vault rides your browser's own sync, sealed before it leaves the device.")}
                         </div>
                       </div>
                     </div>
                     <div
                       data-pencil-name="Item Network observation"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start max-md:flex-wrap"
                     >
                       <svg
                         data-pencil-name="Item Icon"
@@ -189,7 +189,7 @@ const t = getT(Astro.currentLocale).t;
                     </div>
                     <div
                       data-pencil-name="Item The interface itself"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start max-md:flex-wrap"
                     >
                       <svg
                         data-pencil-name="Item Icon"
@@ -225,7 +225,7 @@ const t = getT(Astro.currentLocale).t;
                     </div>
                     <div
                       data-pencil-name="Item A stale device"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start max-md:flex-wrap"
                     >
                       <svg
                         data-pencil-name="Item Icon"
@@ -263,11 +263,11 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Col Not protected against"
-                  class="box-border [flex:1_1_0] h-fit flex flex-col gap-0 p-[24px_26px_28px_26px] justify-start items-start bg-[#1B1B1E] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[12px]"
+                  class="box-border [flex:1_1_0] h-fit flex flex-col gap-0 p-[24px_26px_28px_26px] justify-start items-start bg-[#1B1B1E] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[12px] max-md:w-full max-md:flex-none"
                 >
                   <div
                     data-pencil-name="Col Head"
-                    class="box-border w-fit h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center"
+                    class="box-border w-fit h-fit shrink-0 flex flex-row gap-[10px] justify-start items-center max-md:flex-wrap max-w-full"
                   >
                     <svg
                       data-pencil-name="Col Icon"
@@ -283,12 +283,12 @@ const t = getT(Astro.currentLocale).t;
                         fill="#6E6E73"
                       ></path>
                     </svg>
-                    <div
+                    <h3
                       data-pencil-name="Col Title"
                       class="text-[17px]/[normal] box-border text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-semibold tracking-[-0.2px] text-left [white-space:nowrap]"
                     >
                       {t("Not protected against")}
-                    </div>
+                    </h3>
                   </div>
                   <div
                     data-pencil-name="Col List"
@@ -296,7 +296,7 @@ const t = getT(Astro.currentLocale).t;
                   >
                     <div
                       data-pencil-name="Item Malware running as you"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start max-md:flex-wrap"
                     >
                       <svg
                         data-pencil-name="Item Icon"
@@ -332,7 +332,7 @@ const t = getT(Astro.currentLocale).t;
                     </div>
                     <div
                       data-pencil-name="Item A weak passphrase"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start max-md:flex-wrap"
                     >
                       <svg
                         data-pencil-name="Item Icon"
@@ -368,7 +368,7 @@ const t = getT(Astro.currentLocale).t;
                     </div>
                     <div
                       data-pencil-name="Item Remembering the passphrase"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start max-md:flex-wrap"
                     >
                       <svg
                         data-pencil-name="Item Icon"
@@ -404,7 +404,7 @@ const t = getT(Astro.currentLocale).t;
                     </div>
                     <div
                       data-pencil-name="Item Unsigned installers"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start max-md:flex-wrap"
                     >
                       <svg
                         data-pencil-name="Item Icon"
@@ -440,7 +440,7 @@ const t = getT(Astro.currentLocale).t;
                     </div>
                     <div
                       data-pencil-name="Item The issuer's copy"
-                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start"
+                      class="box-border w-full h-fit shrink-0 flex flex-row gap-[11px] justify-start items-start max-md:flex-wrap"
                     >
                       <svg
                         data-pencil-name="Item Icon"

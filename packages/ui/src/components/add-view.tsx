@@ -1,4 +1,4 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronDown, ChevronLeft } from "lucide-react";
 import { useRef, useState } from "react";
 import { useT } from "@twofau/i18n/react";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,9 @@ export function AddView({
   const [pristine, setPristine] = useState(Boolean(prefill?.uri));
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false)
+  // Type and colour are rarely changed by hand (paste/QR infer the type), so
+  // they sit behind a disclosure to keep the first screen to what matters.
+  const [moreOpen, setMoreOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
   function applyPrefill(p: AddPrefill) {
@@ -88,6 +91,9 @@ export function AddView({
     }
   }
 
+  // A pristine URI carries its own secret; otherwise the manual secret is required.
+  const canSave = (pristine && Boolean(uri)) || secret.trim().length > 0;
+
   async function save() {
     try {
       setSaving(true)
@@ -109,7 +115,7 @@ export function AddView({
   return (
     <div className="flex flex-col gap-3 p-4">
       <div className="flex items-center gap-1">
-        <Button size="icon-sm" variant="ghost" onClick={onDone}>
+        <Button size="icon-sm" variant="ghost" aria-label={t("Back")} onClick={onDone}>
           <ChevronLeft />
         </Button>
         <span className="text-[15px] font-semibold">{t("Add account")}</span>
@@ -149,7 +155,7 @@ export function AddView({
               title={t("Import many, or a Google Authenticator export")}
               onClick={onImport}
             >
-              {t("Bulk")}
+              {t("Import many")}
             </Button>
           )}
         </div>
@@ -167,6 +173,7 @@ export function AddView({
       </div>
 
       <Input
+        aria-label={t("Issuer")}
         placeholder={t("Issuer (e.g. GitHub)")}
         value={issuer}
         onChange={(e) => {
@@ -175,6 +182,7 @@ export function AddView({
         }}
       />
       <Input
+        aria-label={t("Label")}
         placeholder={t("Label (e.g. me@x.com)")}
         value={label}
         onChange={(e) => {
@@ -183,6 +191,7 @@ export function AddView({
         }}
       />
       <Input
+        aria-label={t("Secret (Base32)")}
         placeholder={t("Secret (Base32)")}
         value={secret}
         onChange={(e) => {
@@ -191,32 +200,47 @@ export function AddView({
         }}
       />
 
-      <ToggleGroup
-        type="single"
-        value={type}
-        onValueChange={(v) => {
-          if (v) {
-            setType(v as "totp" | "hotp" | "steam");
-            edited();
-          }
-        }}
-        className="w-full"
+      <button
+        type="button"
+        aria-expanded={moreOpen}
+        onClick={() => setMoreOpen((o) => !o)}
+        className="flex items-center gap-1 self-start rounded-md text-[12px] text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
       >
-        <ToggleGroupItem value="totp" className="min-w-0 flex-1 px-2 text-xs">
-          TOTP
-        </ToggleGroupItem>
-        <ToggleGroupItem value="hotp" className="min-w-0 flex-1 px-2 text-xs">
-          HOTP
-        </ToggleGroupItem>
-        <ToggleGroupItem value="steam" className="min-w-0 flex-1 px-2 text-xs">
-          Steam
-        </ToggleGroupItem>
-      </ToggleGroup>
+        <ChevronDown className={`size-3.5 transition-transform duration-150 ${moreOpen ? "" : "-rotate-90"}`} />
+        {t("More options")}
+      </button>
 
-      <div className="flex flex-col gap-1.5">
-        <span className="text-[11px] text-muted-foreground">{t("Row color")}</span>
-        <ColorPicker value={color} onChange={setColor} />
-      </div>
+      {moreOpen && (
+        <>
+          <ToggleGroup
+            aria-label={t("Code type")}
+            type="single"
+            value={type}
+            onValueChange={(v) => {
+              if (v) {
+                setType(v as "totp" | "hotp" | "steam");
+                edited();
+              }
+            }}
+            className="w-full"
+          >
+            <ToggleGroupItem value="totp" className="min-w-0 flex-1 px-2 text-xs">
+              TOTP
+            </ToggleGroupItem>
+            <ToggleGroupItem value="hotp" className="min-w-0 flex-1 px-2 text-xs">
+              HOTP
+            </ToggleGroupItem>
+            <ToggleGroupItem value="steam" className="min-w-0 flex-1 px-2 text-xs">
+              Steam
+            </ToggleGroupItem>
+          </ToggleGroup>
+
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[12px] text-muted-foreground">{t("Row color")}</span>
+            <ColorPicker value={color} onChange={setColor} />
+          </div>
+        </>
+      )}
 
       {error && <p className="text-[11px] text-destructive">{error}</p>}
 
@@ -224,7 +248,7 @@ export function AddView({
         <Button variant="secondary" size="sm" onClick={onDone}>
           {t("Cancel")}
         </Button>
-        <Button size="sm" onClick={save} disabled={saving}>
+        <Button size="sm" onClick={save} disabled={saving || !canSave}>
           {saving ? t("Saving") : t("Save")}
         </Button>
       </div>

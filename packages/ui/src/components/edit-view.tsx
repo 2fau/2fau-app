@@ -40,7 +40,7 @@ export function EditView({ account, onDone }: { account: Account; onDone: () => 
   return (
     <div className="flex flex-col gap-3 p-4">
       <div className="flex items-center gap-1">
-        <Button size="icon-sm" variant="ghost" onClick={onDone}>
+        <Button size="icon-sm" variant="ghost" aria-label={t("Back")} onClick={onDone}>
           <ChevronLeft />
         </Button>
         <span className="text-[15px] font-semibold">{t("Edit account")}</span>
@@ -48,8 +48,8 @@ export function EditView({ account, onDone }: { account: Account; onDone: () => 
 
       <div className="border-t" />
 
-      <Input placeholder={t("Issuer")} value={issuer} onChange={(e) => setIssuer(e.target.value)} />
-      <Input placeholder={t("Label")} value={label} onChange={(e) => setLabel(e.target.value)} />
+      <Input aria-label={t("Issuer")} placeholder={t("Issuer")} value={issuer} onChange={(e) => setIssuer(e.target.value)} />
+      <Input aria-label={t("Label")} placeholder={t("Label")} value={label} onChange={(e) => setLabel(e.target.value)} />
 
       <div className="flex flex-col gap-1.5">
         <span className="text-[11px] text-muted-foreground">{t("Row color")}</span>

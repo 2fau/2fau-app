@@ -46,7 +46,7 @@ export function SetupView({ onDone, onBack }: { onDone?: () => void; onBack?: ()
     <form className="flex flex-col items-center gap-3 px-6 py-8" onSubmit={submit}>
       <ShieldPlus className="size-9 text-primary" />
       <p className="text-[15px] font-semibold">{t("Create a passphrase")}</p>
-      <p className="text-center text-[11px] text-muted-foreground">
+      <p className="text-center text-[12px] text-muted-foreground">
         {t("It encrypts your accounts on this device and can’t be recovered — don’t forget it.")}
       </p>
 
@@ -67,7 +67,7 @@ export function SetupView({ onDone, onBack }: { onDone?: () => void; onBack?: ()
       />
 
       {tooShort && (
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-[12px] text-muted-foreground">
           {t("Use at least {count} characters.", { count: MIN_LENGTH })}
         </p>
       )}

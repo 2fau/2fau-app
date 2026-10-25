@@ -119,7 +119,7 @@ describe("ExtensionVaultService", () => {
     await service.unlock(PASSPHRASE);
     await service.addUri(URI);
 
-    await expect(service.deleteVault("not-the-passphrase")).rejects.toThrow(/wrong password/i);
+    await expect(service.deleteVault("not-the-passphrase")).rejects.toThrow(/wrong passphrase/i);
 
     expect(service.needsSetup()).toBe(false);
     expect(await service.list()).toHaveLength(1);

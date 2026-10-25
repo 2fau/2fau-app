@@ -353,7 +353,7 @@ export class ExtensionVaultService implements VaultService {
     try {
       await openWithKey(loaded.blob, key);
     } catch (cause) {
-      throw new Error("Wrong password.", { cause });
+      throw new Error("Wrong passphrase.", { cause });
     }
 
     await wipe();

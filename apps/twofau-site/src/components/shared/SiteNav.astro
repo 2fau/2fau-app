@@ -11,17 +11,18 @@ const locale = Astro.currentLocale ?? "en";
 const t = getT(locale).t;
 const url = (path: string) => localeUrl(locale, path);
 ---
-    <div
+    <nav
+            aria-label={t("Main navigation")}
             data-pencil-name="Nav"
-            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[18px_40px] justify-between items-center"
+            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[18px_40px] justify-between items-center max-md:px-5 max-md:flex-wrap max-md:gap-y-3"
           >
             <div
               data-pencil-name="Nav Left"
-              class="box-border w-fit shrink-0 h-fit flex flex-row gap-[36px] justify-start items-center"
+              class="box-border w-fit shrink-0 h-fit flex flex-row gap-[36px] max-md:contents justify-start items-center max-md:flex-wrap max-w-full"
             >
               <a href={url("")}
                 data-pencil-name="Logo"
-                class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] justify-start items-center"
+                class="box-border w-fit shrink-0 h-fit flex flex-row gap-[9px] justify-start items-center max-md:flex-wrap max-w-full"
               >
                 <div
                   data-pencil-name="Logo Mark"
@@ -62,7 +63,7 @@ const url = (path: string) => localeUrl(locale, path);
               </a>
               <div
                 data-pencil-name="Nav Links"
-                class="box-border w-fit shrink-0 h-fit flex flex-row gap-[26px] justify-start items-center"
+                class="box-border w-fit shrink-0 h-fit flex flex-row gap-[26px] max-md:gap-5 max-md:order-last max-md:w-full justify-start items-center max-md:flex-wrap max-w-full"
               >
                 <a href={url("desktop")}
                   data-pencil-name="Desktop"
@@ -83,22 +84,22 @@ const url = (path: string) => localeUrl(locale, path);
             </div>
             <div
               data-pencil-name="Nav Right"
-              class="box-border w-fit shrink-0 h-fit flex flex-row gap-[10px] justify-start items-center"
+              class="box-border w-fit shrink-0 h-fit flex flex-row gap-[10px] justify-start items-center max-md:flex-wrap max-w-full"
             >
               <a href={url("desktop")}
                 data-pencil-name="Download"
-                class="text-[13.5px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap] transition-colors hover:text-[#F5F5F7]"
+                class="max-md:hidden text-[13.5px]/[normal] box-border text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left [white-space:nowrap] transition-colors hover:text-[#F5F5F7]"
               >
                 {t("Download")}
               </a>
               <LanguageSelector />
-              <NavInstallButton
+              <div class="max-md:hidden contents"><NavInstallButton
                 client:load
                 labels={{
                   chrome: t("Add to Chrome"),
                   firefox: t("Add to Firefox"),
                   edge: t("Add to Edge"),
                 }}
-              />
+              /></div>
             </div>
-          </div>
+          </nav>

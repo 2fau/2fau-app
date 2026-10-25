@@ -9,7 +9,7 @@
   --card-foreground: #1d1d1f;
   --muted: #f5f5f7; /* SwiftUI .quaternary-ish fills */
   --muted-foreground: #6e6e73; /* .secondary */
-  --tertiary-foreground: #8e8e93; /* .tertiary */
+  --tertiary-foreground: #737378; /* .tertiary, darkened to clear 4.5:1 */
   --secondary: #f0f0f2;
   --secondary-foreground: #1d1d1f;
   --accent: #f0f0f2;
@@ -33,7 +33,7 @@
     --card-foreground: #f5f5f7;
     --muted: #2c2c2e;
     --muted-foreground: #c3c3cc;
-    --tertiary-foreground: #7c7c80;
+    --tertiary-foreground: #8e8e93;
     --secondary: #303032;
     --secondary-foreground: #f5f5f7;
     --accent: #303032;
@@ -64,17 +64,43 @@
   --acct-gray: #8b8f98;
 }
 
+/* Account card surface. The accent is mixed into these per row (account-row),
+   so the card keeps its tinted, lit look in both themes: dark cards glow out of
+   near-black, light cards are a tinted wash over white. --row-ink is what the
+   issuer label mixes toward, so it stays readable against its own surface. */
+:root {
+  --row-base: #ffffff;
+  --row-base-mid: #fbfbfc;
+  --row-base-end: #f7f7f9;
+  --row-edge-base: #dcdce1;
+  --row-ink: #1d1d1f;
+  --row-code: #1d1d1f;
+  --row-secondary: #5c5c63;
+  --row-hairline: rgb(0 0 0 / 0.06);
+  --row-sheen: rgb(255 255 255 / 0.7);
+  --row-hover: rgb(0 0 0 / 0.06);
+  --row-icon: #6e6e73;
+  --row-icon-hover: #1d1d1f;
+  --warning: #b45309;
+  --copied: #15803d;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
-    --acct-red: #e5484d;
-    --acct-orange: #f76b15;
-    --acct-yellow: #f5c211;
-    --acct-green: #30a46c;
-    --acct-teal: #12a594;
-    --acct-blue: #3b82f6;
-    --acct-purple: #8e5cf0;
-    --acct-pink: #d6409f;
-    --acct-gray: #8b8f98;
+    --row-base: #16161b;
+    --row-base-mid: #131317;
+    --row-base-end: #121216;
+    --row-edge-base: #23232b;
+    --row-ink: #ffffff;
+    --row-code: #ffffff;
+    --row-secondary: #a1a1aa;
+    --row-hairline: rgb(255 255 255 / 0.06);
+    --row-sheen: rgb(255 255 255 / 0.06);
+    --row-hover: rgb(255 255 255 / 0.1);
+    --row-icon: #a1a1aa;
+    --row-icon-hover: #ffffff;
+    --warning: #f5a524;
+    --copied: #34d399;
   }
 }
 

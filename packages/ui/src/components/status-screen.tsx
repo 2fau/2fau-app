@@ -10,7 +10,7 @@ interface StatusAction {
 /** A full-panel empty/notice state: a centered icon, title, message, and any
  * recovery actions. Used when there's nothing to list — e.g. the extension is
  * in Desktop-vault mode but the desktop app is closed. Matches the popup's fixed
- * size and dark panel so it reads as a normal screen, not an error page. */
+ * size and panel so it reads as a normal screen, not an error page. */
 export function StatusScreen({
   icon,
   title,
@@ -23,7 +23,7 @@ export function StatusScreen({
   actions?: StatusAction[];
 }) {
   return (
-    <div className="dark flex h-[458px] w-[320px] flex-col items-center justify-center gap-2.5 overflow-hidden bg-background px-8 text-center text-foreground">
+    <div className="flex h-[458px] w-[320px] flex-col items-center justify-center gap-2.5 overflow-hidden bg-background px-8 text-center text-foreground">
       {icon && <div className="mb-1 text-muted-foreground">{icon}</div>}
       <p className="text-[15px] font-semibold">{title}</p>
       {message && (

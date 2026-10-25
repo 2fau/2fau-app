@@ -159,7 +159,7 @@ export function SettingsView({
         <SettingsRow
           icon={<KeyRound />}
           iconBg="#8e8e93"
-          label={t("Change Password")}
+          label={t("Change Passphrase")}
           chevron
           onClick={() => setScreen("password")}
         />
@@ -302,12 +302,12 @@ function DeleteVaultScreen({
 
   return (
     <SettingsPage title={t("Delete Vault")} onBack={onBack}>
-      <SettingsGroup footer={t("Every account in this vault is erased from this device, along with the saved password that unlocks it. This cannot be undone.")}>
+      <SettingsGroup footer={t("Every account in this vault is erased from this device, along with the saved passphrase that unlocks it. This cannot be undone.")}>
         <div className="flex flex-col gap-2 p-3">
           <Input
             type="password"
             autoFocus
-            placeholder={t("Current password")}
+            placeholder={t("Current passphrase")}
             value={passphrase}
             onChange={(e) => setPassphrase(e.target.value)}
           />
@@ -378,7 +378,7 @@ function ChangePasswordScreen({
       setCurrent("");
       setNext("");
       setConfirm("");
-      setOk(t("Password changed."));
+      setOk(t("Passphrase changed."));
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -387,25 +387,25 @@ function ChangePasswordScreen({
   }
 
   return (
-    <SettingsPage title={t("Change Password")} onBack={onBack}>
-      <SettingsGroup footer={t("Your password encrypts the vault on this device and can't be recovered.")}>
+    <SettingsPage title={t("Change Passphrase")} onBack={onBack}>
+      <SettingsGroup footer={t("Your passphrase encrypts the vault on this device and can't be recovered.")}>
         <div className="flex flex-col gap-2 p-3">
           <Input
             type="password"
-            placeholder={t("Current password")}
+            placeholder={t("Current passphrase")}
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
           />
           <Input
             type="password"
-            placeholder={t("New password")}
+            placeholder={t("New passphrase")}
             aria-invalid={tooShort}
             value={next}
             onChange={(e) => setNext(e.target.value)}
           />
           <Input
             type="password"
-            placeholder={t("Confirm new password")}
+            placeholder={t("Confirm new passphrase")}
             aria-invalid={mismatch}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
@@ -415,9 +415,9 @@ function ChangePasswordScreen({
       {tooShort && (
         <p className="-mt-3 px-1 text-[11px] text-muted-foreground">{t("Use at least 8 characters.")}</p>
       )}
-      {mismatch && <p className="-mt-3 px-1 text-[11px] text-destructive">{t("Passwords don't match.")}</p>}
+      {mismatch && <p className="-mt-3 px-1 text-[11px] text-destructive">{t("Passphrases don’t match.")}</p>}
       <Button disabled={!valid || busy} onClick={() => void submit()}>
-        {busy ? t("Changing…") : t("Change Password")}
+        {busy ? t("Changing…") : t("Change Passphrase")}
       </Button>
       <Status ok={ok} error={error} />
     </SettingsPage>
@@ -460,11 +460,11 @@ function ImportScreen({ backend, onBack }: { backend: SettingsBackend; onBack: (
 
   return (
     <SettingsPage title={t("Import Vault")} onBack={onBack}>
-      <SettingsGroup footer={t("Merges an exported .dat file into this vault. Enter the password the file was exported with.")}>
+      <SettingsGroup footer={t("Merges an exported .dat file into this vault. Enter the passphrase the file was exported with.")}>
         <div className="flex flex-col gap-2 p-3">
           <Input
             type="password"
-            placeholder={t("Password of the file")}
+            placeholder={t("Passphrase of the file")}
             value={passphrase}
             onChange={(e) => setPassphrase(e.target.value)}
           />
@@ -508,7 +508,7 @@ function AutoLockScreen({
   const { t } = tr;
   return (
     <SettingsPage title={t("Auto-Lock")} onBack={onBack}>
-      <SettingsGroup footer={t("How long the app can sit idle before it locks and asks for your password again.")}>
+      <SettingsGroup footer={t("How long the app can sit idle before it locks and asks for your passphrase again.")}>
         {AUTO_LOCK_OPTIONS.map((m) => (
           <SettingsRow
             key={m}

@@ -4,19 +4,19 @@ const t = getT(Astro.currentLocale).t;
 ---
     <div
             data-pencil-name="Differences Section"
-            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#0B0B0D]"
+            class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[96px_40px] justify-center items-start bg-[#0B0B0D] max-md:px-5 max-md:py-16"
           >
             <div
               data-pencil-name="Differences Inner"
-              class="box-border w-[1200px] shrink-0 h-fit flex flex-col gap-0 justify-start items-start"
+              class="box-border w-full max-w-[1200px] shrink-0 h-fit flex flex-col gap-0 justify-start items-start"
             >
               <div
                 data-pencil-name="Differences Header"
-                class="box-border w-full h-fit shrink-0 flex flex-row gap-[60px] justify-between items-end"
+                class="box-border w-full h-fit shrink-0 flex flex-row gap-[60px] justify-between items-end max-lg:flex-col max-lg:gap-10"
               >
                 <div
                   data-pencil-name="Differences Heading"
-                  class="box-border w-[640px] shrink-0 h-fit flex flex-col gap-[14px] justify-start items-start"
+                  class="box-border w-full max-w-[640px] shrink-0 h-fit flex flex-col gap-[14px] justify-start items-start"
                 >
                   <div
                     data-pencil-name="Eyebrow"
@@ -24,16 +24,16 @@ const t = getT(Astro.currentLocale).t;
                   >
                     {t("CHROME / EDGE vs FIREFOX")}
                   </div>
-                  <div
+                  <h2
                     data-pencil-name="Title"
-                    class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left"
+                    class="text-[36px]/[41px] box-border w-full text-[#F5F5F7] font-[Inter,system-ui,sans-serif] font-bold tracking-[-1.1px] text-left max-md:text-[28px]/[1.12]"
                   >
                     {t("Where the two builds actually differ.")}
-                  </div>
+                  </h2>
                 </div>
                 <div
                   data-pencil-name="Differences Note"
-                  class="text-[14.5px]/[24px] box-border w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
+                  class="text-[14.5px]/[24px] box-border w-full max-w-[430px] shrink-0 text-[#98989D] font-[Inter,system-ui,sans-serif] font-normal text-left"
                 >
                   {t("Both are MV3 and both ship the same UI and the same WASM core. Gecko needs five concessions, and the Firefox manifest is generated from the Chrome one so they cannot drift apart.")}
                 </div>
@@ -48,20 +48,20 @@ const t = getT(Astro.currentLocale).t;
               >
                 <div
                   data-pencil-name="Head Row"
-                  class="[box-sizing:content-box] w-[1200px] h-[41.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center bg-[#232326] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                  class="[box-sizing:content-box] w-full max-w-[1200px] h-[41.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center bg-[#232326] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:flex-col max-md:[box-sizing:border-box] max-md:h-auto"
                 >
                   <div
                     data-pencil-name="Head Cell aspect"
-                    class="box-border w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border w-full max-w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
                   >
                     <div
                       data-pencil-name="Head Text"
-                      class="text-[10.5px]/[normal] box-border text-[#6E6E73] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
+                      class="text-[11px]/[normal] box-border text-[#8E8E93] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
                     ></div>
                   </div>
                   <div
                     data-pencil-name="Head Cell CHROME / EDGE"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-[8px] justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-[8px] justify-start items-center max-md:w-full max-md:flex-none max-md:flex-wrap"
                   >
                     <div
                       data-pencil-name="Logo Chrome"
@@ -196,14 +196,14 @@ const t = getT(Astro.currentLocale).t;
                     </div>
                     <div
                       data-pencil-name="Head Text"
-                      class="text-[10.5px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
+                      class="text-[11px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
                     >
                       {t("CHROME / EDGE")}
                     </div>
                   </div>
                   <div
                     data-pencil-name="Head Cell FIREFOX"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-[8px] justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-[8px] justify-start items-center max-md:w-full max-md:flex-none max-md:flex-wrap"
                   >
                     <div
                       data-pencil-name="Logo Firefox"
@@ -267,7 +267,7 @@ const t = getT(Astro.currentLocale).t;
                     </div>
                     <div
                       data-pencil-name="Head Text"
-                      class="text-[10.5px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
+                      class="text-[11px]/[normal] box-border text-[#F5F5F7] font-['JetBrains_Mono',system-ui,sans-serif] font-normal tracking-[1px] text-left [white-space:nowrap]"
                     >
                       {t("FIREFOX")}
                     </div>
@@ -275,11 +275,11 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Row Background"
-                  class="[box-sizing:content-box] w-[1200px] h-[46.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                  class="[box-sizing:content-box] w-full max-w-[1200px] h-[46.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:flex-col max-md:[box-sizing:border-box] max-md:h-auto"
                 >
                   <div
                     data-pencil-name="Cell Aspect"
-                    class="box-border w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border w-full max-w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
                   >
                     <div
                       data-pencil-name="Aspect"
@@ -290,7 +290,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -301,7 +301,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -313,11 +313,11 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Row Clipboard"
-                  class="[box-sizing:content-box] w-[1200px] h-[46.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                  class="[box-sizing:content-box] w-full max-w-[1200px] h-[46.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:flex-col max-md:[box-sizing:border-box] max-md:h-auto"
                 >
                   <div
                     data-pencil-name="Cell Aspect"
-                    class="box-border w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border w-full max-w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
                   >
                     <div
                       data-pencil-name="Aspect"
@@ -328,7 +328,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -339,7 +339,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -351,11 +351,11 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Row Options page"
-                  class="[box-sizing:content-box] w-[1200px] h-[46.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                  class="[box-sizing:content-box] w-full max-w-[1200px] h-[46.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:flex-col max-md:[box-sizing:border-box] max-md:h-auto"
                 >
                   <div
                     data-pencil-name="Cell Aspect"
-                    class="box-border w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border w-full max-w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
                   >
                     <div
                       data-pencil-name="Aspect"
@@ -366,7 +366,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -377,7 +377,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -389,11 +389,11 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Row offscreen permission"
-                  class="[box-sizing:content-box] w-[1200px] h-[46.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                  class="[box-sizing:content-box] w-full max-w-[1200px] h-[46.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:flex-col max-md:[box-sizing:border-box] max-md:h-auto"
                 >
                   <div
                     data-pencil-name="Cell Aspect"
-                    class="box-border w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border w-full max-w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
                   >
                     <div
                       data-pencil-name="Aspect"
@@ -404,7 +404,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -415,7 +415,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -427,11 +427,11 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Row Minimum version"
-                  class="[box-sizing:content-box] w-[1200px] h-[46.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px]"
+                  class="[box-sizing:content-box] w-full max-w-[1200px] h-[46.5px] shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#262628] [margin:0px_0px_-0.5px_0px] max-md:flex-col max-md:[box-sizing:border-box] max-md:h-auto"
                 >
                   <div
                     data-pencil-name="Cell Aspect"
-                    class="box-border w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border w-full max-w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
                   >
                     <div
                       data-pencil-name="Aspect"
@@ -442,7 +442,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -453,7 +453,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -465,11 +465,11 @@ const t = getT(Astro.currentLocale).t;
                 </div>
                 <div
                   data-pencil-name="Row Distribution"
-                  class="box-border w-full h-fit shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center"
+                  class="box-border w-full h-fit shrink-0 flex flex-row gap-[24px] p-[14px_22px] justify-start items-center max-md:flex-col"
                 >
                   <div
                     data-pencil-name="Cell Aspect"
-                    class="box-border w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border w-full max-w-[300px] shrink-0 h-fit flex flex-row gap-0 justify-start items-center"
                   >
                     <div
                       data-pencil-name="Aspect"
@@ -480,7 +480,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -491,7 +491,7 @@ const t = getT(Astro.currentLocale).t;
                   </div>
                   <div
                     data-pencil-name="Cell Value"
-                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center"
+                    class="box-border [flex:1_1_0] h-fit flex flex-row gap-0 justify-start items-center max-md:w-full max-md:flex-none"
                   >
                     <div
                       data-pencil-name="Value"
@@ -508,7 +508,7 @@ const t = getT(Astro.currentLocale).t;
               ></div>
               <div
                 data-pencil-name="Derivation Strip"
-                class="box-border w-full h-fit shrink-0 flex flex-row gap-[12px] p-[16px_20px] justify-start items-center bg-[#1B1B1E] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[10px]"
+                class="box-border w-full h-fit shrink-0 flex flex-row gap-[12px] p-[16px_20px] justify-start items-center bg-[#1B1B1E] [outline:1px_solid_#262628] [outline-offset:-0.5px] rounded-[10px] max-md:flex-wrap"
               >
                 <svg
                   data-pencil-name="Icon"

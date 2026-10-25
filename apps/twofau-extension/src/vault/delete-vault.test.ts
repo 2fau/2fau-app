@@ -55,7 +55,7 @@ describe("deleteLocalVault", () => {
     await seedVault();
     await writeSettings({ mode: "sync" });
 
-    await expect(deleteLocalVault("not-the-passphrase", build)).rejects.toThrow(/wrong password/i);
+    await expect(deleteLocalVault("not-the-passphrase", build)).rejects.toThrow(/wrong passphrase/i);
 
     expect((await readSettings()).mode).toBe("sync");
     expect((await build()).needsSetup()).toBe(false);
