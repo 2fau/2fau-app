@@ -162,7 +162,9 @@ jobs:
           releaseBody: ${{ github.ref_type == 'tag' && '' || 'Automatically built from the latest commit on main. Unstable.' }}
           releaseDraft: false
           prerelease: ${{ github.ref_type != 'tag' }}
-          args: ${{ matrix.target && format('--target {0}', matrix.target) || '' }}
+          # --verbose on the Mac leg: Tauri otherwise swallows bundle_dmg.sh's
+          # output, leaving only "failed to run bundle_dmg.sh" in the log.
+          args: ${{ matrix.target && format('--target {0} --verbose', matrix.target) || '' }}
 
       # Package every browser deliverable in the Linux leg only, right after the
       # release exists. Doing it here (rather than a separate job that needs the
@@ -241,6 +243,11 @@ jobs:
 
       - name: Submit the Firefox add-on to AMO (listed)
         if: matrix.platform == 'ubuntu-22.04' && github.ref_type == 'tag' && steps.amo.outputs.have == 'true'
+        # A store-side problem (bad/expired AMO key, review rejection) must not
+        # fail this leg: stabilize-downloads needs every bundle leg green, so it
+        # would hold back the release's stable installers. The step still shows
+        # as failed in the run.
+        continue-on-error: true
         env:
           AMO_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
           AMO_SECRET: ${{ secrets.AMO_JWT_SECRET }}
