@@ -10,6 +10,7 @@ export { SetupView } from "@/components/setup-view";
 export { SetupWizard } from "@/components/setup-wizard";
 export { StatusScreen } from "@/components/status-screen";
 export { SettingsView } from "@/components/settings-view";
+export { CrashDialog } from "@/components/crash-dialog";
 export {
   SettingsPage,
   SettingsGroup,
@@ -20,6 +21,7 @@ export {
   type SettingsBackend,
   type SettingsLinks,
   type ImportSpec,
+  type CrashReport,
 } from "@/core/settings";
 export {
   adoptFailure,

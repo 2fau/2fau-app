@@ -89,6 +89,16 @@ can interoperate.
   anchors unconditionally and pushes the popup off-screen on bottom-taskbar systems.
 - Height is driven from the frontend via a `ResizeObserver` that resizes the window to the
   content.
+- Crash reports: `run()` installs a panic hook first thing; every panic (any thread) is
+  written to `<data_dir>/dev.artkost.2fau/crashes/crash-*.json` (newest 10 kept) and shown
+  by the shared `CrashDialog` via `SettingsBackend.crashReports`. The report holds the panic
+  string verbatim, so never `Debug`/`Display` secret-bearing types (`StoredAccount`, secrets,
+  the passphrase) into `panic!`/`expect`/`unwrap` messages.
+- Native crashes: `run()` re-launches the binary as `--crash-monitor <socket>` (handled in
+  `main()` before Tauri). On a signal/exception the monitor writes `<id>.dmp`, walks it with
+  `minidump-processor` and writes a normal `<id>.json`; app frames are named via an anchor
+  address the app sends at startup. Dumps can hold memory contents: never upload them.
+  x86_64 builds under Rosetta produce empty dumps.
 
 ## Type generation
 

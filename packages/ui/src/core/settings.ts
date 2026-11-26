@@ -20,6 +20,16 @@ export type ImportSpec =
   | { kind: "native"; run: (passphrase: string) => Promise<number | null> }
   | { kind: "file"; run: (file: File, passphrase: string) => Promise<number> };
 
+/** A recorded native crash, as the host renders it for the crash dialog.
+ * `text` is the full report (shown and copied); `issueUrl` is a prefilled
+ * GitHub new-issue link whose body may be truncated to fit a URL. */
+export interface CrashReport {
+  id: string;
+  message: string;
+  text: string;
+  issueUrl: string;
+}
+
 /** Everything the shared `SettingsView` needs from a host. Sync is a platform
  * component (the desktop bridge vs. the extension's mode + pairing), injected as
  * a ready-made sub-screen. */
@@ -55,6 +65,15 @@ export interface SettingsBackend {
   };
   /** Platform-specific Sync sub-screen, plus a short summary for its row. */
   sync: { summary?: string; screen: ReactNode };
+  /** Crash reports from the host's native process. Desktop-only; omitted where
+   * there is no native process to crash (the extension), and then no crash
+   * dialog renders. `subscribe` reports crashes that didn't kill the app and
+   * returns an unsubscribe function. */
+  crashReports?: {
+    pending: () => Promise<CrashReport | null>;
+    dismiss: (id: string) => Promise<void>;
+    subscribe: (onCrash: () => void) => () => void;
+  };
   /** Open an external URL (opener plugin on desktop, `window.open` in the ext). */
   openLink: (url: string) => void;
   /** Configurable hotkeys. `summon` differs by platform: desktop rebinds in

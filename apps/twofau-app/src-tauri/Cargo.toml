@@ -4,6 +4,7 @@ version = "0.1.1"
 description = "2FAu — menu-bar TOTP/HOTP authenticator"
 authors = ["Nikolay Kostyurin"]
 edition = "2021"
+repository.workspace = true
 
 [lib]
 # The `_lib` suffix keeps the lib name distinct from the bin name (a Windows
@@ -34,6 +35,13 @@ tiny_http = "0.12"
 # OpenSSL, so the CI cross-builds stay clean); `json` adds `into_json`. Also
 # used by the bridge integration tests (plain http on loopback).
 ureq = { version = "2", features = ["json"] }
+crash-handler = "0.8.1"
+minidumper = "0.11.0"
+minidump = "0.27.0"
+backtrace = "0.3.77"
+minidump-processor = { version = "0.27", default-features = false }
+minidump-unwind = "0.27"
+futures-executor = "0.3.34"
 
 [dev-dependencies]
 tempfile = "3"
