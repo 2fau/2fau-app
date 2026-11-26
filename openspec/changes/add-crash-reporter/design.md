@@ -112,8 +112,9 @@ scanning, no symbol files) and writes a normal `<id>.json` via the same
 *Why not an in-process trace:* on macOS `crash-handler` runs the callback on a
 separate exception-handler thread, so `backtrace::trace` there captures the
 wrong stack. The dump has the real crashed thread on every OS.
-*Socket:* `temp_dir()/2fau-crash-<pid>.sock` (short enough for macOS's 104-byte
-limit). Linux: `set_ptracer(monitor pid)` so Yama allows the dump.
+*Socket:* `<crashes dir>/mon-<pid>.sock`; the dir is 0700 on Unix, so another
+local user cannot squat the name as in a shared `/tmp` (a path over macOS's
+104-byte limit just disables native capture). Linux: `set_ptracer(monitor pid)` so Yama allows the dump.
 
 **10. Naming app frames without symbol files.** The app sends the monitor one
 message at startup: the runtime address of `run`. The monitor is the same

@@ -37,8 +37,30 @@ fn anchor() -> u64 {
 }
 
 fn socket_path(pid: u32) -> PathBuf {
-    // Short path: macOS caps Unix socket paths at 104 bytes.
-    std::env::temp_dir().join(format!("2fau-crash-{pid}.sock"))
+    // In the owner-only crashes dir, not a shared /tmp where another local user
+    // could squat the name and receive our dump requests. Short name: macOS caps
+    // Unix socket paths at 104 bytes; a longer path just disables capture.
+    crash::crashes_dir().join(format!("mon-{pid}.sock"))
+}
+
+/// Create `dir` (and tighten an existing one) as owner-only on Unix: it holds
+/// dumps, which can contain memory, and the monitor socket. Windows relies on
+/// the per-user ACL of the app data dir.
+fn private_dir(dir: &Path) -> std::io::Result<()> {
+    let mut builder = std::fs::DirBuilder::new();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::DirBuilderExt;
+        builder.mode(0o700);
+    }
+    builder.recursive(true).create(dir)?;
+    #[cfg(unix)]
+    {
+        // `mode` only applies to a newly created dir.
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(dir, std::fs::Permissions::from_mode(0o700))?;
+    }
+    Ok(())
 }
 
 /// Start the monitor and attach the crash handler. Best-effort: any failure
@@ -49,6 +71,7 @@ pub fn start() {
 
 fn try_start() -> Option<()> {
     let socket = socket_path(std::process::id());
+    private_dir(socket.parent()?).ok()?;
     let _ = std::fs::remove_file(&socket);
     let mut child = std::process::Command::new(std::env::current_exe().ok()?)
         .arg(MONITOR_FLAG)
@@ -125,24 +148,15 @@ impl Monitor {
 
 impl ServerHandler for Monitor {
     fn create_minidump_file(&self) -> std::io::Result<(std::fs::File, PathBuf)> {
-        // Dumps can hold memory contents (secrets): owner-only on Unix. Windows
-        // relies on the per-user ACL of the app data dir.
-        let mut dir = std::fs::DirBuilder::new();
+        // Dumps can hold memory contents (secrets): owner-only on Unix.
         let mut file = std::fs::OpenOptions::new();
         file.write(true).create_new(true);
         #[cfg(unix)]
         {
-            use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt};
-            dir.mode(0o700);
+            use std::os::unix::fs::OpenOptionsExt;
             file.mode(0o600);
         }
-        dir.recursive(true).create(&self.dir)?;
-        #[cfg(unix)]
-        {
-            // `mode` only applies to a newly created dir; tighten an existing one.
-            use std::os::unix::fs::PermissionsExt;
-            std::fs::set_permissions(&self.dir, std::fs::Permissions::from_mode(0o700))?;
-        }
+        private_dir(&self.dir)?;
         let id = crash::new_id(crash::now_ms());
         let path = self.dir.join(format!("{id}.dmp"));
         *self.id.lock().unwrap_or_else(|e| e.into_inner()) = Some(id);
