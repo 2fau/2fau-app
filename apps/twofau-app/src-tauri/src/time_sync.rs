@@ -61,11 +61,13 @@ impl TimeSync {
 
     /// Milliseconds to add to the local clock to get trusted time.
     pub fn offset_ms(&self) -> i64 {
-        *self.offset_ms.lock().expect("time offset mutex")
+        // A panic mid-sync can poison the lock; an i64 is never half-written,
+        // so the stored value is still good.
+        *self.offset_ms.lock().unwrap_or_else(|e| e.into_inner())
     }
 
     fn store(&self, value: i64) {
-        *self.offset_ms.lock().expect("time offset mutex") = value;
+        *self.offset_ms.lock().unwrap_or_else(|e| e.into_inner()) = value;
         let _ = std::fs::write(&self.path, value.to_string());
     }
 
@@ -174,6 +176,23 @@ fn days_from_civil(y: i64, m: i64, d: i64) -> i64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn offset_survives_a_poisoned_lock() {
+        let dir = tempfile::tempdir().unwrap();
+        let ts = std::sync::Arc::new(TimeSync::new(dir.path().join("time-offset")));
+        ts.store(42);
+        let t = ts.clone();
+        let _ = std::thread::spawn(move || {
+            let _held = t.offset_ms.lock().unwrap();
+            panic!("poison the lock");
+        })
+        .join();
+        assert!(ts.offset_ms.is_poisoned());
+        assert_eq!(ts.offset_ms(), 42);
+        ts.store(7);
+        assert_eq!(ts.offset_ms(), 7);
+    }
 
     #[test]
     fn parses_timeapi_style_no_zone() {

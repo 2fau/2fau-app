@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import type { SettingsBackend } from "@twofau/ui";
+import type { CrashReport, SettingsBackend } from "@twofau/ui";
 import { BridgeSettings } from "./bridge-settings";
 import { getAutoLockMinutes, setAutoLockMinutes } from "./auto-lock";
 import { getQuickCopy, setQuickCopy } from "./hotkeys";
@@ -43,6 +44,15 @@ export function tauriSettingsBackend(version: string): SettingsBackend {
     autostart: {
       get: () => invoke<boolean>("get_autostart"),
       set: (enabled) => invoke("set_autostart", { enabled }),
+    },
+    crashReports: {
+      pending: () => invoke<CrashReport | null>("crash_pending"),
+      dismiss: (id) => invoke("crash_dismiss", { id }),
+      // Rust emits this from the panic hook when the app survived the panic.
+      subscribe: (onCrash) => {
+        const unlisten = listen("crash://reported", () => onCrash());
+        return () => void unlisten.then((un) => un());
+      },
     },
     sync: { summary: "Desktop bridge", screen: <BridgeSettings /> },
     openLink: (url) => void openUrl(url),

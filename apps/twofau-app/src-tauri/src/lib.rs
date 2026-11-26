@@ -1,4 +1,6 @@
 pub mod bridge;
+pub mod crash;
+pub mod native;
 pub mod time_sync;
 pub mod vault;
 
@@ -498,7 +500,22 @@ fn toggle_window(app: &AppHandle) {
     }
 }
 
+/// Newest crash report the user hasn't dismissed, rendered for the dialog.
+#[tauri::command]
+fn crash_pending() -> Option<crash::CrashView> {
+    crash::newest_unseen(&crash::crashes_dir()).map(|r| crash::view(&r))
+}
+
+#[tauri::command]
+fn crash_dismiss(id: String) -> Result<(), String> {
+    crash::mark_seen(&crash::crashes_dir(), &id)
+}
+
 pub fn run() {
+    // First, so a panic anywhere below (setup, plugins, threads) is recorded.
+    crash::install_hook(crash::crashes_dir());
+    native::start();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_positioner::init())
@@ -510,6 +527,8 @@ pub fn run() {
             // Menu-bar agent: no Dock icon on macOS.
             #[cfg(target_os = "macos")]
             app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+
+            crash::set_app(app.handle().clone());
 
             // Use this app's own data dir (keyed by the bundle identifier), NOT
             // the legacy Swift app's ~/Library/Application Support/2fau — the two
@@ -539,13 +558,16 @@ pub fn run() {
             // Network time correction: start from the last persisted offset, then
             // keep it fresh on a background thread (immediate first sync, then
             // every REFRESH). Failures are silent — we simply keep the last
-            // known offset (or zero) until a sync succeeds.
+            // known offset (or zero) until a sync succeeds. A panicking pass is
+            // recorded by the crash hook and must not end the loop.
             let time_sync = Arc::new(TimeSync::new(time_path));
             app.manage(time_sync.clone());
-            std::thread::spawn(move || loop {
-                let _ = time_sync.sync_once();
-                std::thread::sleep(time_sync::REFRESH);
-            });
+            std::thread::Builder::new()
+                .name("time-sync".into())
+                .spawn(move || loop {
+                    let _ = crash::guard(|| time_sync.sync_once());
+                    std::thread::sleep(time_sync::REFRESH);
+                })?;
 
             let menu = build_tray_menu(app, &vault)?;
 
@@ -641,6 +663,8 @@ pub fn run() {
             set_global_shortcut,
             get_autostart,
             set_autostart,
+            crash_pending,
+            crash_dismiss,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

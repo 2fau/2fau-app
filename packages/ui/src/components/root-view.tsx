@@ -9,11 +9,12 @@ import { prefillFromClipboardText } from "@/lib/prefill";
 import { useClipboard } from "@/state/clipboard";
 import { useVault } from "@/state/vault-provider";
 import { SettingsView } from "@/components/settings-view";
+import { CrashDialog } from "@/components/crash-dialog";
 
 import type { ReactNode } from "react";
 import type { AddPrefill } from "@/lib/prefill";
 import type { Account, ParsedOtp } from "@/core/types";
-import type { SettingsBackend } from "@/core/settings";
+import type { CrashReport, SettingsBackend } from "@/core/settings";
 import type { SetupBackend } from "@/core/setup";
 import type { QuickCopyConfig } from "@/lib/hotkeys";
 
@@ -78,6 +79,22 @@ export function RootView({
     return true;
   }
 
+  // Newest unseen native crash: checked on mount (a crash that killed the last
+  // run) and again whenever the host reports one live.
+  const crashReports = settingsBackend?.crashReports;
+  const [crash, setCrash] = useState<CrashReport | null>(null);
+  useEffect(() => {
+    if (!crashReports) return;
+    const load = () => void crashReports.pending().then(setCrash, () => {});
+    load();
+    return crashReports.subscribe(load);
+  }, [crashReports]);
+
+  function closeCrash(report: CrashReport) {
+    setCrash(null);
+    void crashReports?.dismiss(report.id).catch(() => {});
+  }
+
   const onDone = () => setScreen({ name: "list" });
 
   // A short view (unlock/setup/add/edit) that fills the fixed panel height and
@@ -91,7 +108,17 @@ export function RootView({
     // window tracks this (its ResizeObserver now reads a constant height); the
     // extension popup takes it directly. Each view fills it and scrolls its own
     // overflow, exactly like the account list.
-    <div className="flex h-[458px] w-[320px] flex-col overflow-hidden bg-background text-foreground">
+    <div className="relative flex h-[458px] w-[320px] flex-col overflow-hidden bg-background text-foreground">
+      {crash && settingsBackend && (
+        <CrashDialog
+          report={crash}
+          onReport={() => {
+            settingsBackend.openLink(crash.issueUrl);
+            closeCrash(crash);
+          }}
+          onDismiss={() => closeCrash(crash)}
+        />
+      )}
       {(() => {
         if (setupOpen) {
           return fill(<SetupWizard backend={setupBackend} onDone={() => setSetupOpen(false)} />);
